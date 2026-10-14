@@ -2,9 +2,32 @@ import { useState } from "react";
 import { Globe, Building2, MapPin, Target, ArrowRight, ArrowLeft, Check, Sparkles } from "lucide-react";
 
 const industries = [
-  "Legal", "Real Estate", "Epoxy Flooring", "Roofing", "HVAC", "Plumbing", "Electrical",
-  "Med Spa", "Dental", "Chiropractic", "Remodeling", "Landscaping", "Solar", "Pest Control",
-  "Moving", "Auto Detailing", "Restaurants", "Insurance", "Mortgage", "Cleaning Services",
+  "Accounting & Bookkeeping", "Advertising Agency", "AI Consultant", "Architecture", "Assisted Living",
+  "Auto Detailing", "Auto Repair", "Aviation & Flight School", "Bakery", "Banking & Credit Union",
+  "Bar & Nightclub", "Barbershop", "Bed & Breakfast", "Body Shop & Collision", "Branding & Design",
+  "Business Coach", "Career Coaching", "Carpet Cleaning", "Catering", "Childcare & Daycare",
+  "Chiropractic", "Cleaning Services", "Coffee Shop & Cafe", "College & University", "Construction",
+  "Consulting", "Content Marketing", "Corporate Law", "Criminal Defense Law", "Dance Studio",
+  "Deck & Patio", "Dental & Dentist", "Dermatology", "Ecommerce Store", "Electrical",
+  "Email Marketing", "Engineering", "Environmental Services", "Epoxy Flooring", "Estate Planning Law",
+  "Event Planning", "Family Law", "Fencing", "Financial Advisor", "Fitness & Gym",
+  "Florist", "Flooring", "Food Truck", "Freight & Logistics", "Funeral Home",
+  "Garage Door", "General Contractor", "Home Health Care", "Home Inspection", "HVAC",
+  "Immigration Law", "Interior Design", "Investment Firm", "IP & Patent Law", "Janitorial",
+  "Junk Removal", "Kitchen & Bath", "Landscaping", "Lawn Care", "Law Firm",
+  "Life Coach", "Locksmith", "Manufacturing", "Marketing Agency", "Martial Arts",
+  "Massage Therapy", "Med Spa & Aesthetics", "Mental Health & Therapy", "Mortgage & Lending", "Moving Company",
+  "Nail Salon", "Nonprofit", "Optometry", "Orthodontics", "Painting",
+  "Personal Injury Law", "Personal Training", "Pest Control", "Photography", "Physical Therapy",
+  "Plastic Surgery", "Plumbing", "Pool & Spa", "Preschool", "Pressure Washing",
+  "Primary Care Clinic", "PR & Communications", "Private School", "Property Management", "Public Relations",
+  "Real Estate", "Real Estate Brokerage", "Remodeling", "Renewable Energy", "Restaurant",
+  "Roofing", "SEO Agency", "Security Services", "Senior Care", "Septic Services",
+  "Siding", "Social Media Agency", "Software & SaaS", "Solar", "Spa & Wellness",
+  "Storage", "Tax Services", "Title Company", "Towing", "Tree Service",
+  "Tutoring", "Urgent Care", "Vacation Rental", "Veterinary", "Videography",
+  "Warehousing", "Wealth Management", "Web Design Agency", "Wedding Planning", "Windows & Doors",
+  "Yoga Studio",
 ];
 const goals = ["More qualified leads", "Online bookings", "Phone calls", "Quote requests", "Brand awareness"];
 const tones = ["Professional", "Friendly", "Premium", "Approachable", "Bold"];
@@ -13,6 +36,7 @@ const stepLabels = ["Business", "Industry", "Markets", "Goals"];
 
 export default function OnboardingWizard({ onComplete }) {
   const [step, setStep] = useState(0);
+  const [industryQuery, setIndustryQuery] = useState("");
   const [data, setData] = useState({
     businessName: "",
     businessWebsiteUrl: "",
@@ -78,19 +102,27 @@ export default function OnboardingWizard({ onComplete }) {
         {step === 1 && (
           <div className="space-y-3">
             <p className="text-sm font-semibold text-foreground mb-1">Select your industry</p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {industries.map((ind) => (
-                <button
-                  key={ind}
-                  type="button"
-                  onClick={() => setData({ ...data, industry: ind })}
-                  className={`rounded-xl border px-3 py-2.5 text-sm text-left transition ${
-                    data.industry === ind ? "border-primary bg-primary/10 text-foreground" : "border-border text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {ind}
-                </button>
-              ))}
+            <input
+              value={industryQuery}
+              onChange={(e) => setIndustryQuery(e.target.value)}
+              placeholder="Search industries..."
+              className="dd-input mb-1"
+            />
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-72 overflow-y-auto pr-1">
+              {industries
+                .filter((ind) => ind.toLowerCase().includes(industryQuery.trim().toLowerCase()))
+                .map((ind) => (
+                  <button
+                    key={ind}
+                    type="button"
+                    onClick={() => setData({ ...data, industry: ind })}
+                    className={`rounded-xl border px-3 py-2.5 text-sm text-left transition ${
+                      data.industry === ind ? "border-primary bg-primary/10 text-foreground" : "border-border text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {ind}
+                  </button>
+                ))}
             </div>
             <p className="text-xs text-muted-foreground mt-2">We'll analyze the top 5 rated sites in this industry for style, layout, SEO, AEO & GEO.</p>
           </div>
