@@ -1,0 +1,104 @@
+{
+  "name": "LaunchCampaign",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Campaign name"
+    },
+    "industry": {
+      "type": "string",
+      "description": "Target industry"
+    },
+    "business_name": {
+      "type": "string",
+      "description": "Base business name"
+    },
+    "business_website": {
+      "type": "string",
+      "description": "Source business website"
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Target locations/cities"
+    },
+    "tone": {
+      "type": "string",
+      "description": "Preferred brand tone"
+    },
+    "goal": {
+      "type": "string",
+      "description": "Primary conversion goal"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "running",
+        "complete",
+        "failed"
+      ],
+      "default": "running"
+    },
+    "sites_generated": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of sites created in this campaign"
+    },
+    "benchmark": {
+      "type": "object",
+      "description": "Industry benchmark used across all variants"
+    },
+    "business_research": {
+      "type": "object",
+      "description": "Skip-traced business research shared across variants"
+    }
+  },
+  "required": [
+    "name",
+    "industry"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

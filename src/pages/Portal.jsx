@@ -6,7 +6,9 @@ import ProgressStep from "@/components/portal/ProgressStep";
 import BlueprintReview from "@/components/portal/BlueprintReview";
 import AssetStudio from "@/components/portal/AssetStudio";
 import TemplateLibrary from "@/components/portal/TemplateLibrary";
-import { CheckCircle2, Plus, Wand2, Library } from "lucide-react";
+import MassLaunchConsole from "@/components/portal/MassLaunchConsole";
+import Campaigns from "@/components/portal/Campaigns";
+import { CheckCircle2, Plus, Wand2, Library, Rocket } from "lucide-react";
 
 export default function Portal() {
   const [tab, setTab] = useState("generator");
@@ -111,15 +113,16 @@ export default function Portal() {
     <div className="min-h-screen bg-background text-foreground">
       <PortalNav onNew={() => { reset(); setTab("generator"); }} />
 
-      {/* Tabs */}
       <div className="border-b border-border bg-background/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex gap-1">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex gap-1 overflow-x-auto">
           <TabButton active={tab === "generator"} onClick={() => setTab("generator")} icon={Wand2} label="Website Generator" />
           <TabButton active={tab === "library"} onClick={() => setTab("library")} icon={Library} label="Template Library" />
+          <TabButton active={tab === "launch"} onClick={() => setTab("launch")} icon={Rocket} label="Mass Launch" />
+          <TabButton active={tab === "campaigns"} onClick={() => setTab("campaigns")} icon={Rocket} label="Campaigns" />
         </div>
       </div>
 
-      {error && (
+      {error && tab === "generator" && (
         <div className="max-w-2xl mx-auto px-4 mt-4 rounded-xl border border-destructive/40 bg-destructive/10 text-destructive text-sm p-3">
           {error}
         </div>
@@ -177,6 +180,8 @@ export default function Portal() {
       )}
 
       {tab === "library" && <TemplateLibrary />}
+      {tab === "launch" && <MassLaunchConsole onDone={() => setTab("campaigns")} />}
+      {tab === "campaigns" && <Campaigns />}
     </div>
   );
 }
@@ -185,7 +190,7 @@ function TabButton({ active, onClick, icon: Icon, label }) {
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition ${
+      className={`inline-flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition whitespace-nowrap ${
         active ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
       }`}
     >

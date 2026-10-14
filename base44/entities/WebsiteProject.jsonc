@@ -45,6 +45,14 @@
     "hero_image_url": {
       "type": "string",
       "description": "AI-generated hero image URL"
+    },
+    "location": {
+      "type": "string",
+      "description": "Target location for this variant (mass launch)"
+    },
+    "campaign_id": {
+      "type": "string",
+      "description": "LaunchCampaign id this variant belongs to"
     }
   },
   "required": [
