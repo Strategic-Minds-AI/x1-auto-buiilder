@@ -1,0 +1,95 @@
+{
+  "name": "WebsiteProject",
+  "type": "object",
+  "properties": {
+    "business_name": {
+      "type": "string",
+      "description": "Business name extracted or entered"
+    },
+    "business_website": {
+      "type": "string",
+      "description": "Source business website URL researched"
+    },
+    "industry": {
+      "type": "string",
+      "description": "Target industry"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "researching",
+        "generated",
+        "designing",
+        "preview_ready",
+        "approved"
+      ],
+      "default": "draft"
+    },
+    "business_research": {
+      "type": "object",
+      "description": "Skip-traced business info from source site"
+    },
+    "benchmark": {
+      "type": "object",
+      "description": "Top industry sites + design guidance"
+    },
+    "content": {
+      "type": "object",
+      "description": "Generated original website content blueprint"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "AI-generated logo image URL"
+    },
+    "hero_image_url": {
+      "type": "string",
+      "description": "AI-generated hero image URL"
+    }
+  },
+  "required": [
+    "business_website",
+    "industry"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
