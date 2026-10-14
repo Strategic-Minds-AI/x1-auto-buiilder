@@ -1,0 +1,96 @@
+{
+  "name": "Template",
+  "type": "object",
+  "properties": {
+    "industry": {
+      "type": "string",
+      "description": "Industry this template was researched for"
+    },
+    "source_url": {
+      "type": "string",
+      "description": "URL of the analyzed top site"
+    },
+    "site_name": {
+      "type": "string",
+      "description": "Name of the analyzed site"
+    },
+    "rank": {
+      "type": "number",
+      "description": "Rank among top 5 for the industry"
+    },
+    "overall_score": {
+      "type": "number",
+      "description": "0-100 score across design + SEO + AEO + GEO"
+    },
+    "style_analysis": {
+      "type": "object",
+      "description": "Color, typography, imagery, tone"
+    },
+    "layout_analysis": {
+      "type": "object",
+      "description": "Hero pattern, section order, navigation, conversion"
+    },
+    "seo_analysis": {
+      "type": "object",
+      "description": "Title/meta, headings, content, linking, technical"
+    },
+    "aeo_analysis": {
+      "type": "object",
+      "description": "FAQ, schema, direct answers, AI overview readiness"
+    },
+    "geo_analysis": {
+      "type": "object",
+      "description": "Local SEO, GBP, location pages, citations, reviews"
+    },
+    "design_direction": {
+      "type": "object",
+      "description": "Summary + which patterns to adopt as inspiration"
+    }
+  },
+  "required": [
+    "industry",
+    "source_url",
+    "site_name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

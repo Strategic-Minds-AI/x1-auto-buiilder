@@ -1,9 +1,10 @@
-import { Search, BarChart3, Sparkles, Check } from "lucide-react";
+import { Search, BarChart3, Library, Sparkles, Check } from "lucide-react";
 
 const phases = [
-  { icon: Search, label: "Researching your business", desc: "Skip-tracing your website to extract services, value props, and tone." },
-  { icon: BarChart3, label: "Benchmarking top sites", desc: "Identifying the 5 best-designed sites in your industry for design guidance." },
-  { icon: Sparkles, label: "Generating original content", desc: "Writing hero copy, services, about, FAQs, and a design direction." },
+  { icon: Search, label: "Skip-tracing your business", desc: "Extracting services, value props, and brand tone from your website." },
+  { icon: BarChart3, label: "Analyzing top 5 industry sites", desc: "Deep analysis across style, layout, SEO, AEO & GEO." },
+  { icon: Library, label: "Building your template library", desc: "Saving analyzed top sites as reusable templates." },
+  { icon: Sparkles, label: "Generating your website", desc: "Writing original content and a design direction for your new site." },
 ];
 
 export default function ProgressStep({ phase }) {
@@ -12,8 +13,8 @@ export default function ProgressStep({ phase }) {
       <div className="inline-flex w-16 h-16 rounded-2xl bg-primary/15 items-center justify-center mb-6">
         <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
       </div>
-      <h2 className="font-display font-bold text-2xl mb-2">Building your website</h2>
-      <p className="text-muted-foreground mb-10">This takes about 30–60 seconds.</p>
+      <h2 className="font-display font-bold text-2xl mb-2">Researching & building</h2>
+      <p className="text-muted-foreground mb-10">This takes about 60–90 seconds.</p>
 
       <div className="space-y-3 text-left">
         {phases.map((p, i) => {

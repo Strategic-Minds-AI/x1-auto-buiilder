@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import PortalNav from "@/components/portal/PortalNav";
-import OnboardingStep from "@/components/portal/OnboardingStep";
+import OnboardingWizard from "@/components/portal/OnboardingWizard";
 import ProgressStep from "@/components/portal/ProgressStep";
 import BlueprintReview from "@/components/portal/BlueprintReview";
 import AssetStudio from "@/components/portal/AssetStudio";
-import { CheckCircle2, Plus } from "lucide-react";
+import TemplateLibrary from "@/components/portal/TemplateLibrary";
+import { CheckCircle2, Plus, Wand2, Library } from "lucide-react";
 
 export default function Portal() {
+  const [tab, setTab] = useState("generator");
   const [step, setStep] = useState("onboarding");
   const [phase, setPhase] = useState(0);
   const [form, setForm] = useState(null);
   const [result, setResult] = useState(null);
+  const [templates, setTemplates] = useState([]);
   const [assets, setAssets] = useState({ logoUrl: null, heroImageUrl: null, logoError: null, heroError: null });
   const [loadingAssets, setLoadingAssets] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -23,18 +26,25 @@ export default function Portal() {
     setStep("generating");
     setPhase(0);
     setError(null);
-    const t1 = setTimeout(() => setPhase(1), 6000);
+    const t1 = setTimeout(() => setPhase(1), 5000);
     const t2 = setTimeout(() => setPhase(2), 14000);
+    const t3 = setTimeout(() => setPhase(3), 22000);
     try {
-      const res = await base44.functions.invoke("generateWebsite", formData);
+      const [siteRes, tplRes] = await Promise.all([
+        base44.functions.invoke("generateWebsite", formData),
+        base44.functions.invoke("researchIndustryTemplates", { industry: formData.industry }),
+      ]);
       clearTimeout(t1);
       clearTimeout(t2);
-      setResult(res.data);
-      setPhase(3);
+      clearTimeout(t3);
+      setResult(siteRes.data);
+      setTemplates(tplRes.data?.templates || []);
+      setPhase(4);
       setStep("review");
     } catch (err) {
       clearTimeout(t1);
       clearTimeout(t2);
+      clearTimeout(t3);
       setError(err.response?.data?.error || err.message || "Generation failed");
       setStep("onboarding");
     }
@@ -91,6 +101,7 @@ export default function Portal() {
     setStep("onboarding");
     setForm(null);
     setResult(null);
+    setTemplates([]);
     setAssets({ logoUrl: null, heroImageUrl: null, logoError: null, heroError: null });
     setSavedId(null);
     setError(null);
@@ -98,7 +109,15 @@ export default function Portal() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <PortalNav onNew={reset} />
+      <PortalNav onNew={() => { reset(); setTab("generator"); }} />
+
+      {/* Tabs */}
+      <div className="border-b border-border bg-background/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex gap-1">
+          <TabButton active={tab === "generator"} onClick={() => setTab("generator")} icon={Wand2} label="Website Generator" />
+          <TabButton active={tab === "library"} onClick={() => setTab("library")} icon={Library} label="Template Library" />
+        </div>
+      </div>
 
       {error && (
         <div className="max-w-2xl mx-auto px-4 mt-4 rounded-xl border border-destructive/40 bg-destructive/10 text-destructive text-sm p-3">
@@ -106,44 +125,71 @@ export default function Portal() {
         </div>
       )}
 
-      {step === "onboarding" && <OnboardingStep onGenerate={generate} />}
-      {step === "generating" && <ProgressStep phase={phase} />}
-      {step === "review" && result && (
-        <BlueprintReview
-          result={result}
-          onGenerateAssets={generateAssets}
-          loadingAssets={loadingAssets}
-          onSave={save}
-          saving={saving}
-        />
+      {tab === "generator" && (
+        <>
+          {step === "onboarding" && <OnboardingWizard onComplete={generate} />}
+          {step === "generating" && <ProgressStep phase={phase} />}
+          {step === "review" && result && (
+            <BlueprintReview
+              result={result}
+              onGenerateAssets={generateAssets}
+              loadingAssets={loadingAssets}
+              onSave={save}
+              saving={saving}
+            />
+          )}
+          {step === "assets" && (
+            <AssetStudio
+              assets={assets}
+              loading={loadingAssets}
+              onRegenerate={generateAssets}
+              onSave={save}
+              saving={saving}
+              saved={!!savedId}
+            />
+          )}
+          {step === "saved" && (
+            <div className="max-w-xl mx-auto px-4 py-20 text-center">
+              <div className="inline-flex w-16 h-16 rounded-2xl bg-primary/15 items-center justify-center mb-6">
+                <CheckCircle2 className="w-8 h-8 text-primary" />
+              </div>
+              <h2 className="font-display font-bold text-2xl mb-2">Project Saved</h2>
+              <p className="text-muted-foreground mb-4">
+                Your website blueprint and assets are saved, and {templates.length} industry templates were added to your library.
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <button
+                  onClick={reset}
+                  className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground hover:brightness-110 transition"
+                >
+                  <Plus className="w-4 h-4" /> Create Another
+                </button>
+                <button
+                  onClick={() => setTab("library")}
+                  className="inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 text-sm font-semibold text-foreground hover:bg-secondary transition"
+                >
+                  <Library className="w-4 h-4" /> View Templates
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
-      {step === "assets" && (
-        <AssetStudio
-          assets={assets}
-          loading={loadingAssets}
-          onRegenerate={generateAssets}
-          onSave={save}
-          saving={saving}
-          saved={!!savedId}
-        />
-      )}
-      {step === "saved" && (
-        <div className="max-w-xl mx-auto px-4 py-20 text-center">
-          <div className="inline-flex w-16 h-16 rounded-2xl bg-primary/15 items-center justify-center mb-6">
-            <CheckCircle2 className="w-8 h-8 text-primary" />
-          </div>
-          <h2 className="font-display font-bold text-2xl mb-2">Project Saved</h2>
-          <p className="text-muted-foreground mb-8">
-            Your website blueprint and assets are saved to your projects.
-          </p>
-          <button
-            onClick={reset}
-            className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground hover:brightness-110 transition"
-          >
-            <Plus className="w-4 h-4" /> Create Another
-          </button>
-        </div>
-      )}
+
+      {tab === "library" && <TemplateLibrary />}
     </div>
+  );
+}
+
+function TabButton({ active, onClick, icon: Icon, label }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`inline-flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition ${
+        active ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
+      }`}
+    >
+      <Icon className="w-4 h-4" /> {label}
+    </button>
   );
 }
