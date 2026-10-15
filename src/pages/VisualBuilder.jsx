@@ -7,6 +7,7 @@ import BuilderPreview from "@/components/builder/BuilderPreview";
 import ComponentsPanel from "@/components/builder/ComponentsPanel";
 import ThemePanel from "@/components/builder/ThemePanel";
 import SettingsPanel from "@/components/builder/SettingsPanel";
+import DashboardMode from "@/components/builder/DashboardMode";
 import { Loader2, ChevronDown, Plus, MessageCircle, Radio, Rocket } from "lucide-react";
 
 const AGENT_NAME = "super_agent";
@@ -23,6 +24,7 @@ export default function VisualBuilder() {
   const [provisioning, setProvisioning] = useState(false);
   const [showProjectMenu, setShowProjectMenu] = useState(false);
   const [activePanel, setActivePanel] = useState(null);
+  const [builderMode, setBuilderMode] = useState("editor");
 
   useEffect(() => { loadProjects(); startConversation(); }, []);
 
@@ -151,29 +153,38 @@ export default function VisualBuilder() {
             {provisioning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Rocket className="w-3.5 h-3.5" />}
             Provision to Vercel
           </button>
-          <div className="text-xs text-white/40 font-semibold tracking-wide">VISUAL BUILDER</div>
+          <div className="flex items-center gap-1 rounded-lg bg-white/10 p-0.5">
+            <button onClick={() => setBuilderMode("editor")} className={`px-3 py-1 text-xs font-bold rounded-md transition ${builderMode === "editor" ? "bg-[#00d4ff] text-[#0a0e14]" : "text-white/60 hover:text-white"}`}>Editor</button>
+            <button onClick={() => setBuilderMode("dashboard")} className={`px-3 py-1 text-xs font-bold rounded-md transition ${builderMode === "dashboard" ? "bg-[#00d4ff] text-[#0a0e14]" : "text-white/60 hover:text-white"}`}>Dashboard</button>
+          </div>
         </div>
       </div>
 
-      {/* Toolbar */}
-      <BuilderToolbar project={activeProject} onGenerate={handleNewProject} onDeploy={handleDeploy} onNewProject={handleNewProject} deploying={deploying}
-        onComponents={() => setActivePanel("components")} onTheme={() => setActivePanel("theme")} onSettings={() => setActivePanel("settings")} />
+      {builderMode === "editor" ? (
+        <>
+          {/* Toolbar */}
+          <BuilderToolbar project={activeProject} onGenerate={handleNewProject} onDeploy={handleDeploy} onNewProject={handleNewProject} deploying={deploying}
+            onComponents={() => setActivePanel("components")} onTheme={() => setActivePanel("theme")} onSettings={() => setActivePanel("settings")} />
 
-      {/* Split layout */}
-      <div className="flex-1 flex min-h-0 relative">
-        {/* Chat — left 40% */}
-        <div className="w-2/5 min-w-[320px] max-w-[480px] shrink-0">
-          <BuilderChat conversation={conversation} messages={messages} loading={chatLoading} onSend={sendMessage} onMessages={setMessages} />
-        </div>
-        {/* Preview — right 60% */}
-        <div className="flex-1 min-w-0">
-          <BuilderPreview project={activeProject} previewMode={previewMode} onModeChange={setPreviewMode} loading={chatLoading} />
-        </div>
-        {/* Slide-in panels */}
-        {activePanel === "components" && <ComponentsPanel onClose={() => setActivePanel(null)} onAdd={handleAddComponent} />}
-        {activePanel === "theme" && <ThemePanel project={activeProject} onClose={() => setActivePanel(null)} onApply={handleApplyTheme} />}
-        {activePanel === "settings" && <SettingsPanel project={activeProject} onClose={() => setActivePanel(null)} onUpdate={loadProjects} />}
-      </div>
+          {/* Split layout */}
+          <div className="flex-1 flex min-h-0 relative">
+            {/* Chat — left 40% */}
+            <div className="w-2/5 min-w-[320px] max-w-[480px] shrink-0">
+              <BuilderChat conversation={conversation} messages={messages} loading={chatLoading} onSend={sendMessage} onMessages={setMessages} />
+            </div>
+            {/* Preview — right 60% */}
+            <div className="flex-1 min-w-0">
+              <BuilderPreview project={activeProject} previewMode={previewMode} onModeChange={setPreviewMode} loading={chatLoading} />
+            </div>
+            {/* Slide-in panels */}
+            {activePanel === "components" && <ComponentsPanel onClose={() => setActivePanel(null)} onAdd={handleAddComponent} />}
+            {activePanel === "theme" && <ThemePanel project={activeProject} onClose={() => setActivePanel(null)} onApply={handleApplyTheme} />}
+            {activePanel === "settings" && <SettingsPanel project={activeProject} onClose={() => setActivePanel(null)} onUpdate={loadProjects} />}
+          </div>
+        </>
+      ) : (
+        <DashboardMode conversation={conversation} messages={messages} chatLoading={chatLoading} onSend={sendMessage} />
+      )}
     </div>
   );
 }
