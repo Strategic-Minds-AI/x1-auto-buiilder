@@ -45,6 +45,7 @@ import PerformanceDashboard from '@/pages/PerformanceDashboard';
 import MockupIngestion from '@/pages/MockupIngestion';
 import FaultLine from '@/pages/FaultLine';
 import ClientPortal from '@/pages/ClientPortal';
+import SuperAgentChat from '@/components/SuperAgentChat';
 
 function App() {
   return (
@@ -99,6 +100,7 @@ function App() {
             <Route path="*" element={<PageNotFound />} />
           </Routes>
           <Toaster />
+          <SuperAgentChat />
         </Router>
       </QueryClientProvider>
     </AuthProvider>
