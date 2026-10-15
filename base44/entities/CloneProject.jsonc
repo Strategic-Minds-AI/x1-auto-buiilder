@@ -1,0 +1,107 @@
+{
+  "name": "CloneProject",
+  "type": "object",
+  "properties": {
+    "source_url": {
+      "type": "string",
+      "description": "URL that was cloned"
+    },
+    "source_title": {
+      "type": "string",
+      "description": "Title extracted from the source page"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "cloning",
+        "cloned",
+        "reverse_engineered",
+        "rebranded",
+        "content_generated",
+        "funnel_generated",
+        "google_scanned",
+        "website_generated",
+        "failed"
+      ],
+      "default": "cloning"
+    },
+    "raw_html": {
+      "type": "string",
+      "description": "Truncated raw HTML from source (max 50k chars)"
+    },
+    "analysis": {
+      "type": "object",
+      "description": "Reverse-engineered analysis: sections, design system, layout, components, technologies"
+    },
+    "rebrand": {
+      "type": "object",
+      "description": "Rebrand options: name, tagline, colors, fonts, logo direction"
+    },
+    "generated_content": {
+      "type": "string",
+      "description": "Generated content in markdown"
+    },
+    "funnel_system": {
+      "type": "object",
+      "description": "Generated funnel system data"
+    },
+    "google_scan": {
+      "type": "object",
+      "description": "Google compliance scan results and requirements"
+    },
+    "website_blueprint": {
+      "type": "string",
+      "description": "Ultra high quality website blueprint in markdown"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_url"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

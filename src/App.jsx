@@ -47,6 +47,7 @@ import FaultLine from '@/pages/FaultLine';
 import ClientPortal from '@/pages/ClientPortal';
 import UniversalGenerator from '@/pages/UniversalGenerator';
 import UniversalGeneratorStudio from '@/pages/UniversalGeneratorStudio';
+import CloneGenerator from '@/pages/CloneGenerator';
 import AgentInstructions from '@/pages/AgentInstructions';
 import VisualBuilder from '@/pages/VisualBuilder';
 import BuilderDocs from '@/pages/BuilderDocs';
@@ -113,6 +114,7 @@ function App() {
               <Route path="/client-portal" element={<ClientPortal />} />
               <Route path="/universal-generator" element={<UniversalGenerator />} />
               <Route path="/universal-studio" element={<UniversalGeneratorStudio />} />
+              <Route path="/clone-generator" element={<CloneGenerator />} />
               <Route path="/agent-instructions" element={<AgentInstructions />} />
               <Route path="/visual-builder" element={<VisualBuilder />} />
               <Route path="/builder-docs" element={<BuilderDocs />} />

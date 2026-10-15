@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Wand2, Library, Globe, LayoutTemplate, Rocket, LayoutGrid, Cable,
   Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown, Mail, Workflow, Code,
-  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2, Key, Plug, Brain, Scan, AlertTriangle, Megaphone, Download
+  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2, Key, Plug, Brain, Scan, AlertTriangle, Megaphone, Download, Copy
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -86,6 +86,7 @@ const EXTERNAL_MODULES = [
   { to: "/client-portal", icon: Building2, label: "Client Portals" },
   { to: "/universal-generator", icon: Wand2, label: "Universal Generator" },
   { to: "/universal-studio", icon: Wand2, label: "Generation Studio" },
+  { to: "/clone-generator", icon: Copy, label: "Clone Generator" },
   { to: "/agent-instructions", icon: SlidersHorizontal, label: "Agent Instructions" },
   { to: "/visual-builder", icon: Wand2, label: "Visual Builder" },
   { to: "/builder-docs", icon: Brain, label: "Builder Docs" },
