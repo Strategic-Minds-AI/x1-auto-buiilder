@@ -5,7 +5,7 @@ import OnboardingWizard from "@/components/portal/OnboardingWizard";
 import ProgressStep from "@/components/portal/ProgressStep";
 import BlueprintReview from "@/components/portal/BlueprintReview";
 import AssetStudio from "@/components/portal/AssetStudio";
-import TemplateLibrary from "@/components/portal/TemplateLibrary";
+import PremiumDesignLibrary from "@/pages/PremiumDesignLibrary";
 import MassLaunchConsole from "@/components/portal/MassLaunchConsole";
 import MassLaunchConsoleV2 from "@/components/masslaunch/MassLaunchConsoleV2";
 import Campaigns from "@/components/portal/Campaigns";
@@ -248,7 +248,7 @@ export default function Portal() {
         </>
       )}
 
-      {tab === "library" && <TemplateLibrary />}
+      {tab === "library" && <PremiumDesignLibrary />}
       {tab === "sites" && <WebsiteLibrary />}
       {tab === "templates" && <SiteTemplates />}
       {tab === "launch" && <MassLaunchConsoleV2 onDeployed={() => setTab("campaigns")} />}
