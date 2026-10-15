@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Wand2, Library, Globe, LayoutTemplate, Rocket, LayoutGrid, Cable,
   Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown,
-  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard
+  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -52,6 +52,7 @@ const NAV_GROUPS = [
       { tab: "modules", icon: LayoutGrid, label: "Modules" },
       { tab: "quality", icon: Gauge, label: "Quality Dashboard" },
       { tab: "gpt-bridge", icon: Radio, label: "GPT Bridge" },
+      { tab: "supabase", icon: Database, label: "Supabase Bridge" },
       { tab: "sync", icon: Cable, label: "Sync Engine" },
     ],
   },

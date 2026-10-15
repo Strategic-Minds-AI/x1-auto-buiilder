@@ -19,6 +19,7 @@ import GPTBridge from "@/components/portal/GPTBridge";
 import Campaigns from "@/components/portal/Campaigns";
 import GPTSyncDashboard from "@/components/portal/GPTSyncDashboard";
 import GoogleSheetsSync from "@/components/portal/GoogleSheetsSync";
+import SupabaseBridgePanel from "@/components/portal/SupabaseBridgePanel";
 import LaunchMonitor from "@/components/portal/LaunchMonitor";
 import WebsiteLibrary from "@/components/portal/WebsiteLibrary";
 import SiteTemplates from "@/components/portal/SiteTemplates";
@@ -256,6 +257,7 @@ export default function Portal() {
       {tab === "gpt-bridge" && <GPTBridge />}
       {tab === "sync" && <GPTSyncDashboard />}
       {tab === "sheets" && <GoogleSheetsSync />}
+      {tab === "supabase" && <SupabaseBridgePanel />}
     </PortalShell>
   );
 }
