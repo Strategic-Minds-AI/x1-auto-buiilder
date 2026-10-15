@@ -4,7 +4,7 @@ import BackButton from "@/components/shared/BackButton";
 import BuilderToolbar from "@/components/builder/BuilderToolbar";
 import BuilderChat from "@/components/builder/BuilderChat";
 import BuilderPreview from "@/components/builder/BuilderPreview";
-import { Loader2, ChevronDown, Plus, MessageCircle, Radio } from "lucide-react";
+import { Loader2, ChevronDown, Plus, MessageCircle, Radio, Rocket } from "lucide-react";
 
 const AGENT_NAME = "super_agent";
 
@@ -17,6 +17,7 @@ export default function VisualBuilder() {
   const [chatLoading, setChatLoading] = useState(false);
   const [previewMode, setPreviewMode] = useState("desktop");
   const [deploying, setDeploying] = useState(false);
+  const [provisioning, setProvisioning] = useState(false);
   const [showProjectMenu, setShowProjectMenu] = useState(false);
 
   useEffect(() => { loadProjects(); startConversation(); }, []);
@@ -75,6 +76,21 @@ export default function VisualBuilder() {
     } catch {} finally { setDeploying(false); }
   };
 
+  const handleProvisionVercel = async () => {
+    if (!activeProject) return;
+    setProvisioning(true);
+    try {
+      await base44.functions.invoke("provisionSandbox", {
+        action: "create",
+        platform: "vercel",
+        projectId: activeProject.id,
+        name: activeProject.business_name || activeProject.id,
+      });
+      await base44.functions.invoke("deploySite", { projectId: activeProject.id });
+      await loadProjects();
+    } catch {} finally { setProvisioning(false); }
+  };
+
   const handleNewProject = () => {
     sendMessage("Generate a new website project. Ask me for the business name, industry, and location.");
   };
@@ -117,6 +133,11 @@ export default function VisualBuilder() {
             className="inline-flex items-center gap-1.5 rounded-lg bg-[#25D366]/20 px-3 py-1.5 text-xs font-semibold text-[#25D366] hover:bg-[#25D366]/30 transition">
             <MessageCircle className="w-3.5 h-3.5" /> Connect Phone
           </a>
+          <button onClick={handleProvisionVercel} disabled={!activeProject || provisioning}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-[#00d4ff] to-[#0066ff] px-3 py-1.5 text-xs font-bold text-white hover:brightness-110 disabled:opacity-40 transition">
+            {provisioning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Rocket className="w-3.5 h-3.5" />}
+            Provision to Vercel
+          </button>
           <div className="text-xs text-white/40 font-semibold tracking-wide">VISUAL BUILDER</div>
         </div>
       </div>
