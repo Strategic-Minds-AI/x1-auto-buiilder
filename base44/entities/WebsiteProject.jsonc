@@ -53,6 +53,14 @@
     "campaign_id": {
       "type": "string",
       "description": "LaunchCampaign id this variant belongs to"
+    },
+    "deploy_url": {
+      "type": "string",
+      "description": "Live Vercel deployment URL for this site"
+    },
+    "deploy_id": {
+      "type": "string",
+      "description": "Vercel deployment id"
     }
   },
   "required": [

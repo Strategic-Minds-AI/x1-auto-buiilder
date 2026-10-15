@@ -9,7 +9,7 @@ import TemplateLibrary from "@/components/portal/TemplateLibrary";
 import MassLaunchConsole from "@/components/portal/MassLaunchConsole";
 import Campaigns from "@/components/portal/Campaigns";
 import SyncEngine from "@/components/portal/SyncEngine";
-import { CheckCircle2, Plus, Wand2, Library, Rocket, Cable } from "lucide-react";
+import { CheckCircle2, Plus, Wand2, Library, Rocket, Cable, ExternalLink, Loader2 } from "lucide-react";
 
 export default function Portal() {
   const [tab, setTab] = useState("generator");
@@ -22,6 +22,9 @@ export default function Portal() {
   const [loadingAssets, setLoadingAssets] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState(null);
+  const [deploying, setDeploying] = useState(false);
+  const [deployUrl, setDeployUrl] = useState(null);
+  const [deployError, setDeployError] = useState(null);
   const [error, setError] = useState(null);
 
   const generate = async (formData) => {
@@ -107,7 +110,25 @@ export default function Portal() {
     setTemplates([]);
     setAssets({ logoUrl: null, heroImageUrl: null, logoError: null, heroError: null });
     setSavedId(null);
+    setDeploying(false);
+    setDeployUrl(null);
+    setDeployError(null);
     setError(null);
+  };
+
+  const deployToVercel = async () => {
+    if (!savedId) return;
+    setDeploying(true);
+    setDeployError(null);
+    setDeployUrl(null);
+    try {
+      const res = await base44.functions.invoke("deploySite", { projectId: savedId });
+      setDeployUrl(res.data.url);
+    } catch (err) {
+      setDeployError(err.response?.data?.error || err.message || "Deploy failed");
+    } finally {
+      setDeploying(false);
+    }
   };
 
   return (
@@ -162,19 +183,41 @@ export default function Portal() {
               <p className="text-muted-foreground mb-4">
                 Your website blueprint and assets are saved, and {templates.length} industry templates were added to your library.
               </p>
-              <div className="flex items-center justify-center gap-3">
-                <button
-                  onClick={reset}
-                  className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground hover:brightness-110 transition"
-                >
-                  <Plus className="w-4 h-4" /> Create Another
-                </button>
-                <button
-                  onClick={() => setTab("library")}
-                  className="inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 text-sm font-semibold text-foreground hover:bg-secondary transition"
-                >
-                  <Library className="w-4 h-4" /> View Templates
-                </button>
+              <div className="flex flex-col items-center gap-3 w-full">
+                <div className="flex items-center justify-center gap-3">
+                  <button
+                    onClick={reset}
+                    className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground hover:brightness-110 transition"
+                  >
+                    <Plus className="w-4 h-4" /> Create Another
+                  </button>
+                  <button
+                    onClick={() => setTab("library")}
+                    className="inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 text-sm font-semibold text-foreground hover:bg-secondary transition"
+                  >
+                    <Library className="w-4 h-4" /> View Templates
+                  </button>
+                </div>
+                <div className="w-full mt-2">
+                  <button
+                    onClick={deployToVercel}
+                    disabled={deploying}
+                    className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:brightness-110 transition disabled:opacity-60"
+                  >
+                    {deploying ? <Loader2 className="w-4 h-4 animate-spin" /> : <Rocket className="w-4 h-4" />} Deploy to Vercel
+                  </button>
+                  {deployError && (
+                    <p className="mt-3 text-left text-sm text-destructive">{deployError}</p>
+                  )}
+                  {deployUrl && (
+                    <div className="mt-3 rounded-xl border border-border bg-background/60 p-3 text-left">
+                      <p className="text-xs text-muted-foreground mb-1">Live site deployed:</p>
+                      <a href={deployUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary break-all hover:underline">
+                        {deployUrl} <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                      </a>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
