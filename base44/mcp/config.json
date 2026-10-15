@@ -1,0 +1,144 @@
+{
+  "auth": "oauth",
+  "tools": {
+    "functions": [
+      {
+        "name": "generate_website",
+        "title": "Generate Website Blueprint",
+        "description": "Skip-traces a business website, benchmarks the top 5 sites in its industry, and produces an original website content blueprint with hero, services, and design tokens. Call when the user wants to create a new website project from a business URL and industry.",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "businessWebsiteUrl": { "type": "string", "description": "The source business website URL to research and extract content from." },
+            "industry": { "type": "string", "description": "The target industry, e.g. Roofing, HVAC, Dental." },
+            "businessName": { "type": "string", "description": "Optional business name to use in the generated content." }
+          },
+          "required": ["businessWebsiteUrl", "industry"]
+        },
+        "handler": "generateWebsite",
+        "annotations": { "read_only_hint": false, "destructive_hint": false, "idempotent_hint": false }
+      },
+      {
+        "name": "generate_brand_assets",
+        "title": "Generate Brand Assets",
+        "description": "Generates a logo and a hero image from text prompts using AI image generation. Call when the user wants to create or refine brand visuals for a website project.",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "logoPrompt": { "type": "string", "description": "Detailed prompt describing the logo style, colors, and mood." },
+            "heroImagePrompt": { "type": "string", "description": "Detailed prompt describing the hero scene, subject, and lighting." }
+          },
+          "required": ["logoPrompt", "heroImagePrompt"]
+        },
+        "handler": "generateAssets",
+        "annotations": { "read_only_hint": false, "destructive_hint": false, "idempotent_hint": false }
+      },
+      {
+        "name": "generate_vision",
+        "title": "Generate Vision Statement",
+        "description": "Produces an AI-refined vision statement and alternatives from a seed description and optional accent color. Call when the user is starting a new build project and needs a vision to anchor the strategy.",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "seed": { "type": "string", "description": "A short description or idea to anchor the vision generation." },
+            "accentColor": { "type": "string", "description": "Optional hex color for the vision, e.g. #00d4ff." }
+          },
+          "required": ["seed"]
+        },
+        "handler": "generateVision",
+        "annotations": { "read_only_hint": false, "destructive_hint": false, "idempotent_hint": false }
+      },
+      {
+        "name": "generate_strategies",
+        "title": "Generate Strategies",
+        "description": "Generates strategy options from an approved vision and selected capability add-ons. Call after a vision is approved and the user wants to explore strategic directions for the build.",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "vision": { "type": "object", "description": "The approved vision object, containing statement, type, tagline, and alternatives." },
+            "addons": { "type": "array", "items": { "type": "string" }, "description": "Optional list of selected capability add-on names to factor into the strategy." }
+          },
+          "required": ["vision"]
+        },
+        "handler": "generateStrategies",
+        "annotations": { "read_only_hint": false, "destructive_hint": false, "idempotent_hint": false }
+      },
+      {
+        "name": "research_industry_templates",
+        "title": "Research Industry Templates",
+        "description": "Analyzes the top 5 rated sites in an industry for style, layout, SEO, AEO, and GEO, then stores the findings as design-guidance templates. Call when the user wants to refresh or build out the template library for an industry.",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "industry": { "type": "string", "description": "The industry to research, e.g. Roofing, HVAC, Dental." }
+          },
+          "required": ["industry"]
+        },
+        "handler": "researchIndustryTemplates",
+        "annotations": { "read_only_hint": false, "destructive_hint": false, "idempotent_hint": false }
+      },
+      {
+        "name": "mass_launch_sites",
+        "title": "Mass Launch Location Websites",
+        "description": "Skip-traces a business once, benchmarks the industry, then generates a strategically location-tailored website for every market listed. Call when the user wants to launch a multi-location campaign with original content per market.",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "businessWebsiteUrl": { "type": "string", "description": "The source business website URL to research." },
+            "industry": { "type": "string", "description": "The target industry for all variants." },
+            "locations": { "type": "array", "items": { "type": "string" }, "description": "List of target locations or cities, one per variant." },
+            "businessName": { "type": "string", "description": "Optional base business name." },
+            "tone": { "type": "string", "description": "Optional preferred brand tone, e.g. Professional, Friendly, Premium." },
+            "goal": { "type": "string", "description": "Optional primary conversion goal, e.g. More qualified leads, Online bookings." }
+          },
+          "required": ["businessWebsiteUrl", "industry", "locations"]
+        },
+        "handler": "massLaunch",
+        "annotations": { "read_only_hint": false, "destructive_hint": false, "idempotent_hint": false }
+      },
+      {
+        "name": "instantiate_site_template",
+        "title": "Instantiate Site Template",
+        "description": "Takes a saved site template and a set of variable values, then produces a business-specific website project with generated content and brand assets. Call when the user wants to spin up a new site from an existing template.",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "templateId": { "type": "string", "description": "The id of the SiteTemplate to instantiate from." },
+            "variables": { "type": "object", "description": "Key-value pairs filling the template's placeholder variables, e.g. business_name, location, phone." }
+          },
+          "required": ["templateId", "variables"]
+        },
+        "handler": "instantiateTemplate",
+        "annotations": { "read_only_hint": false, "destructive_hint": false, "idempotent_hint": false }
+      },
+      {
+        "name": "universalize_project_template",
+        "title": "Universalize Project Into Template",
+        "description": "Converts a generated website project into a reusable, universal industry template by replacing business-specific details with placeholder variables. Call when the user wants to turn a finished site into a reusable template for future projects.",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "projectId": { "type": "string", "description": "The id of the WebsiteProject to universalize. The project must have generated content." }
+          },
+          "required": ["projectId"]
+        },
+        "handler": "universalizeTemplate",
+        "annotations": { "read_only_hint": false, "destructive_hint": false, "idempotent_hint": false }
+      },
+      {
+        "name": "deploy_site_vercel",
+        "title": "Deploy Site To Vercel",
+        "description": "Renders a website project's content into a static HTML site and deploys it to Vercel, returning the live URL. Call when the user wants to publish a generated website project to a live URL.",
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "projectId": { "type": "string", "description": "The id of the WebsiteProject to deploy. The project must have generated content." }
+          },
+          "required": ["projectId"]
+        },
+        "handler": "deploySite",
+        "annotations": { "read_only_hint": false, "destructive_hint": false, "idempotent_hint": false }
+      }
+    ]
+  }
+}
