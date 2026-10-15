@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
+import { useAuth } from "@/lib/AuthContext";
 import ReactMarkdown from "react-markdown";
 import {
   Bot, Send, X, Plus, Loader2,
@@ -9,6 +10,7 @@ import {
 const AGENT_NAME = "super_agent";
 
 export default function SuperAgentChat() {
+  const { isAuthenticated } = useAuth();
   const [open, setOpen] = useState(false);
   const [conversations, setConversations] = useState([]);
   const [activeConv, setActiveConv] = useState(null);
@@ -71,9 +73,11 @@ export default function SuperAgentChat() {
 
   useEffect(() => () => { if (window._superAgentUnsub) window._superAgentUnsub(); }, []);
 
+  if (!isAuthenticated) return null;
+
   return (
     <>
-      {/* Vertical tab on the right edge — always visible */}
+      {/* Vertical tab on the right edge — admin only */}
       <button
         onClick={() => setOpen(!open)}
         className={`fixed top-1/2 right-0 -translate-y-1/2 z-50 flex flex-col items-center gap-1 rounded-l-xl bg-gradient-to-b from-[#00d4ff] to-[#0066ff] py-4 px-2.5 text-white shadow-lg hover:shadow-[0_0_25px_rgba(0,212,255,0.4)] transition-all duration-200 ${open ? "translate-x-[calc(100%-0px)] opacity-0 pointer-events-none" : "translate-x-0"}`}
