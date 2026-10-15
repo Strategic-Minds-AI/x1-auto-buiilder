@@ -32,23 +32,23 @@ export default function BuildFactoryPanel({ data }) {
           <Hammer className="w-5 h-5 text-[#00d4ff]" />
           <h2 className="text-xl font-bold">Build Factory</h2>
         </div>
-        <p className="text-sm text-white/40">Website, app, SaaS, funnel, and platform generation pipeline</p>
+        <p className="text-sm text-slate-500">Website, app, SaaS, funnel, and platform generation pipeline</p>
       </div>
 
       {/* Active Jobs */}
       {activeJobs.length > 0 && (
         <div className="mb-6">
-          <p className="text-xs font-bold text-white/30 uppercase tracking-wide mb-2">Active Generation Jobs ({activeJobs.length})</p>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Active Generation Jobs ({activeJobs.length})</p>
           <div className="space-y-2">
             {activeJobs.map((job) => {
               const meta = jobStatusMeta[job.status] || jobStatusMeta.queued;
               const Icon = meta.icon;
               return (
-                <div key={job.id} className="rounded-xl bg-white/5 border border-white/10 p-3 flex items-center gap-3">
+                <div key={job.id} className="rounded-xl bg-white border border-slate-200 p-3 flex items-center gap-3">
                   <Icon className={`w-4 h-4 shrink-0 ${meta.spin ? "animate-spin" : ""}`} style={{ color: meta.color }} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white/70">{job.job_type?.replace(/_/g, " ")}</p>
-                    {job.project_id && <p className="text-[10px] text-white/30">Project: {job.project_id.substring(0, 8)}...</p>}
+                    <p className="text-sm font-semibold text-slate-700">{job.job_type?.replace(/_/g, " ")}</p>
+                    {job.project_id && <p className="text-[10px] text-slate-400">Project: {job.project_id.substring(0, 8)}...</p>}
                   </div>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ background: `${meta.color}20`, color: meta.color }}>
                     {job.status.toUpperCase()}
@@ -61,7 +61,7 @@ export default function BuildFactoryPanel({ data }) {
       )}
 
       {/* Generators */}
-      <p className="text-xs font-bold text-white/30 uppercase tracking-wide mb-2">Generation Tools</p>
+      <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Generation Tools</p>
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         {GENERATORS.map((g) => {
           const Icon = g.icon;
@@ -69,13 +69,13 @@ export default function BuildFactoryPanel({ data }) {
             <Link
               key={g.to}
               to={g.to}
-              className="group rounded-2xl bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/20 transition"
+              className="group rounded-2xl bg-white border border-slate-200 p-4 hover:bg-slate-50 hover:border-[#00d4ff]/40 transition"
             >
               <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{ background: `${g.color}20` }}>
                 <Icon className="w-5 h-5" style={{ color: g.color }} />
               </div>
-              <p className="text-sm font-bold text-white mb-0.5">{g.label}</p>
-              <p className="text-xs text-white/40">{g.desc}</p>
+              <p className="text-sm font-bold text-slate-800 mb-0.5">{g.label}</p>
+              <p className="text-xs text-slate-500">{g.desc}</p>
             </Link>
           );
         })}

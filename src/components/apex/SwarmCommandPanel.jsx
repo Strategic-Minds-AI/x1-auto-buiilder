@@ -84,11 +84,11 @@ export default function SwarmCommandPanel({ data, onRefresh }) {
             <Bot className="w-5 h-5 text-[#8b5cf6]" />
             <h2 className="text-xl font-bold">Swarm Command</h2>
           </div>
-          <p className="text-sm text-white/40">Agent hierarchy, mission dispatch, queue health, and execution receipts</p>
+          <p className="text-sm text-slate-500">Agent hierarchy, mission dispatch, queue health, and execution receipts</p>
         </div>
         <button
           onClick={() => setShowCreate(!showCreate)}
-          className="flex items-center gap-2 rounded-xl bg-gradient-to-br from-[#8b5cf6] to-[#6366f1] px-4 py-2.5 text-sm font-bold text-white hover:brightness-110 transition"
+          className="flex items-center gap-2 rounded-xl bg-gradient-to-br from-[#8b5cf6] to-[#6366f1] px-4 py-2.5 text-sm font-bold text-slate-800 hover:brightness-110 transition"
         >
           <Plus className="w-4 h-4" /> New Mission
         </button>
@@ -102,27 +102,27 @@ export default function SwarmCommandPanel({ data, onRefresh }) {
 
       {/* Agent Swarm */}
       <div className="mb-6">
-        <p className="text-xs font-bold text-white/30 uppercase tracking-wide mb-2">Agent Swarm ({agents.length})</p>
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Agent Swarm ({agents.length})</p>
         {agents.length === 0 ? (
-          <div className="rounded-xl bg-white/5 border border-white/10 p-6 text-center">
-            <Bot className="w-8 h-8 text-white/20 mx-auto mb-2" />
-            <p className="text-xs text-white/40">No agents seeded. Click "Seed Agents" in the header.</p>
+          <div className="rounded-xl bg-white border border-slate-200 p-6 text-center">
+            <Bot className="w-8 h-8 text-slate-800/20 mx-auto mb-2" />
+            <p className="text-xs text-slate-500">No agents seeded. Click "Seed Agents" in the header.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
             {agents.map((a) => (
-              <div key={a.id} className="rounded-xl bg-white/5 border border-white/10 p-3">
+              <div key={a.id} className="rounded-xl bg-white border border-slate-200 p-3">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: `${a.color}20` }}>
                     <Bot className="w-3.5 h-3.5" style={{ color: a.color }} />
                   </div>
-                  <p className="text-xs font-bold text-white truncate">{a.name}</p>
+                  <p className="text-xs font-bold text-slate-800 truncate">{a.name}</p>
                 </div>
-                <p className="text-[10px] text-white/30 truncate">{a.skill_category}</p>
+                <p className="text-[10px] text-slate-400 truncate">{a.skill_category}</p>
                 <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded mt-1 inline-block ${
                   a.autonomy_level === "autonomous" ? "bg-emerald-500/10 text-emerald-400" :
                   a.autonomy_level === "assisted" ? "bg-amber-500/10 text-amber-400" :
-                  "bg-white/10 text-white/40"
+                  "bg-slate-100 text-slate-500"
                 }`}>{a.autonomy_level?.toUpperCase()}</span>
               </div>
             ))}
@@ -132,22 +132,22 @@ export default function SwarmCommandPanel({ data, onRefresh }) {
 
       {/* Create Mission Form */}
       {showCreate && (
-        <div className="rounded-2xl bg-white/5 border border-white/10 p-4 mb-4">
-          <p className="text-sm font-bold text-white mb-3">Create New Mission</p>
+        <div className="rounded-2xl bg-white border border-slate-200 p-4 mb-4">
+          <p className="text-sm font-bold text-slate-800 mb-3">Create New Mission</p>
           <div className="space-y-3">
             <input
               type="text"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
               placeholder="Mission title..."
-              className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#8b5cf6]/50"
+              className="w-full rounded-lg bg-white border border-slate-200 px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#8b5cf6]/50"
             />
             <textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               placeholder="Mission description..."
               rows={2}
-              className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#8b5cf6]/50 resize-none"
+              className="w-full rounded-lg bg-white border border-slate-200 px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#8b5cf6]/50 resize-none"
             />
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <Select label="Type" value={form.mission_type} options={MISSION_TYPES} onChange={(v) => setForm({ ...form, mission_type: v })} />
@@ -159,7 +159,7 @@ export default function SwarmCommandPanel({ data, onRefresh }) {
             <button
               onClick={handleCreate}
               disabled={creating || !form.title.trim()}
-              className="flex items-center gap-2 rounded-xl bg-[#8b5cf6] px-4 py-2 text-sm font-bold text-white disabled:opacity-40 hover:brightness-110 transition"
+              className="flex items-center gap-2 rounded-xl bg-[#8b5cf6] px-4 py-2 text-sm font-bold text-slate-800 disabled:opacity-40 hover:brightness-110 transition"
             >
               {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
               Create Mission
@@ -170,11 +170,11 @@ export default function SwarmCommandPanel({ data, onRefresh }) {
 
       {/* Missions */}
       <div>
-        <p className="text-xs font-bold text-white/30 uppercase tracking-wide mb-2">Active Missions ({missions.length})</p>
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Active Missions ({missions.length})</p>
         {missions.length === 0 ? (
-          <div className="rounded-xl bg-white/5 border border-white/10 p-6 text-center">
-            <Target className="w-8 h-8 text-white/20 mx-auto mb-2" />
-            <p className="text-xs text-white/40">No missions yet. Create one to start the autonomous loop.</p>
+          <div className="rounded-xl bg-white border border-slate-200 p-6 text-center">
+            <Target className="w-8 h-8 text-slate-800/20 mx-auto mb-2" />
+            <p className="text-xs text-slate-500">No missions yet. Create one to start the autonomous loop.</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -182,25 +182,25 @@ export default function SwarmCommandPanel({ data, onRefresh }) {
               const meta = statusMeta[m.status] || statusMeta.pending;
               const StatusIcon = meta.icon;
               return (
-                <div key={m.id} className="rounded-xl bg-white/5 border border-white/10 p-4">
+                <div key={m.id} className="rounded-xl bg-white border border-slate-200 p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${meta.bg}`} style={{ color: meta.color }}>
                           {m.status.toUpperCase()}
                         </span>
-                        <span className="text-[9px] text-white/30">{m.mission_type}</span>
-                        <span className="text-[9px] text-white/30">· {m.priority}</span>
-                        <span className="text-[9px] text-white/30">· {m.phase}</span>
+                        <span className="text-[9px] text-slate-400">{m.mission_type}</span>
+                        <span className="text-[9px] text-slate-400">· {m.priority}</span>
+                        <span className="text-[9px] text-slate-400">· {m.phase}</span>
                         {m.approval_required && (
                           <span className="text-[9px] font-bold bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded">
                             {m.approval_status.toUpperCase()}
                           </span>
                         )}
                       </div>
-                      <p className="text-sm font-bold text-white">{m.title}</p>
-                      {m.description && <p className="text-xs text-white/40 mt-0.5 line-clamp-2">{m.description}</p>}
-                      {m.assigned_agent && <p className="text-[10px] text-white/30 mt-1">Agent: {m.assigned_agent}</p>}
+                      <p className="text-sm font-bold text-slate-800">{m.title}</p>
+                      {m.description && <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{m.description}</p>}
+                      {m.assigned_agent && <p className="text-[10px] text-slate-400 mt-1">Agent: {m.assigned_agent}</p>}
                     </div>
                     {m.status === "pending" && (
                       <button
@@ -214,8 +214,8 @@ export default function SwarmCommandPanel({ data, onRefresh }) {
                     )}
                   </div>
                   {m.outputs?.summary && (
-                    <div className="mt-2 rounded-lg bg-white/5 p-2">
-                      <p className="text-xs text-white/50">{m.outputs.summary}</p>
+                    <div className="mt-2 rounded-lg bg-white p-2">
+                      <p className="text-xs text-slate-600">{m.outputs.summary}</p>
                     </div>
                   )}
                 </div>
@@ -231,14 +231,14 @@ export default function SwarmCommandPanel({ data, onRefresh }) {
 function Select({ label, value, options, onChange }) {
   return (
     <div>
-      <label className="text-[10px] text-white/30 uppercase block mb-1">{label}</label>
+      <label className="text-[10px] text-slate-400 uppercase block mb-1">{label}</label>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg bg-white/5 border border-white/10 px-2 py-2 text-xs text-white focus:outline-none focus:border-[#8b5cf6]/50"
+        className="w-full rounded-lg bg-white border border-slate-200 px-2 py-2 text-xs text-slate-800 focus:outline-none focus:border-[#8b5cf6]/50"
       >
         {options.map((o) => (
-          <option key={o} value={o} className="bg-[#0a0e14]">{o}</option>
+          <option key={o} value={o} className="bg-white">{o}</option>
         ))}
       </select>
     </div>
