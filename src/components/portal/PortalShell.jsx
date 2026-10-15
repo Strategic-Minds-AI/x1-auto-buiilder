@@ -58,10 +58,10 @@ export default function PortalShell({ activeTab, onTabChange, onNew, children })
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen flex bg-[#0a0e14]">
-      {/* Sidebar */}
+    <div className="min-h-screen flex bg-white">
+      {/* Sidebar — dark/black */}
       <aside
-        className={`${collapsed ? "w-16" : "w-64"} shrink-0 flex flex-col bg-[#0d1117] border-r border-white/8 sticky top-0 h-screen transition-all duration-200`}
+        className={`${collapsed ? "w-16" : "w-64"} shrink-0 flex flex-col bg-[#0a0e14] border-r border-black/10 sticky top-0 h-screen transition-all duration-200`}
       >
         {/* Brand */}
         <div className="h-16 flex items-center gap-2.5 px-4 border-b border-white/8 shrink-0">
@@ -97,7 +97,7 @@ export default function PortalShell({ activeTab, onTabChange, onNew, children })
                       className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 group ${
                         active
                           ? "bg-[#00d4ff]/10 text-[#00d4ff] shadow-[inset_2px_0_0_#00d4ff]"
-                          : "text-white/55 hover:text-white hover:bg-white/5"
+                          : "text-white/55 hover:text-[#00d4ff] hover:bg-[#00d4ff]/8"
                       }`}
                     >
                       <Icon className={`w-4 h-4 shrink-0 ${active ? "text-[#00d4ff]" : "text-white/40 group-hover:text-[#00d4ff]"}`} />
@@ -122,7 +122,7 @@ export default function PortalShell({ activeTab, onTabChange, onNew, children })
                     <Link
                       key={m.to}
                       to={m.to}
-                      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium text-white/55 hover:text-white hover:bg-white/5 transition-all duration-150 group"
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium text-white/55 hover:text-[#00d4ff] hover:bg-[#00d4ff]/8 transition-all duration-150 group"
                     >
                       <Icon className="w-4 h-4 shrink-0 text-white/40 group-hover:text-[#00d4ff]" />
                       <span className="truncate">{m.label}</span>
@@ -138,7 +138,7 @@ export default function PortalShell({ activeTab, onTabChange, onNew, children })
         <div className="border-t border-white/8 p-2 shrink-0">
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="w-full flex items-center justify-center gap-2 py-2 rounded-lg text-white/40 hover:text-white hover:bg-white/5 transition text-xs font-medium"
+            className="w-full flex items-center justify-center gap-2 py-2 rounded-lg text-white/40 hover:text-[#00d4ff] hover:bg-[#00d4ff]/8 transition text-xs font-medium"
           >
             <ChevronDown className={`w-4 h-4 transition-transform ${collapsed ? "rotate-90" : "-rotate-90"}`} />
             {!collapsed && "Collapse"}
@@ -148,21 +148,21 @@ export default function PortalShell({ activeTab, onTabChange, onNew, children })
 
       {/* Main content */}
       <div className="flex-1 min-w-0 flex flex-col">
-        {/* Top bar */}
-        <header className="h-16 bg-[#0d1117]/80 backdrop-blur-md border-b border-white/8 sticky top-0 z-30 flex items-center justify-between px-6 shrink-0">
+        {/* Top bar — white */}
+        <header className="h-16 bg-white border-b border-slate-200 sticky top-0 z-30 flex items-center justify-between px-6 shrink-0">
           <div className="flex items-center gap-4">
-            <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-[#00d4ff] transition">
+            <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-[#00d4ff] transition">
               <Home className="w-4 h-4" /> Home
             </Link>
-            <div className="h-4 w-px bg-white/10" />
-            <span className="text-sm font-semibold text-white/80">
+            <div className="h-4 w-px bg-slate-200" />
+            <span className="text-sm font-semibold text-slate-800">
               {NAV_GROUPS.flatMap(g => g.items).find(i => i.tab === activeTab)?.label || "Portal"}
             </span>
           </div>
           <div className="flex items-center gap-3">
             <Link
               to="/auto-builder"
-              className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white/70 hover:text-[#00d4ff] hover:border-[#00d4ff]/40 transition"
+              className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:text-[#00d4ff] hover:border-[#00d4ff]/40 transition"
             >
               <Hammer className="w-4 h-4" /> Auto Builder
             </Link>
@@ -175,8 +175,8 @@ export default function PortalShell({ activeTab, onTabChange, onNew, children })
           </div>
         </header>
 
-        {/* Content area — mixed white/black panels on dark canvas */}
-        <main className="flex-1 overflow-y-auto bg-[#0a0e14]">
+        {/* Content area — white with light token override */}
+        <main className="portal-light flex-1 overflow-y-auto bg-white">
           {children}
         </main>
       </div>

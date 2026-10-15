@@ -147,7 +147,7 @@ export default function Portal() {
   return (
     <PortalShell activeTab={tab} onTabChange={setTab} onNew={() => { reset(); setTab("generator"); }}>
       {error && tab === "generator" && (
-        <div className="max-w-2xl mx-auto px-4 mt-4 rounded-xl border border-red-500/40 bg-red-500/10 text-red-400 text-sm p-3">
+        <div className="max-w-2xl mx-auto px-4 mt-4 rounded-xl border border-red-300 bg-red-50 text-red-600 text-sm p-3">
           {error}
         </div>
       )}
@@ -180,21 +180,21 @@ export default function Portal() {
               <div className="inline-flex w-16 h-16 rounded-2xl bg-[#00d4ff]/15 items-center justify-center mb-6">
                 <CheckCircle2 className="w-8 h-8 text-[#00d4ff]" />
               </div>
-              <h2 className="font-black text-2xl mb-2 text-white">Project Saved</h2>
-              <p className="text-white/50 mb-4">
+              <h2 className="font-black text-2xl mb-2 text-slate-900">Project Saved</h2>
+              <p className="text-slate-500 mb-4">
                 Your website blueprint and assets are saved, and {templates.length} industry templates were added to your library.
               </p>
               <div className="flex flex-col items-center gap-3 w-full">
                 <div className="flex items-center justify-center gap-3">
                   <button
                     onClick={reset}
-                    className="inline-flex items-center gap-2 rounded-full bg-white/10 px-6 py-3 text-sm font-semibold text-white hover:bg-white/20 transition"
+                    className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-200 transition"
                   >
                     <Plus className="w-4 h-4" /> Create Another
                   </button>
                   <button
                     onClick={() => setTab("library")}
-                    className="inline-flex items-center gap-2 rounded-full border border-white/15 px-6 py-3 text-sm font-semibold text-white/70 hover:text-[#00d4ff] hover:border-[#00d4ff]/40 transition"
+                    className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-600 hover:text-[#00d4ff] hover:border-[#00d4ff]/40 transition"
                   >
                     <Library className="w-4 h-4" /> View Templates
                   </button>
@@ -208,11 +208,11 @@ export default function Portal() {
                     {deploying ? <Loader2 className="w-4 h-4 animate-spin" /> : <Rocket className="w-4 h-4" />} Deploy to Vercel
                   </button>
                   {deployError && (
-                    <p className="mt-3 text-left text-sm text-red-400">{deployError}</p>
+                    <p className="mt-3 text-left text-sm text-red-500">{deployError}</p>
                   )}
                   {deployUrl && (
-                    <div className="mt-3 rounded-xl border border-white/10 bg-[#0d1117] p-3 text-left">
-                      <p className="text-xs text-white/40 mb-1">Live site deployed:</p>
+                    <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-left">
+                      <p className="text-xs text-slate-400 mb-1">Live site deployed:</p>
                       <a href={deployUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00d4ff] break-all hover:underline">
                         {deployUrl} <ExternalLink className="w-3.5 h-3.5 shrink-0" />
                       </a>

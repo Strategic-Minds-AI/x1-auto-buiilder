@@ -22,21 +22,21 @@ export default function ModulesGrid() {
   return (
     <div className="p-6 lg:p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-black text-white">Modules</h1>
-        <p className="text-sm text-white/40 mt-0.5">All tools and workspaces in the Digital Dominance Factory</p>
+        <h1 className="text-2xl font-black text-slate-900">Modules</h1>
+        <p className="text-sm text-slate-500 mt-0.5">All tools and workspaces in the Digital Dominance Factory</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {MODULES.map((m) => {
           const Icon = m.icon;
           return (
-            <Link key={m.to} to={m.to} className="group rounded-2xl bg-[#0d1117] border border-white/8 p-5 hover:border-[#00d4ff]/30 hover:shadow-[0_0_20px_rgba(0,212,255,0.05)] transition-all duration-200">
+            <Link key={m.to} to={m.to} className="group rounded-2xl bg-white border border-slate-200 p-5 hover:border-[#00d4ff]/30 hover:shadow-[0_0_20px_rgba(0,212,255,0.05)] transition-all duration-200">
               <div className="flex items-start gap-3">
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5 text-white/50 group-hover:bg-[#00d4ff] group-hover:text-[#0a0e14] transition-all duration-200 shrink-0">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-500 group-hover:bg-[#00d4ff] group-hover:text-[#0a0e14] transition-all duration-200 shrink-0">
                   <Icon className="h-5 w-5" />
                 </span>
                 <div className="min-w-0">
-                  <div className="text-sm font-bold text-white group-hover:text-[#00d4ff] transition">{m.title}</div>
-                  <div className="text-xs text-white/40 mt-0.5">{m.desc}</div>
+                  <div className="text-sm font-bold text-slate-900 group-hover:text-[#00d4ff] transition">{m.title}</div>
+                  <div className="text-xs text-slate-500 mt-0.5">{m.desc}</div>
                 </div>
               </div>
             </Link>

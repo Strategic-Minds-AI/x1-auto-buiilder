@@ -114,8 +114,8 @@ export default function GoogleSheetsSync() {
   if (!authed) {
     return (
       <div className="max-w-md mx-auto py-20 text-center">
-        <FileSpreadsheet className="w-12 h-12 mx-auto mb-4 text-white/20" />
-        <p className="text-white/50 text-sm mb-5">Please sign in to use Google Sheets sync.</p>
+        <FileSpreadsheet className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+        <p className="text-slate-500 text-sm mb-5">Please sign in to use Google Sheets sync.</p>
         <button
           onClick={() => base44.auth.redirectToLogin()}
           className="inline-flex items-center gap-2 rounded-full bg-[#00d4ff] px-5 py-2.5 text-sm font-bold text-[#0a0e14] hover:brightness-110 transition"
@@ -130,19 +130,19 @@ export default function GoogleSheetsSync() {
     <div className="p-6 lg:p-8 max-w-5xl">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-black text-white flex items-center gap-2.5">
+        <h1 className="text-2xl font-black text-slate-900 flex items-center gap-2.5">
           <Table className="w-6 h-6 text-[#00d4ff]" /> Google Sheets Sync
         </h1>
-        <p className="text-sm text-white/40 mt-1">
+        <p className="text-sm text-slate-500 mt-1">
           Read template variables from a Google Sheet and batch-instantiate websites.
         </p>
       </div>
 
       {/* Connection card */}
-      <div className="rounded-2xl bg-[#0d1117] border border-white/8 p-5 mb-5">
+      <div className="rounded-2xl bg-white border border-slate-200 p-5 mb-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${connected ? "bg-green-500/15" : "bg-white/5"}`}>
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${connected ? "bg-green-500/15" : "bg-slate-50"}`}>
               {connected ? <CheckCircle2 className="w-5 h-5 text-green-400" /> : <Link2 className="w-5 h-5 text-white/40" />}
             </div>
             <div>
@@ -153,7 +153,7 @@ export default function GoogleSheetsSync() {
           {connected ? (
             <button
               onClick={handleDisconnect}
-              className="rounded-lg border border-white/15 px-4 py-2 text-xs font-semibold text-white/60 hover:text-white hover:bg-white/5 transition"
+              className="rounded-lg border border-white/15 px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition"
             >
               Disconnect
             </button>
@@ -170,20 +170,20 @@ export default function GoogleSheetsSync() {
 
       {/* Sheet URL input */}
       {connected && (
-        <div className="rounded-2xl bg-[#0d1117] border border-white/8 p-5 mb-5">
+        <div className="rounded-2xl bg-white border border-slate-200 p-5 mb-5">
           <label className="block mb-3">
-            <span className="block text-xs font-bold text-white/40 uppercase tracking-wide mb-1.5">Google Sheet URL</span>
+            <span className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Google Sheet URL</span>
             <input
               value={sheetUrl}
               onChange={(e) => setSheetUrl(e.target.value)}
-              className="w-full rounded-xl bg-[#0a0e14] border border-white/10 px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#00d4ff]/50 transition"
+              className="w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#00d4ff]/50 transition"
               placeholder="https://docs.google.com/spreadsheets/d/..."
             />
           </label>
           <button
             onClick={readSheet}
             disabled={!sheetUrl || reading}
-            className="inline-flex items-center gap-2 rounded-lg bg-white/10 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/15 transition disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-200 transition disabled:opacity-50"
           >
             {reading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />} Read Sheet
           </button>
@@ -193,31 +193,31 @@ export default function GoogleSheetsSync() {
 
       {/* Sheet data preview */}
       {sheetData && (
-        <div className="rounded-2xl bg-[#0d1117] border border-white/8 p-5 mb-5">
+        <div className="rounded-2xl bg-white border border-slate-200 p-5 mb-5">
           <div className="flex items-center justify-between mb-4">
             <div>
               <div className="text-sm font-bold text-white">{sheetData.spreadsheetTitle || "Sheet"}</div>
-              <div className="text-xs text-white/40">{sheetData.selectedSheet} · {sheetData.totalRows} data rows</div>
+              <div className="text-xs text-slate-500">{sheetData.selectedSheet} · {sheetData.totalRows} data rows</div>
             </div>
           </div>
 
           {/* Data table */}
-          <div className="overflow-x-auto rounded-xl border border-white/8">
+          <div className="overflow-x-auto rounded-xl border border-slate-200">
             <table className="w-full text-sm">
-              <thead className="bg-white/5">
+              <thead className="bg-slate-50">
                 <tr>
-                  <th className="px-3 py-2 text-left text-[10px] font-bold text-white/40 uppercase">#</th>
+                  <th className="px-3 py-2 text-left text-[10px] font-bold text-slate-500 uppercase">#</th>
                   {sheetData.headers.map((h, i) => (
-                    <th key={i} className="px-3 py-2 text-left text-[10px] font-bold text-white/40 uppercase whitespace-nowrap">{h}</th>
+                    <th key={i} className="px-3 py-2 text-left text-[10px] font-bold text-slate-500 uppercase whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {sheetData.rows.slice(0, 10).map((row) => (
-                  <tr key={row.rowNumber} className="border-t border-white/5">
-                    <td className="px-3 py-2 text-white/30 font-mono text-xs">{row.rowNumber}</td>
+                  <tr key={row.rowNumber} className="border-t border-slate-100">
+                    <td className="px-3 py-2 text-slate-400 font-mono text-xs">{row.rowNumber}</td>
                     {sheetData.headers.map((h, i) => (
-                      <td key={i} className="px-3 py-2 text-white/70 text-xs whitespace-nowrap">{row.variables[h] || "—"}</td>
+                      <td key={i} className="px-3 py-2 text-slate-700 text-xs whitespace-nowrap">{row.variables[h] || "—"}</td>
                     ))}
                   </tr>
                 ))}
@@ -225,13 +225,13 @@ export default function GoogleSheetsSync() {
             </table>
           </div>
           {sheetData.totalRows > 10 && (
-            <p className="text-xs text-white/30 mt-2">Showing first 10 of {sheetData.totalRows} rows</p>
+            <p className="text-xs text-slate-400 mt-2">Showing first 10 of {sheetData.totalRows} rows</p>
           )}
 
           {/* Template selector + instantiate */}
-          <div className="mt-5 pt-5 border-t border-white/8">
+          <div className="mt-5 pt-5 border-t border-slate-200">
             <label className="block mb-3">
-              <span className="block text-xs font-bold text-white/40 uppercase tracking-wide mb-1.5">Site Template</span>
+              <span className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Site Template</span>
               <select
                 value={selectedTemplate}
                 onChange={(e) => setSelectedTemplate(e.target.value)}
@@ -257,23 +257,23 @@ export default function GoogleSheetsSync() {
 
       {/* Results */}
       {results && (
-        <div className="rounded-2xl bg-[#0d1117] border border-white/8 p-5">
+        <div className="rounded-2xl bg-white border border-slate-200 p-5">
           <div className="flex items-center gap-4 mb-4">
             <div className="text-center">
               <div className="text-2xl font-black text-green-400">{results.instantiated}</div>
-              <div className="text-[10px] text-white/40 uppercase">Created</div>
+              <div className="text-[10px] text-slate-500 uppercase">Created</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-black text-red-400">{results.failed}</div>
-              <div className="text-[10px] text-white/40 uppercase">Failed</div>
+              <div className="text-[10px] text-slate-500 uppercase">Failed</div>
             </div>
           </div>
           <div className="space-y-1.5 max-h-64 overflow-y-auto">
             {results.results.map((r, i) => (
               <div key={i} className="flex items-center gap-2 text-sm">
                 {r.success ? <CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" /> : <XCircle className="w-4 h-4 text-red-400 shrink-0" />}
-                <span className="text-white/30 font-mono text-xs">Row {r.row}</span>
-                <span className="text-white/70 text-xs">{r.success ? r.businessName : r.error}</span>
+                <span className="text-slate-400 font-mono text-xs">Row {r.row}</span>
+                <span className="text-slate-700 text-xs">{r.success ? r.businessName : r.error}</span>
               </div>
             ))}
           </div>

@@ -93,4 +93,25 @@
   .dd-input {
     @apply w-full rounded-xl bg-background/60 border border-border px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition;
   }
+
+  /* Light token override for the admin portal content area — mixed white/black theme */
+  .portal-light {
+    --background: 0 0% 100%;
+    --foreground: 215 25% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 15%;
+    --primary: 190 100% 50%;
+    --primary-foreground: 215 54% 9%;
+    --secondary: 210 20% 96%;
+    --secondary-foreground: 215 25% 15%;
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 190 100% 50%;
+    --accent-foreground: 215 54% 9%;
+    --border: 215 20% 88%;
+    --input: 215 20% 88%;
+    --ring: 190 100% 50%;
+  }
 }

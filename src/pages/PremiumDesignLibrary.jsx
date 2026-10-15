@@ -198,8 +198,8 @@ export default function PremiumDesignLibrary() {
         <div className="mb-6">
           <div className="flex items-center justify-between gap-4 mb-4">
             <div>
-              <h1 className="text-2xl font-black text-white tracking-tight">{activeCat?.label}</h1>
-              <p className="text-sm text-white/40 mt-0.5">
+              <h1 className="text-2xl font-black text-slate-900 tracking-tight">{activeCat?.label}</h1>
+              <p className="text-sm text-slate-500 mt-0.5">
                 {filtered.length} of {inCategory.length} templates
                 {industryFilter !== "All" && ` · ${industryFilter}`}
                 {layoutFilter !== "All" && ` · ${layoutFilter} layout`}
@@ -207,7 +207,7 @@ export default function PremiumDesignLibrary() {
             </div>
             <button
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden inline-flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-sm text-white/70"
+              className="lg:hidden inline-flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-600"
             >
               <Filter className="w-4 h-4" /> Filters
             </button>
@@ -215,9 +215,9 @@ export default function PremiumDesignLibrary() {
 
           {/* Search bar */}
           <div className="relative max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
-              className="w-full rounded-xl bg-[#0d1117] border border-white/10 pl-11 pr-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#00d4ff]/50 focus:ring-1 focus:ring-[#00d4ff]/30 transition"
+              className="w-full rounded-xl bg-slate-50 border border-slate-200 pl-11 pr-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#00d4ff]/50 focus:ring-1 focus:ring-[#00d4ff]/30 transition"
               placeholder="Search templates, industries, design families…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -232,8 +232,8 @@ export default function PremiumDesignLibrary() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-24">
-            <Globe className="w-12 h-12 mx-auto mb-4 text-white/20" />
-            <p className="text-white/40 text-sm">No templates match your filters.</p>
+            <Globe className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+            <p className="text-slate-500 text-sm">No templates match your filters.</p>
           </div>
         ) : (
           <div className={category === "mobile_app"

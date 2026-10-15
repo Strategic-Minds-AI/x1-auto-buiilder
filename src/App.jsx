@@ -58,7 +58,7 @@ function App() {
               <Route path="/asset-repository" element={<AssetRepository />} />
               <Route path="/campaign-monitor" element={<CampaignMonitor />} />
               <Route path="/style-guide-editor" element={<StyleGuideEditor />} />
-              <Route path="/design-library" element={<PremiumDesignLibrary />} />
+              <Route path="/design-library" element={<div className="portal-light min-h-screen bg-white"><PremiumDesignLibrary /></div>} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>

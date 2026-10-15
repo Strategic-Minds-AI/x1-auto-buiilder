@@ -43,15 +43,15 @@ export default function WebPackLibrary() {
             <Package className="w-5 h-5 text-[#00d4ff]" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-white">Web Pack Library</h1>
-            <p className="text-sm text-white/40">{templates.length} complete website design packs — layout, copy, colors, and imagery</p>
+            <h1 className="text-2xl font-black text-slate-900">Web Pack Library</h1>
+            <p className="text-sm text-slate-500">{templates.length} complete website design packs — layout, copy, colors, and imagery</p>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3 mt-4">
           <div className="relative flex-1 min-w-[200px] max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
-              className="w-full rounded-xl bg-[#0d1117] border border-white/10 pl-11 pr-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#00d4ff]/50 transition"
+              className="w-full rounded-xl bg-slate-50 border border-slate-200 pl-11 pr-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#00d4ff]/50 transition"
               placeholder="Search packs…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -60,17 +60,17 @@ export default function WebPackLibrary() {
           <select
             value={industry}
             onChange={(e) => setIndustry(e.target.value)}
-            className="rounded-xl bg-[#0d1117] border border-white/10 px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00d4ff]/50 transition"
+            className="rounded-xl bg-slate-50 border border-slate-200 px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-[#00d4ff]/50 transition"
           >
-            {industries.map((ind) => <option key={ind} value={ind} className="bg-[#0d1117]">{ind === "All" ? "All Industries" : ind}</option>)}
+            {industries.map((ind) => <option key={ind} value={ind} className="bg-white">{ind === "All" ? "All Industries" : ind}</option>)}
           </select>
         </div>
       </div>
 
       {filtered.length === 0 ? (
         <div className="text-center py-24">
-          <Globe className="w-12 h-12 mx-auto mb-4 text-white/20" />
-          <p className="text-white/40 text-sm">No web packs found.</p>
+          <Globe className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+          <p className="text-slate-500 text-sm">No web packs found.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">

@@ -42,15 +42,15 @@ export default function AppPackLibrary() {
             <Monitor className="w-5 h-5 text-[#00d4ff]" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-white">App Pack Library</h1>
-            <p className="text-sm text-white/40">Desktop and mobile application layout patterns</p>
+            <h1 className="text-2xl font-black text-slate-900">App Pack Library</h1>
+            <p className="text-sm text-slate-500">Desktop and mobile application layout patterns</p>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3 mt-4">
           <div className="relative flex-1 min-w-[200px] max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
-              className="w-full rounded-xl bg-[#0d1117] border border-white/10 pl-11 pr-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#00d4ff]/50 transition"
+              className="w-full rounded-xl bg-slate-50 border border-slate-200 pl-11 pr-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#00d4ff]/50 transition"
               placeholder="Search app packs…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -59,13 +59,13 @@ export default function AppPackLibrary() {
           <div className="flex gap-1.5">
             <button
               onClick={() => setCategory("desktop_app")}
-              className={`rounded-full px-4 py-2 text-[13px] font-bold transition ${category === "desktop_app" ? "bg-[#00d4ff] text-[#0a0e14]" : "bg-white/5 text-white/50 hover:text-white"}`}
+              className={`rounded-full px-4 py-2 text-[13px] font-bold transition ${category === "desktop_app" ? "bg-[#00d4ff] text-[#0a0e14]" : "bg-slate-100 text-slate-500 hover:text-slate-900"}`}
             >
               Desktop
             </button>
             <button
               onClick={() => setCategory("mobile_app")}
-              className={`rounded-full px-4 py-2 text-[13px] font-bold transition ${category === "mobile_app" ? "bg-[#00d4ff] text-[#0a0e14]" : "bg-white/5 text-white/50 hover:text-white"}`}
+              className={`rounded-full px-4 py-2 text-[13px] font-bold transition ${category === "mobile_app" ? "bg-[#00d4ff] text-[#0a0e14]" : "bg-slate-100 text-slate-500 hover:text-slate-900"}`}
             >
               Mobile
             </button>
@@ -73,12 +73,12 @@ export default function AppPackLibrary() {
         </div>
       </div>
 
-      <div className="text-sm text-white/40 mb-4">{filtered.length} {category === "desktop_app" ? "desktop" : "mobile"} app packs</div>
+      <div className="text-sm text-slate-500 mb-4">{filtered.length} {category === "desktop_app" ? "desktop" : "mobile"} app packs</div>
 
       {filtered.length === 0 ? (
         <div className="text-center py-24">
-          <Monitor className="w-12 h-12 mx-auto mb-4 text-white/20" />
-          <p className="text-white/40 text-sm">No app packs found. Generate templates to populate this library.</p>
+          <Monitor className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+          <p className="text-slate-500 text-sm">No app packs found. Generate templates to populate this library.</p>
         </div>
       ) : (
         <div className={category === "mobile_app" ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4" : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"}>

@@ -56,14 +56,14 @@ export default function WebsiteLibrary() {
             <Globe className="w-5 h-5 text-[#00d4ff]" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-white">Website Library</h1>
-            <p className="text-sm text-white/40">Every generated site with a live style preview. Universalize any site into a reusable template.</p>
+            <h1 className="text-2xl font-black text-slate-900">Website Library</h1>
+            <p className="text-sm text-slate-500">Every generated site with a live style preview. Universalize any site into a reusable template.</p>
           </div>
         </div>
         <div className="relative max-w-md mt-4">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
-            className="w-full rounded-xl bg-[#0d1117] border border-white/10 pl-11 pr-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#00d4ff]/50 transition"
+            className="w-full rounded-xl bg-slate-50 border border-slate-200 pl-11 pr-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#00d4ff]/50 transition"
             placeholder="Search websites…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -73,9 +73,9 @@ export default function WebsiteLibrary() {
 
       {filtered.length === 0 ? (
         <div className="text-center py-24">
-          <Globe className="w-12 h-12 mx-auto mb-4 text-white/20" />
-          <h3 className="font-black text-xl mb-2 text-white">No websites yet</h3>
-          <p className="text-white/40 text-sm max-w-md mx-auto">
+          <Globe className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+          <h3 className="font-black text-xl mb-2 text-slate-900">No websites yet</h3>
+          <p className="text-slate-500 text-sm max-w-md mx-auto">
             Generate a site in the Website Generator and it will appear here, ready to be universalized into a reusable template.
           </p>
         </div>
