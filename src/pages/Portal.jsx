@@ -9,6 +9,7 @@ import PremiumDesignLibrary from "@/pages/PremiumDesignLibrary";
 import MassLaunchConsoleV2 from "@/components/masslaunch/MassLaunchConsoleV2";
 import Campaigns from "@/components/portal/Campaigns";
 import GPTSyncDashboard from "@/components/portal/GPTSyncDashboard";
+import GoogleSheetsSync from "@/components/portal/GoogleSheetsSync";
 import WebsiteLibrary from "@/components/portal/WebsiteLibrary";
 import SiteTemplates from "@/components/portal/SiteTemplates";
 import ModulesGrid from "@/components/portal/ModulesGrid";
@@ -233,6 +234,7 @@ export default function Portal() {
       {tab === "campaigns" && <Campaigns />}
       {tab === "modules" && <ModulesGrid />}
       {tab === "sync" && <GPTSyncDashboard />}
+      {tab === "sheets" && <GoogleSheetsSync />}
     </PortalShell>
   );
 }
