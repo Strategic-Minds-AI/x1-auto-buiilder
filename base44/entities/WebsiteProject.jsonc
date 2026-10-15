@@ -54,6 +54,10 @@
       "type": "string",
       "description": "LaunchCampaign id this variant belongs to"
     },
+    "client_id": {
+      "type": "string",
+      "description": "Client id this project belongs to (multi-tenant isolation)"
+    },
     "deploy_url": {
       "type": "string",
       "description": "Live Vercel deployment URL for this site"

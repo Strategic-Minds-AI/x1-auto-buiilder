@@ -44,6 +44,7 @@ import IntelligenceHub from '@/pages/IntelligenceHub';
 import PerformanceDashboard from '@/pages/PerformanceDashboard';
 import MockupIngestion from '@/pages/MockupIngestion';
 import FaultLine from '@/pages/FaultLine';
+import ClientPortal from '@/pages/ClientPortal';
 
 function App() {
   return (
@@ -93,6 +94,7 @@ function App() {
               <Route path="/performance-dashboard" element={<PerformanceDashboard />} />
               <Route path="/mockup-ingestion" element={<MockupIngestion />} />
               <Route path="/fault-line" element={<FaultLine />} />
+              <Route path="/client-portal" element={<ClientPortal />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>

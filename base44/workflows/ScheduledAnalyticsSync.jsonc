@@ -26,30 +26,16 @@
     },
     "do": [
       {
-        "sync_search_console": {
+        "sync_all_analytics": {
           "call": "invoke_backend_function",
           "with": {
-            "function_name": "syncSearchConsole",
-            "args": {}
-          },
-          "then": "sync_ga4",
-          "x-base44": {
-            "title": "Sync Search Console",
-            "description": "Pull search performance data"
-          }
-        }
-      },
-      {
-        "sync_ga4": {
-          "call": "invoke_backend_function",
-          "with": {
-            "function_name": "syncGoogleAnalytics",
+            "function_name": "syncAllAnalytics",
             "args": {}
           },
           "then": "end",
           "x-base44": {
-            "title": "Sync GA4",
-            "description": "Pull analytics traffic data"
+            "title": "Sync All Analytics",
+            "description": "Iterates all deployed projects and syncs Search Console + GA4 data"
           }
         }
       }

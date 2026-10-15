@@ -1,0 +1,76 @@
+{
+  "name": "Client",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Client display name"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-safe slug (e.g., xps)"
+    },
+    "parent_organization": {
+      "type": "string",
+      "description": "Parent organization name"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "onboarding",
+        "active",
+        "suspended",
+        "churned"
+      ],
+      "default": "onboarding"
+    },
+    "supabase_project_ref": {
+      "type": "string",
+      "description": "Dedicated Supabase project ref for this client"
+    },
+    "vercel_team_id": {
+      "type": "string",
+      "description": "Vercel team ID for client deployments"
+    },
+    "portal_url": {
+      "type": "string",
+      "description": "Client portal URL slug"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "brand_color": {
+      "type": "string",
+      "description": "Brand accent color hex"
+    },
+    "logo_url": {
+      "type": "string"
+    },
+    "config": {
+      "type": "object",
+      "description": "Client-specific configuration (sandbox, features, etc)"
+    }
+  },
+  "required": [
+    "name",
+    "slug"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

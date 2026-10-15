@@ -82,6 +82,7 @@ const EXTERNAL_MODULES = [
   { to: "/performance-dashboard", icon: BarChart3, label: "Performance Dashboard" },
   { to: "/mockup-ingestion", icon: Scan, label: "Mock-up Ingestion" },
   { to: "/fault-line", icon: AlertTriangle, label: "Fault Line Scanner" },
+  { to: "/client-portal", icon: Building2, label: "Client Portals" },
 ];
 
 export default function PortalShell({ activeTab, onTabChange, onNew, children }) {
