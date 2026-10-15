@@ -29,6 +29,7 @@ import BrandLibrary from "@/components/portal/BrandLibrary";
 import ImageLibrary from "@/components/portal/ImageLibrary";
 import WebPackLibrary from "@/components/portal/WebPackLibrary";
 import AppPackLibrary from "@/components/portal/AppPackLibrary";
+import TemplateIngestion from "@/components/portal/TemplateIngestion";
 import { Link } from "react-router-dom";
 import { CheckCircle2, Plus, Loader2, Rocket, ExternalLink, Library } from "lucide-react";
 
@@ -235,6 +236,7 @@ export default function Portal() {
         </>
       )}
 
+      {tab === "ingest" && <TemplateIngestion />}
       {tab === "library" && <PremiumDesignLibrary />}
       {tab === "sites" && <WebsiteLibrary />}
       {tab === "templates" && <SiteTemplates />}
