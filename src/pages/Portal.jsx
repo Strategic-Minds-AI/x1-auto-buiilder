@@ -10,6 +10,7 @@ import PremiumDesignLibrary from "@/pages/PremiumDesignLibrary";
 import AppFactory from "@/pages/AppFactory";
 import VideoStudio from "@/pages/VideoStudio";
 import MassLaunchConsoleV2 from "@/components/masslaunch/MassLaunchConsoleV2";
+import ComplianceDashboard from "@/components/portal/ComplianceDashboard";
 import Campaigns from "@/components/portal/Campaigns";
 import GPTSyncDashboard from "@/components/portal/GPTSyncDashboard";
 import GoogleSheetsSync from "@/components/portal/GoogleSheetsSync";
@@ -238,6 +239,7 @@ export default function Portal() {
       {tab === "app-packs" && <AppPackLibrary />}
       {tab === "launch" && <MassLaunchConsoleV2 onDeployed={() => setTab("campaigns")} />}
       {tab === "monitor" && <LaunchMonitor />}
+      {tab === "compliance" && <ComplianceDashboard />}
       {tab === "campaigns" && <Campaigns />}
       {tab === "app-factory" && <AppFactory />}
       {tab === "video-studio" && <VideoStudio />}
