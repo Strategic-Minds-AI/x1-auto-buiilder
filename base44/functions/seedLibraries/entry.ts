@@ -3,6 +3,7 @@ import { generateAITools } from '../../shared/aiToolsLibrary.js';
 import { generateAISkills } from '../../shared/aiSkillsLibrary.js';
 import { generateAgentProfiles } from '../../shared/agentLibrary.js';
 import { generateCommChannels } from '../../shared/commLibrary.js';
+import { generateFreeAssets } from '../../shared/freeLibrary.js';
 
 // Seed AI libraries: 300 tools, 300 skills, 20 agents, 8 comm channels
 export default async function(req) {
@@ -46,6 +47,15 @@ export default async function(req) {
       await base44.entities.CommChannel.deleteMany({});
       await base44.entities.CommChannel.bulkCreate(channels);
       results.commChannels = channels.length;
+    }
+
+    if (library === 'all' || library === 'free') {
+      const freeAssets = generateFreeAssets();
+      await base44.asServiceRole.entities.FreeAsset.deleteMany({});
+      for (let i = 0; i < freeAssets.length; i += 100) {
+        await base44.asServiceRole.entities.FreeAsset.bulkCreate(freeAssets.slice(i, i + 100));
+      }
+      results.freeAssets = freeAssets.length;
     }
 
     return Response.json({ success: true, seeded: results, seededAt: new Date().toISOString() });

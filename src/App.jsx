@@ -57,6 +57,8 @@ import WorkflowLibrary from '@/pages/WorkflowLibrary';
 import MarketingLibrary from '@/pages/MarketingLibrary';
 import WorkflowBuilder from '@/pages/WorkflowBuilder';
 import ApiDocs from '@/pages/ApiDocs';
+import FreeLibrary from '@/pages/FreeLibrary';
+import IntegrationHub from '@/pages/IntegrationHub';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
 function App() {
@@ -120,6 +122,8 @@ function App() {
               <Route path="/marketing-library" element={<MarketingLibrary />} />
               <Route path="/workflow-builder" element={<WorkflowBuilder />} />
               <Route path="/api-docs" element={<ApiDocs />} />
+              <Route path="/free-library" element={<FreeLibrary />} />
+              <Route path="/integration-hub" element={<IntegrationHub />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>

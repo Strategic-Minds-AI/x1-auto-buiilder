@@ -1,0 +1,114 @@
+{
+  "name": "GitHubRepo",
+  "type": "object",
+  "properties": {
+    "repo_id": {
+      "type": "number",
+      "description": "GitHub repository numeric ID"
+    },
+    "full_name": {
+      "type": "string",
+      "description": "owner/repo"
+    },
+    "name": {
+      "type": "string",
+      "description": "Repository name"
+    },
+    "description": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string",
+      "description": "GitHub URL"
+    },
+    "html_url": {
+      "type": "string"
+    },
+    "stars": {
+      "type": "number",
+      "default": 0
+    },
+    "forks": {
+      "type": "number",
+      "default": 0
+    },
+    "language": {
+      "type": "string"
+    },
+    "topics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "license": {
+      "type": "string"
+    },
+    "is_template": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_free": {
+      "type": "boolean",
+      "default": true
+    },
+    "category": {
+      "type": "string",
+      "description": "Intelligence category: ai_tool, template, library, framework, prompt_pack, workflow, design_system, starter_kit"
+    },
+    "relevance_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for matching to projects"
+    },
+    "readme_summary": {
+      "type": "string",
+      "description": "AI-generated summary of the repo's purpose"
+    },
+    "install_instructions": {
+      "type": "string"
+    },
+    "scanned_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "intelligence_score": {
+      "type": "number",
+      "description": "0-100 relevance score for the platform"
+    }
+  },
+  "required": [
+    "full_name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

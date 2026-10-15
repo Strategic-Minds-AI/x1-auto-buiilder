@@ -1,0 +1,174 @@
+{
+  "name": "FreeAsset",
+  "type": "object",
+  "properties": {
+    "asset_id": {
+      "type": "string",
+      "description": "Unique asset identifier (e.g. FA-001)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Asset name"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "ai_tool",
+        "template",
+        "prompt_pack",
+        "video_asset",
+        "workflow_template",
+        "design_system",
+        "icon_pack",
+        "font_pack",
+        "starter_kit",
+        "api_service",
+        "dataset",
+        "plugin",
+        "component_library"
+      ],
+      "description": "Asset type"
+    },
+    "category": {
+      "type": "string",
+      "description": "Sub-category for grouping"
+    },
+    "description": {
+      "type": "string",
+      "description": "What this asset does"
+    },
+    "provider": {
+      "type": "string",
+      "description": "Provider or source"
+    },
+    "source_url": {
+      "type": "string",
+      "description": "URL to access the asset"
+    },
+    "docs_url": {
+      "type": "string",
+      "description": "Documentation URL"
+    },
+    "is_free": {
+      "type": "boolean",
+      "default": true
+    },
+    "pricing_model": {
+      "type": "string",
+      "enum": [
+        "free",
+        "freemium",
+        "open_source",
+        "free_tier"
+      ],
+      "default": "free"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "industries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Applicable industries"
+    },
+    "integration_type": {
+      "type": "string",
+      "enum": [
+        "api",
+        "sdk",
+        "npm",
+        "cdn",
+        "download",
+        "copy_paste",
+        "github",
+        "service"
+      ],
+      "description": "How to integrate"
+    },
+    "install_steps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Step-by-step installation instructions"
+    },
+    "code_snippet": {
+      "type": "string",
+      "description": "Ready-to-use code snippet"
+    },
+    "config_template": {
+      "type": "object",
+      "description": "Configuration template for integration"
+    },
+    "popularity_score": {
+      "type": "number",
+      "description": "1-100 popularity score"
+    },
+    "installed_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many times installed"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "available",
+        "installed",
+        "deprecated"
+      ],
+      "default": "available"
+    }
+  },
+  "required": [
+    "asset_id",
+    "name",
+    "type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
