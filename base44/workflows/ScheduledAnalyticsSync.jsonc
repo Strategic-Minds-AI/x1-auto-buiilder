@@ -1,0 +1,48 @@
+{
+  "name": "Scheduled Analytics Sync",
+  "description": "Daily sync of Search Console and GA4 performance data for all deployed projects",
+  "trigger": {
+    "config": {
+      "trigger_type": "scheduled",
+      "schedule": "0 8 * * *"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "scheduled_analytics_sync",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "sync_search_console": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "syncSearchConsole",
+            "args": {}
+          },
+          "then": "sync_ga4",
+          "x-base44": {
+            "title": "Sync Search Console",
+            "description": "Pull search performance data"
+          }
+        }
+      },
+      {
+        "sync_ga4": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "syncGoogleAnalytics",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Sync GA4",
+            "description": "Pull analytics traffic data"
+          }
+        }
+      }
+    ]
+  }
+}

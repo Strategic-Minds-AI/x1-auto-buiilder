@@ -1,0 +1,137 @@
+{
+  "name": "PricingIntelligence",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "Associated WebsiteProject id"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "competitor_name": {
+      "type": "string",
+      "description": "Competitor or provider name"
+    },
+    "competitor_url": {
+      "type": "string",
+      "description": "Source URL"
+    },
+    "service_or_product": {
+      "type": "string",
+      "description": "Item or service being priced"
+    },
+    "price_range": {
+      "type": "string",
+      "description": "Price or price range observed"
+    },
+    "price_min": {
+      "type": "number",
+      "description": "Minimum price in USD cents"
+    },
+    "price_max": {
+      "type": "number",
+      "description": "Maximum price in USD cents"
+    },
+    "currency": {
+      "type": "string",
+      "default": "USD"
+    },
+    "unit": {
+      "type": "string",
+      "description": "Pricing unit (per sq ft, per hour, per month, flat, etc)"
+    },
+    "pricing_tier": {
+      "type": "string",
+      "enum": [
+        "entry",
+        "standard",
+        "premium",
+        "enterprise",
+        "custom"
+      ],
+      "default": "standard"
+    },
+    "inclusions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "exclusions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "geography": {
+      "type": "string",
+      "description": "Market or geographic context"
+    },
+    "retrieval_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "confidence": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "inferred",
+        "unavailable"
+      ],
+      "default": "inferred"
+    },
+    "source_url": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "industry",
+    "competitor_name",
+    "service_or_product"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
