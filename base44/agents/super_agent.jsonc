@@ -461,15 +461,15 @@
     },
     {
       "function_name": "webScraper",
-      "description": "Web scraper \u2014 fetch and extract content from any URL. Supports text, links, metadata, images, and AI analysis. Browser-like capability."
+      "description": "Web scraper \u2014 fetch and extract content from any URL. Browser-like capability for discovery and integration."
     },
     {
       "function_name": "provisionDomain",
-      "description": "Domain provisioner \u2014 full Vercel domain lifecycle: check, purchase, assign, verify, remove, list."
+      "description": "Domain provisioner \u2014 full Vercel domain lifecycle: check, purchase, assign, verify, remove."
     },
     {
       "function_name": "systemAudit",
-      "description": "Proactive system audit \u2014 analyzes the platform, identifies optimizations, suggests upgrades, creates intelligence tasks. Returns system intelligence."
+      "description": "Proactive system audit \u2014 analyzes platform, identifies optimizations, suggests upgrades, returns intelligence."
     }
   ],
   "context_files": [],
