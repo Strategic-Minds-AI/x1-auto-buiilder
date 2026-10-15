@@ -7,6 +7,7 @@
 
 const X1_PROJECT_REF = "vgsmyhqqtkkluhypxyua"; // X1 AI Hub (production)
 const X1_STAGING_REF = "uvdkzsbjackpjvpoxtyk"; // X1 AI Hub Staging
+const XPS_PROJECT_REF = "akezkmklygzltvnvisob"; // Xtreme Polishing System (dedicated, isolated)
 const API_BASE = "https://api.supabase.com/v1";
 const REST_BASE = (ref) => `https://${ref}.supabase.co/rest/v1`;
 
@@ -274,6 +275,44 @@ export async function getSystemStatus(base44, projectRef = X1_PROJECT_REF) {
   };
 }
 
+// List all organizations the connected account belongs to
+export async function listOrganizations(base44) {
+  const conn = await getSupabaseConnection(base44);
+  const res = await fetch(`${API_BASE}/organizations`, {
+    headers: { Authorization: `Bearer ${conn.accessToken}` },
+    signal: AbortSignal.timeout(10000),
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to list organizations: ${res.status}`);
+  }
+  return await res.json();
+}
+
+// Create a new Supabase project (requires organization-level access)
+export async function createProject(base44, { name, organizationId, region = "us-east-2", dbPassword, plan = "free" }) {
+  const conn = await getSupabaseConnection(base44);
+  const res = await fetch(`${API_BASE}/projects`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${conn.accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name,
+      organization_id: organizationId,
+      region,
+      db_pass: dbPassword,
+      plan,
+    }),
+    signal: AbortSignal.timeout(30000),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Failed to create project (${res.status}): ${text}`);
+  }
+  return await res.json();
+}
+
 // List all Supabase projects for the connected account
 export async function listProjects(base44) {
   const conn = await getSupabaseConnection(base44);
@@ -296,4 +335,4 @@ export async function listProjects(base44) {
     : [];
 }
 
-export { X1_PROJECT_REF, X1_STAGING_REF };
+export { X1_PROJECT_REF, X1_STAGING_REF, XPS_PROJECT_REF };

@@ -5,9 +5,13 @@ import {
   readTable,
   insertRows,
   runReadOnlyQuery,
+  runWriteQuery,
   listProjects,
+  listOrganizations,
+  createProject,
   X1_PROJECT_REF,
   X1_STAGING_REF,
+  XPS_PROJECT_REF,
 } from "../../shared/supabaseBridge.js";
 
 // Supabase Bridge — connects this Digital Dominance Factory platform to the
@@ -88,6 +92,75 @@ export default async function (req: Request): Promise<Response> {
       case "projects": {
         const projects = await listProjects(base44);
         return Response.json({ projects });
+      }
+
+      case "list_organizations": {
+        const orgs = await listOrganizations(base44);
+        return Response.json({ organizations: orgs });
+      }
+
+      case "create_project": {
+        if (!body.name) return Response.json({ error: "name is required" }, { status: 400 });
+        const orgs = await listOrganizations(base44);
+        const orgId = body.organization_id || (Array.isArray(orgs) && orgs.length > 0 ? orgs[0].id : null);
+        if (!orgId) return Response.json({ error: "No organization available" }, { status: 400 });
+        const dbPassword = body.db_password || `Xps${Date.now()}!${Math.random().toString(36).slice(2, 10)}`;
+        const project = await createProject(base44, {
+          name: body.name,
+          organizationId: orgId,
+          region: body.region || "us-east-2",
+          dbPassword,
+          plan: body.plan || "free",
+        });
+        return Response.json({ project, dbPassword });
+      }
+
+      case "setup_xps_schema": {
+        // Create a dedicated xps schema in the specified project (or X1 by default)
+        const projectRef = body.project_ref || X1_PROJECT_REF;
+        const schemaSql = `
+          CREATE SCHEMA IF NOT EXISTS xps;
+          CREATE TABLE IF NOT EXISTS xps.projects (
+            id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+            business_name text NOT NULL,
+            industry text,
+            location text,
+            status text DEFAULT 'draft',
+            content jsonb DEFAULT '{}'::jsonb,
+            benchmark jsonb DEFAULT '{}'::jsonb,
+            deploy_url text,
+            created_at timestamptz DEFAULT now(),
+            updated_at timestamptz DEFAULT now(),
+            owner_id uuid
+          );
+          CREATE TABLE IF NOT EXISTS xps.leads (
+            id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+            name text,
+            email text,
+            phone text,
+            source text,
+            status text DEFAULT 'new',
+            project_id uuid REFERENCES xps.projects(id),
+            notes text,
+            created_at timestamptz DEFAULT now(),
+            updated_at timestamptz DEFAULT now()
+          );
+          CREATE TABLE IF NOT EXISTS xps.work_items (
+            id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+            task_id text,
+            action_class text,
+            status text DEFAULT 'PENDING',
+            priority int DEFAULT 100,
+            payload jsonb DEFAULT '{}'::jsonb,
+            created_at timestamptz DEFAULT now(),
+            updated_at timestamptz DEFAULT now()
+          );
+          CREATE INDEX IF NOT EXISTS idx_xps_projects_status ON xps.projects(status);
+          CREATE INDEX IF NOT EXISTS idx_xps_leads_status ON xps.leads(status);
+          CREATE INDEX IF NOT EXISTS idx_xps_work_items_status ON xps.work_items(status);
+        `;
+        const result = await runWriteQuery(base44, schemaSql, projectRef);
+        return Response.json({ success: true, schema: "xps", projectRef, result });
       }
 
       case "sync_project": {
