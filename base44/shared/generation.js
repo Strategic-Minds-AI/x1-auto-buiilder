@@ -209,3 +209,46 @@ export async function researchTemplates(base44, industry, scope) {
   }
   return { industry: industry, templates: saved };
 }
+
+export async function instantiateFromTemplate(base44, params) {
+  const { template, variables } = params;
+  const content = await base44.asServiceRole.integrations.Core.InvokeLLM({
+    model: 'claude-sonnet-5',
+    prompt:
+      'You are an elite website copywriter. A reusable industry template for "' + (template.industry || '') + '" contains placeholder variables. ' +
+      'Fill every placeholder with the provided business details and adapt ALL copy to be specific, compelling, and locally relevant to this exact business and location. ' +
+      'Do NOT leave any placeholder unresolved. Keep the template structure, tone, and section order intact, but make the copy feel bespoke — never generic or filler. ' +
+      'Generate a fresh logoPrompt tailored to this specific business (clean modern professional logo mark, no text, describe style and colors fitting the brand), ' +
+      'a fresh heroImagePrompt (cinematic photorealistic image representing this business in its location), ' +
+      'and choose accent colorTokens (primary, accent, background as hex values) appropriate to this brand. ' +
+      'Return a complete content blueprint matching the template structure.\n\n' +
+      'Template content:\n' + JSON.stringify(template.template) + '\n\n' +
+      'Business details to fill in (keys are the placeholders):\n' + JSON.stringify(variables) + '\n\n' +
+      'Industry: ' + (template.industry || ''),
+    response_json_schema: contentSchema
+  });
+
+  const norm = {};
+  Object.keys(variables || {}).forEach(function (k) { norm[k.replace(/[{}]/g, '')] = variables[k]; });
+  const businessResearch = {
+    businessName: norm.business_name || norm.businessName || '',
+    tagline: norm.tagline || '',
+    phone: norm.phone || '',
+    email: norm.email || '',
+    address: norm.address || '',
+    serviceArea: norm.location || norm.service_area || norm.serviceArea || '',
+    services: (content.services || []).map(function (s) { return s.title; }),
+    tone: 'professional'
+  };
+
+  const assets = await generateBrandAssets(base44, { logoPrompt: content.logoPrompt, heroImagePrompt: content.heroImagePrompt });
+
+  return {
+    businessResearch: businessResearch,
+    content: content,
+    logoUrl: assets.logoUrl,
+    heroImageUrl: assets.heroImageUrl,
+    logoError: assets.logoError,
+    heroError: assets.heroError
+  };
+}

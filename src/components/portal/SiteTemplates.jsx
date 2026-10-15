@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { LayoutTemplate, Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { LayoutTemplate, Loader2, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
+import TemplateInstantiator from "@/components/portal/TemplateInstantiator";
 
 export default function SiteTemplates() {
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState({});
+  const [selected, setSelected] = useState(null);
 
   useEffect(() => { load(); }, []);
 
@@ -39,6 +41,10 @@ export default function SiteTemplates() {
         </p>
       </div>
     );
+  }
+
+  if (selected) {
+    return <TemplateInstantiator template={selected} onBack={() => setSelected(null)} />;
   }
 
   return (
@@ -99,6 +105,12 @@ export default function SiteTemplates() {
                     </ul>
                   </div>
                 )}
+                <button
+                  onClick={() => setSelected(t)}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:brightness-110 transition"
+                >
+                  <Sparkles className="w-4 h-4" /> Use this template
+                </button>
               </div>
             )}
           </div>
