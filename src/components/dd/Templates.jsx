@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { Image } from "@/components/ui/image";
-import { Loader2, Search, X, ArrowRight, Sparkles } from "lucide-react";
+import { Loader2, Search, ArrowRight, Sparkles } from "lucide-react";
 import TemplatePreviewModal from "@/components/dd/TemplatePreviewModal";
+import TemplateMiniPreview from "@/components/dd/TemplateMiniPreview";
 import { HOME_TEMPLATES, INDUSTRY_LIST } from "@/data/homeTemplates";
 
 export default function Templates({ selectedIndustry, onClearIndustry }) {
@@ -47,9 +47,11 @@ export default function Templates({ selectedIndustry, onClearIndustry }) {
     for (const t of HOME_TEMPLATES) {
       if (!ids.has(t.template_id)) { ids.add(t.template_id); merged.push(t); }
     }
-    // Then DB templates that have working photos
+    // Then DB templates that have working photos (filter out all known broken patterns)
+    const brokenPats = ["1f1f1f1f1f1f", "c8a1f1f1f1f1", "9b8a1f1f1f1f", "d2e9e1c1f1f", "4d2e9e1c1f1f", "1c1f1f1f1f1f", "c1f1f1f1f1f1f"];
     for (const t of dbTemplates) {
-      if (!ids.has(t.template_id) && t.photo && !t.photo.includes("1f1f1f1f1f1f") && !t.photo.includes("c8a1f1f1f1f1")) {
+      const p = t.photo || "";
+      if (!ids.has(t.template_id) && p && !brokenPats.some(pat => p.includes(pat))) {
         ids.add(t.template_id);
         merged.push(t);
       }
@@ -128,16 +130,12 @@ export default function Templates({ selectedIndustry, onClearIndustry }) {
                 onClick={() => setSelected(t)}
                 className="group text-left rounded-2xl overflow-hidden border border-border bg-card hover:border-primary/40 transition-all duration-200 hover:shadow-[0_0_30px_rgba(0,212,255,0.08)]"
               >
-                <div className="aspect-[16/10] relative overflow-hidden">
-                  <Image
-                    src={t.img || (t.photo ? `https://images.unsplash.com/${t.photo}?w=600&q=80` : "https://images.unsplash.com/photo-1467232004574-p5cde63b4d62?w=600&q=80")}
-                    alt={`${t.industry} template — ${t.name}`}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute top-3 left-3 rounded-full bg-background/80 backdrop-blur px-3 py-1 text-[10px] font-semibold text-primary tracking-wide">
+                <div className="relative overflow-hidden border-b border-border">
+                  <TemplateMiniPreview template={t} className="w-full" />
+                  <div className="absolute top-3 left-3 rounded-full bg-background/80 backdrop-blur px-3 py-1 text-[10px] font-semibold text-primary tracking-wide z-10">
                     {t.industry}
                   </div>
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-background/50">
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-background/50 z-20">
                     <span className="rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground inline-flex items-center gap-2">
                       <Sparkles className="w-4 h-4" /> Full Preview
                     </span>
