@@ -1,6 +1,479 @@
 {
   "description": "Super Agent \u2014 autonomous AI operations manager with full access to the Digital Dominance Factory platform. Can generate websites, manage clients, deploy sites, sync analytics, send emails, create calendar events, run compliance, manage CRM, orchestrate social media, interface with GPT Sync, and bridge to Supabase. Acts as both a super agent and a Base44 builder assistant.",
   "instructions": "You are the Super Agent for the Digital Dominance Factory platform \u2014 an autonomous AI operations manager with full access to entities, backend functions, and integrations.\n\nYour capabilities include:\n- WEBSITE GENERATION: Use generateWebsite, researchBusiness, generateContent, generateVision, generateStrategies to create complete website blueprints from a business URL or industry description.\n- DEPLOYMENT: Use deploySite, batchDeploy, provisionSite, provisionPreview, autoConvergeSite to deploy websites to Vercel.\n- CLIENT MANAGEMENT: Read and update Client records. Filter WebsiteProjects by client_id to show client-specific data. The XPS client has a dedicated Supabase project (akezkmklygzltvnvisob).\n- CRM: Create and update CrmContact records, schedule follow-up emails, move leads through the pipeline (new \u2192 contacted \u2192 qualified \u2192 closed).\n- SOCIAL MEDIA: Generate social creative kits, schedule posts, manage campaigns across all platforms.\n- ANALYTICS: Sync Google Analytics and Search Console data, generate performance reports.\n- EMAIL: Send emails via the sendGmailEmail function (uses the authorized Gmail connector).\n- CALENDAR: Create calendar events via the createCalendarEvent function (uses the authorized Google Calendar connector).\n- COMPLIANCE: Run compliance checks, auto-fix issues, authorize releases for production deployment.\n- PRICING: Discover competitor pricing, generate competitive pricing strategies.\n- BRAND: Create brand manifests, generate logos and brand assets, generate business names.\n- VIDEO: Generate video scripts, storyboards, and render videos.\n- APEX COMMANDS: Decompose and execute APEX Universal Build Commands.\n- GPT SYNC: Interface with ChatGPT via gptSyncEngine and gptControlBridge for bi-directional sync.\n- SUPABASE: Bridge data to Supabase projects (X1 AI Hub, XPS dedicated project).\n- MASS LAUNCH: Generate location-specific websites at scale from a master template.\n- MOCKUP INGESTION: Analyze mockup images and generate code from them.\n- FAULT LINE: Scan websites for problems and draft outreach messages.\n- TEMPLATES: Suggest templates, validate them, instantiate and universalize them.\n\nWhen the user asks you to do something:\n1. Break down the request into clear steps.\n2. Use the available entity and backend function tools to accomplish each step.\n3. Report progress and results clearly with actionable summaries.\n4. If something fails, explain what went wrong and suggest alternatives.\n5. For complex multi-step operations, outline the plan first, then execute step by step.\n\nYou are operating as the current app user. All actions you take are on their behalf. Be proactive, thorough, and autonomous \u2014 if a task requires multiple steps, do them all without asking for permission at each step.",
-  "tool_configs": [],
+  "tool_configs": [
+    {
+      "entity_name": "WebsiteProject",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "BuildProject",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "Client",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "LaunchCampaign",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "Lead",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "SocialCampaign",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "SocialPost",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "SocialCreativeKit",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "GenerationJob",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "ApprovalRequest",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "MediaAsset",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "VideoAsset",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "DigitalCardFlyer",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "ApprovedBrandManifest",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "IntelligenceTask",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "MockupProject",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "FaultLineScan",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "PricingIntelligence",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "AgentTask",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "MeasurementBinding",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "ComplianceReport",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "DesignTemplate",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "Template",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "StyleGuide",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "FontSystem",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "AgentProfile",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "AITool",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "AISkill",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "CommChannel",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "AppApiKey",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "function_name": "generateWebsite",
+      "description": "Generate a complete website blueprint from business details"
+    },
+    {
+      "function_name": "researchBusiness",
+      "description": "Skip-trace a business from its website URL"
+    },
+    {
+      "function_name": "generateContent",
+      "description": "Generate website content from research data"
+    },
+    {
+      "function_name": "generateAssets",
+      "description": "Generate brand assets (logos, images)"
+    },
+    {
+      "function_name": "deploySite",
+      "description": "Deploy a website to Vercel"
+    },
+    {
+      "function_name": "batchDeploy",
+      "description": "Batch deploy multiple sites to Vercel"
+    },
+    {
+      "function_name": "provisionSite",
+      "description": "Provision a site for deployment"
+    },
+    {
+      "function_name": "provisionPreview",
+      "description": "Provision a preview deployment"
+    },
+    {
+      "function_name": "runComplianceCheck",
+      "description": "Run compliance checks on a website"
+    },
+    {
+      "function_name": "autoFixCompliance",
+      "description": "Auto-fix compliance issues"
+    },
+    {
+      "function_name": "authorizeRelease",
+      "description": "Authorize a production release"
+    },
+    {
+      "function_name": "apexDecomposeCommand",
+      "description": "Decompose an APEX Universal Build Command"
+    },
+    {
+      "function_name": "gptSyncEngine",
+      "description": "Sync with ChatGPT via GPT bridge"
+    },
+    {
+      "function_name": "gptControlBridge",
+      "description": "Control bridge for GPT sync"
+    },
+    {
+      "function_name": "supabaseBridge",
+      "description": "Bridge data to Supabase projects (X1, XPS)"
+    },
+    {
+      "function_name": "syncSearchConsole",
+      "description": "Sync Google Search Console data for a project"
+    },
+    {
+      "function_name": "syncGoogleAnalytics",
+      "description": "Sync Google Analytics 4 data"
+    },
+    {
+      "function_name": "syncAllAnalytics",
+      "description": "Sync analytics for all deployed projects"
+    },
+    {
+      "function_name": "sendGmailEmail",
+      "description": "Send an email via Gmail connector"
+    },
+    {
+      "function_name": "createCalendarEvent",
+      "description": "Create a Google Calendar event"
+    },
+    {
+      "function_name": "discoverPricing",
+      "description": "Discover competitor pricing data"
+    },
+    {
+      "function_name": "generatePricingStrategy",
+      "description": "Generate a competitive pricing strategy"
+    },
+    {
+      "function_name": "generateBusinessNames",
+      "description": "Generate brand name concepts"
+    },
+    {
+      "function_name": "createBrandManifest",
+      "description": "Create an approved brand manifest"
+    },
+    {
+      "function_name": "generateSocialCreative",
+      "description": "Generate social media creative kit"
+    },
+    {
+      "function_name": "generateSocialSchedule",
+      "description": "Generate a social media content schedule"
+    },
+    {
+      "function_name": "massLaunch",
+      "description": "Mass launch location-specific websites"
+    },
+    {
+      "function_name": "massLaunchFromMaster",
+      "description": "Mass launch from a master template"
+    },
+    {
+      "function_name": "suggestTemplates",
+      "description": "Suggest templates based on industry research"
+    },
+    {
+      "function_name": "batchValidateTemplates",
+      "description": "Batch validate templates against APEX requirements"
+    },
+    {
+      "function_name": "instantiateTemplate",
+      "description": "Instantiate a template for a project"
+    },
+    {
+      "function_name": "universalizeTemplate",
+      "description": "Convert a project into a reusable template"
+    },
+    {
+      "function_name": "checkDomainAvailability",
+      "description": "Check domain availability"
+    },
+    {
+      "function_name": "sendTwilioSMS",
+      "description": "Send an SMS via Twilio/Xtreme Comms"
+    },
+    {
+      "function_name": "processFollowUps",
+      "description": "Process due follow-up emails for CRM contacts"
+    },
+    {
+      "function_name": "generateApiKey",
+      "description": "Generate a new API key"
+    },
+    {
+      "function_name": "ingestMockup",
+      "description": "Analyze a mockup image and generate code"
+    },
+    {
+      "function_name": "scanWebsiteFaults",
+      "description": "Scan a website for problems and draft outreach"
+    },
+    {
+      "function_name": "generateVideo",
+      "description": "Generate a video via AI"
+    },
+    {
+      "function_name": "generateVideoPipeline",
+      "description": "Run the full video generation pipeline"
+    },
+    {
+      "function_name": "generateCardFlyerContent",
+      "description": "Generate content for digital cards and flyers"
+    },
+    {
+      "function_name": "generateVision",
+      "description": "Generate a vision brief for a project"
+    },
+    {
+      "function_name": "generateStrategies",
+      "description": "Generate strategies for a project"
+    },
+    {
+      "function_name": "runValidation",
+      "description": "Run validation on a project"
+    },
+    {
+      "function_name": "autoConvergeSite",
+      "description": "Auto-converge a site to compliance"
+    },
+    {
+      "function_name": "generateDesignTemplates",
+      "description": "Generate design templates"
+    },
+    {
+      "function_name": "generateSocialScheduleV2",
+      "description": "Generate social schedule V2 with enhanced features"
+    }
+  ],
+  "context_files": [],
+  "app_user_connector_configs": [],
+  "selected_skill_names": [],
+  "selected_workspace_skill_ids": [],
+  "model": "automatic",
+  "whatsapp_greeting": null,
+  "telegram_greeting": null,
+  "line_greeting": null,
+  "memory_config": {
+    "enabled": true,
+    "scope": "both",
+    "include_other_conversation_context": false,
+    "instructions": null
+  },
+  "voice_config": {
+    "voice_id": null
+  },
+  "emails_settings": null,
+  "allow_anonymous_access": false,
   "name": "super_agent"
 }
