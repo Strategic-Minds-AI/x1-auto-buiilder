@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import ReactMarkdown from "react-markdown";
 import {
   Bot, Send, X, Plus, Loader2,
-  ChevronDown, ChevronRight, Wrench, CheckCircle, AlertCircle, Clock, Sparkles
+  ChevronDown, ChevronRight, Wrench, CheckCircle, AlertCircle, Clock, Sparkles, MessageCircle
 } from "lucide-react";
 
 const AGENT_NAME = "super_agent";
@@ -99,6 +99,9 @@ export default function SuperAgentChat() {
             </div>
           </div>
           <div className="flex items-center gap-1">
+            <a href={base44.agents.getWhatsAppConnectURL(AGENT_NAME)} target="_blank" title="Connect via WhatsApp" className="p-1.5 rounded-lg text-white/60 hover:text-[#25D366] hover:bg-white/10 transition">
+              <MessageCircle className="w-4 h-4" />
+            </a>
             <button onClick={startNewConversation} title="New conversation" className="p-1.5 rounded-lg text-white/60 hover:text-[#00d4ff] hover:bg-white/10 transition">
               <Plus className="w-4 h-4" />
             </button>

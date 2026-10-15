@@ -84,6 +84,7 @@ const EXTERNAL_MODULES = [
   { to: "/fault-line", icon: AlertTriangle, label: "Fault Line Scanner" },
   { to: "/client-portal", icon: Building2, label: "Client Portals" },
   { to: "/universal-generator", icon: Wand2, label: "Universal Generator" },
+  { to: "/agent-instructions", icon: SlidersHorizontal, label: "Agent Instructions" },
 ];
 
 export default function PortalShell({ activeTab, onTabChange, onNew, children }) {

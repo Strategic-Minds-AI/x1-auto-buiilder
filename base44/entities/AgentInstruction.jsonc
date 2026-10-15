@@ -1,0 +1,63 @@
+{
+  "name": "AgentInstruction",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Short label for this instruction"
+    },
+    "instruction_text": {
+      "type": "string",
+      "description": "The full custom instruction text \u2014 the Super Agent reads and applies this to every request"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Only active instructions are applied by the Super Agent"
+    },
+    "priority": {
+      "type": "number",
+      "default": 0,
+      "description": "Higher priority instructions are applied first"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "behavior",
+        "restriction",
+        "automation",
+        "personality",
+        "workflow",
+        "custom"
+      ],
+      "default": "custom",
+      "description": "Instruction category for grouping"
+    }
+  },
+  "required": [
+    "title",
+    "instruction_text"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
