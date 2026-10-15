@@ -235,7 +235,7 @@ function QuickStat({ label, value, icon: Icon }) {
         <Icon className="w-4 h-4 text-[#00d4ff]" />
         <span className="text-xs font-semibold text-slate-400">{label}</span>
       </div>
-      <p className="text-2xl font-black text-slate-900">{loading ? '...' : value}</p>
+      <p className="text-2xl font-black text-slate-900">{value}</p>
     </div>
   );
 }

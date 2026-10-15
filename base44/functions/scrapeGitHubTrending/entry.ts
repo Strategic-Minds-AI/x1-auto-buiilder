@@ -1,5 +1,4 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
-import { secrets } from 'base44:runtime';
 import { GITHUB_SCAN_TOPICS } from '../../shared/freeLibrary.js';
 
 // Scrape GitHub trending repos for passive intelligence ingest
@@ -15,25 +14,27 @@ export default async function(req) {
     const maxPerTopic = Math.min(body.maxPerTopic || 5, 10);
     const topics = body.topics || GITHUB_SCAN_TOPICS;
 
-    const yesterday = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     const allRepos = [];
     const errors = [];
 
-    // Use GitHub PAT from secrets for authenticated requests (5000/hr vs 60/hr unauthenticated)
-    const githubToken = secrets.get('MY_PERSONAL_ACCESS_TOKEN');
-    const authHeaders = { Accept: 'application/vnd.github.v3+json' };
-    if (githubToken) authHeaders['Authorization'] = `Bearer ${githubToken}`;
+    // Use the authorized GitHub connector for authenticated API access
+    const authHeaders = { Accept: 'application/vnd.github.v3+json', 'User-Agent': 'DigitalDominanceFactory/1.0' };
+    try {
+      const conn = await base44.asServiceRole.connectors.getConnection('github');
+      if (conn?.accessToken) authHeaders['Authorization'] = `Bearer ${conn.accessToken}`;
+    } catch {}
 
-    // Scan each topic — GitHub search API, 1 request per topic
+    // Scan each topic individually — GitHub search API, 1 request per topic (30/min limit)
     for (const topic of topics) {
       try {
-        const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(topic.query)}+created:>${yesterday}&sort=stars&order=desc&per_page=${maxPerTopic}`;
+        const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(topic.query)}+stars:>100&sort=stars&order=desc&per_page=${maxPerTopic}`;
         const res = await fetch(url, {
           headers: authHeaders,
           signal: AbortSignal.timeout(15000),
         });
         if (!res.ok) {
-          errors.push({ topic: topic.query, error: `GitHub API ${res.status}` });
+          const errText = await res.text().catch(() => '');
+          errors.push({ topic: topic.query, error: `GitHub API ${res.status}: ${errText.slice(0, 150)}` });
           continue;
         }
         const data = await res.json();
