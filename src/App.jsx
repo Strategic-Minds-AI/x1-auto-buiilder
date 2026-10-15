@@ -20,6 +20,7 @@ import LogoWorkshop from '@/pages/LogoWorkshop';
 import ProjectTimeline from '@/pages/ProjectTimeline';
 import AssetRepository from '@/pages/AssetRepository';
 import CampaignMonitor from '@/pages/CampaignMonitor';
+import LaunchMonitorPage from '@/components/portal/LaunchMonitor';
 import StyleGuideEditor from '@/pages/StyleGuideEditor';
 import PremiumDesignLibrary from '@/pages/PremiumDesignLibrary';
 import Login from '@/pages/Login';
@@ -57,6 +58,7 @@ function App() {
               <Route path="/project-timeline" element={<ProjectTimeline />} />
               <Route path="/asset-repository" element={<AssetRepository />} />
               <Route path="/campaign-monitor" element={<CampaignMonitor />} />
+              <Route path="/launch-monitor" element={<div className="portal-light min-h-screen bg-white"><LaunchMonitorPage /></div>} />
               <Route path="/style-guide-editor" element={<StyleGuideEditor />} />
               <Route path="/design-library" element={<div className="portal-light min-h-screen bg-white"><PremiumDesignLibrary /></div>} />
             </Route>

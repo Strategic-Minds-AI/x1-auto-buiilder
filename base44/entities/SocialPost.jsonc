@@ -1,0 +1,114 @@
+{
+  "name": "SocialPost",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "WebsiteProject id this post belongs to"
+    },
+    "campaign_id": {
+      "type": "string",
+      "description": "LaunchCampaign id this post is part of"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "facebook",
+        "instagram",
+        "twitter",
+        "linkedin",
+        "tiktok"
+      ],
+      "description": "Social media platform"
+    },
+    "content": {
+      "type": "string",
+      "description": "Post content / caption text"
+    },
+    "hashtags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Post hashtags"
+    },
+    "scheduled_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the post is scheduled to go live"
+    },
+    "day_number": {
+      "type": "number",
+      "description": "Day number in the 30-day schedule (1-30)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "scheduled",
+        "posted",
+        "failed"
+      ],
+      "default": "draft",
+      "description": "Post status"
+    },
+    "post_url": {
+      "type": "string",
+      "description": "URL of the posted content after publishing"
+    },
+    "image_prompt": {
+      "type": "string",
+      "description": "Prompt for generating the post image"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Generated post image URL"
+    }
+  },
+  "required": [
+    "project_id",
+    "platform",
+    "content"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

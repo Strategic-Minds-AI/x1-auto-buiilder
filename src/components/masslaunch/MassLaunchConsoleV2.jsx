@@ -5,14 +5,14 @@ import LocationPicker from "@/components/masslaunch/LocationPicker";
 import CompliancePanel from "@/components/masslaunch/CompliancePanel";
 import {
   Rocket, Globe, Building2, Search, Loader2, CheckCircle2, Library,
-  CheckSquare, Square, Layers, ShieldCheck,
+  CheckSquare, Square, Layers, ShieldCheck, Crown,
 } from "lucide-react";
 
 const goals = ["More qualified leads", "Online bookings", "Phone calls", "Quote requests", "Brand awareness"];
 const tones = ["Professional", "Friendly", "Premium", "Approachable", "Bold"];
 
 export default function MassLaunchConsoleV2({ onDone }) {
-  const [mode, setMode] = useState("generate"); // "generate" | "existing"
+  const [mode, setMode] = useState("generate"); // "generate" | "existing" | "master"
   const [form, setForm] = useState({
     businessName: "",
     businessWebsiteUrl: "",
@@ -25,11 +25,15 @@ export default function MassLaunchConsoleV2({ onDone }) {
   const [launching, setLaunching] = useState(false);
   const [generatedProjects, setGeneratedProjects] = useState([]);
   const [existingProjects, setExistingProjects] = useState([]);
+  const [masterProjects, setMasterProjects] = useState([]);
+  const [selectedMaster, setSelectedMaster] = useState(null);
+  const [launchingMaster, setLaunchingMaster] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (mode === "existing") loadExisting();
+    if (mode === "master") loadMasterProjects();
   }, [mode]);
 
   const loadExisting = async () => {
@@ -40,6 +44,33 @@ export default function MassLaunchConsoleV2({ onDone }) {
       );
       setExistingProjects(res.items || []);
     } catch { setExistingProjects([]); }
+  };
+
+  const loadMasterProjects = async () => {
+    try {
+      const res = await base44.entities.WebsiteProject.filter(
+        { status: { $in: ["preview_ready", "approved"] }, content: { $exists: true } },
+        { sort: "-created_date", limit: 50, fields: ["business_name", "industry", "location", "status", "content"] }
+      );
+      setMasterProjects(res.items || []);
+    } catch { setMasterProjects([]); }
+  };
+
+  const launchFromMaster = async () => {
+    if (!selectedMaster || locations.length === 0) return;
+    setLaunchingMaster(true); setError("");
+    try {
+      const res = await base44.functions.invoke("massLaunchFromMaster", {
+        masterProjectId: selectedMaster,
+        locations,
+      });
+      setGeneratedProjects(res.data.projects || []);
+      setSelectedIds((res.data.projects || []).map((p) => p.id));
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || "Launch failed");
+    } finally {
+      setLaunchingMaster(false);
+    }
   };
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
@@ -110,6 +141,12 @@ export default function MassLaunchConsoleV2({ onDone }) {
         >
           <Library className="w-4 h-4" /> Select Existing Projects
         </button>
+        <button
+          onClick={() => setMode("master")}
+          className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${mode === "master" ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground hover:text-foreground"}`}
+        >
+          <Crown className="w-4 h-4" /> Auto Builder Master
+        </button>
       </div>
 
       {/* Generate mode */}
@@ -152,6 +189,51 @@ export default function MassLaunchConsoleV2({ onDone }) {
             >
               {launching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Rocket className="w-4 h-4" />}
               Launch {locations.length} Site{locations.length === 1 ? "" : "s"}
+            </button>
+            {error && <div className="rounded-lg border border-destructive/40 bg-destructive/10 text-destructive text-sm p-3">{error}</div>}
+          </div>
+
+          <LocationPicker selected={locations} onChange={setLocations} />
+        </div>
+      )}
+
+      {/* Master Site mode — launch from an Auto Builder approved site */}
+      {mode === "master" && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+            <div className="flex items-center gap-2 mb-1">
+              <Crown className="w-4 h-4 text-primary" />
+              <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Master Site from Auto Builder</div>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Select a completed Auto Builder site as the master template. The system will generate location-tailored variants for every selected location.
+            </p>
+            {masterProjects.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-6">No completed sites found. Build and save a site first.</p>
+            ) : (
+              <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                {masterProjects.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => setSelectedMaster(p.id)}
+                    className={`w-full flex items-center gap-3 rounded-xl border p-3 text-left transition ${selectedMaster === p.id ? "border-primary bg-primary/10" : "border-border hover:border-primary/40"}`}
+                  >
+                    {selectedMaster === p.id ? <CheckSquare className="w-4 h-4 text-primary shrink-0" /> : <Square className="w-4 h-4 text-muted-foreground shrink-0" />}
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold truncate">{p.business_name || p.industry}</div>
+                      <div className="text-xs text-muted-foreground truncate">{p.industry} {p.location ? `· ${p.location}` : ""}</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+            <button
+              onClick={launchFromMaster}
+              disabled={launchingMaster || !selectedMaster || locations.length === 0}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-bold text-accent-foreground disabled:opacity-50"
+            >
+              {launchingMaster ? <Loader2 className="w-4 h-4 animate-spin" /> : <Crown className="w-4 h-4" />}
+              Launch {locations.length} Location Variant{locations.length === 1 ? "" : "s"}
             </button>
             {error && <div className="rounded-lg border border-destructive/40 bg-destructive/10 text-destructive text-sm p-3">{error}</div>}
           </div>

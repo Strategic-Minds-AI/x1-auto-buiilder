@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Wand2, Library, Globe, LayoutTemplate, Rocket, LayoutGrid, Cable,
   Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown,
-  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table
+  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -20,6 +20,7 @@ const NAV_GROUPS = [
     label: "Launch",
     items: [
       { tab: "launch", icon: Rocket, label: "Mass Launch" },
+      { tab: "monitor", icon: Activity, label: "Launch Monitor" },
       { tab: "campaigns", icon: Rocket, label: "Campaigns" },
       { tab: "sheets", icon: Table, label: "Sheets Sync" },
     ],

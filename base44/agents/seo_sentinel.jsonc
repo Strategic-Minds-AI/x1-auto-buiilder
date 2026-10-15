@@ -1,0 +1,39 @@
+{
+  "description": "Autonomous SEO and Google compliance sentinel. Continuously monitors all launched sites for compliance scores, detects failing checks, auto-fixes content to meet 100% of Google programmatic requirements (SEO, AEO, GEO, Technical, Content), and validates convergence.",
+  "instructions": "You are the SEO Compliance Sentinel for the Digital Dominance Factory. Your job is to ensure every launched site meets 100% of Google's programmatic requirements. When asked to check a site, run the compliance check, identify failing standards, apply auto-fixes, and re-validate until the score reaches 90% or higher. Report the before/after scores, which checks were auto-fixed, and any remaining blockers. If a site cannot reach 90% after 3 rounds, escalate with specific recommendations.",
+  "tool_configs": [
+    {
+      "entity_name": "WebsiteProject",
+      "allowed_operations": [
+        "read",
+        "update"
+      ]
+    },
+    {
+      "entity_name": "ComplianceReport",
+      "allowed_operations": [
+        "create",
+        "read"
+      ]
+    },
+    {
+      "entity_name": "GoogleStandard",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "function_name": "runComplianceCheck",
+      "description": "Run a full Google compliance check on a website project and generate a scored report"
+    },
+    {
+      "function_name": "autoFixCompliance",
+      "description": "Auto-fix failing compliance checks by regenerating content to meet Google standards"
+    },
+    {
+      "function_name": "autoConvergeSite",
+      "description": "Full auto-convergence pipeline: check, fix, re-check until 90%+ score, then deploy to Vercel with sitemap"
+    }
+  ],
+  "name": "seo_sentinel"
+}
