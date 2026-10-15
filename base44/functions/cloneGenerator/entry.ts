@@ -41,7 +41,7 @@ export default async function (req: Request): Promise<Response> {
         const project = await base44.entities.CloneProject.create({
           source_url: url,
           source_title: title,
-          raw_html: html.substring(0, 50000),
+          raw_html: html.substring(0, 15000),
           status: "cloned",
           industry: body.industry || "",
         });
