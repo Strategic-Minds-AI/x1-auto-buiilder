@@ -1,6 +1,6 @@
-// 20 distinct website layout renderers. Each produces a structurally different
-// mini-website preview at 760×460. Layouts are selected by the template's
-// `layout` field. Every layout uses the template's real brand colors and copy.
+// 20 distinct website layout renderers. Each produces a VISUALLY DIFFERENT
+// mini-website preview at 760×460. Layouts differ in structure, typography,
+// background treatment, and visual elements — not just rearrangement.
 
 const FS = (n) => `font-size:calc(${n}px * var(--vg-font-scale,1))`;
 
@@ -16,13 +16,14 @@ function onAccent(accent, tone) {
   return isDark(tone) ? '#ffffff' : (isDark(accent) ? '#ffffff' : '#0b1523');
 }
 
-function navBar(t) {
+function navBar(t, opts = {}) {
   const dark = isDark(t.tone);
   const border = dark ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,.08)';
   const muted = dark ? 'rgba(255,255,255,.6)' : 'rgba(0,0,0,.55)';
   const name = (t.name || 'Brand').split(' ');
+  const pad = opts.pad || '14px 32px';
   return `
-    <div style="display:flex;align-items:center;padding:14px 32px;gap:20px;border-bottom:1px solid ${border}">
+    <div style="display:flex;align-items:center;padding:${pad};gap:20px;border-bottom:1px solid ${border}">
       <span style="font-weight:800;${FS(14)};color:${t.ink};letter-spacing:-.02em">${name[0]}<b style="color:${t.accent}">${name.slice(1).join(' ') ? ' ' + name.slice(1).join(' ') : ''}</b></span>
       <div style="flex:1"></div>
       <span style="${FS(11)};color:${muted};font-weight:600">Services</span>
@@ -38,14 +39,14 @@ function heroImg(t, w, h) {
   return `<img src="https://images.unsplash.com/${t.photo}?w=${w}&q=80" style="width:100%;height:100%;object-fit:cover" />`;
 }
 
-// ── 1. CENTERED ──────────────────────────────────────────────
+// ── 1. CENTERED — big centered headline, lots of whitespace ────
 function layoutCentered(t) {
   const dark = isDark(t.tone);
   return `<div class="vg-screen" style="background:${t.tone};color:${t.ink};font-family:Inter,sans-serif;display:flex;flex-direction:column">
     ${navBar(t)}
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px 60px">
       ${t.eyebrow ? `<div style="${FS(10)};font-weight:800;letter-spacing:.25em;text-transform:uppercase;color:${t.accent};margin-bottom:14px">${t.eyebrow}</div>` : ''}
-      <div style="${FS(32)};font-weight:900;line-height:1.05;letter-spacing:-.03em;max-width:520px;margin-bottom:14px">${t.head || t.name}</div>
+      <div style="${FS(36)};font-weight:900;line-height:1.05;letter-spacing:-.03em;max-width:520px;margin-bottom:14px">${t.head || t.name}</div>
       <div style="${FS(13)};line-height:1.6;opacity:.7;max-width:400px;margin-bottom:22px">${t.sub || ''}</div>
       <div style="display:flex;gap:12px">
         <span style="padding:12px 28px;border-radius:9999px;background:${t.accent};color:${onAccent(t.accent, t.tone)};${FS(12)};font-weight:800">${t.cta || 'Get Started'}</span>
@@ -55,7 +56,7 @@ function layoutCentered(t) {
   </div>`;
 }
 
-// ── 2. SPLIT LEFT (text left, image right) ────────────────────
+// ── 2. SPLIT LEFT — text left, image right, hard 50/50 split ────
 function layoutSplitLeft(t) {
   const dark = isDark(t.tone);
   const border = dark ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,.08)';
@@ -76,7 +77,7 @@ function layoutSplitLeft(t) {
   </div>`;
 }
 
-// ── 3. SPLIT RIGHT (image left, text right) ───────────────────
+// ── 3. SPLIT RIGHT — image left, text right (mirror of split-left) ──
 function layoutSplitRight(t) {
   const dark = isDark(t.tone);
   const border = dark ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,.08)';
@@ -96,7 +97,7 @@ function layoutSplitRight(t) {
   </div>`;
 }
 
-// ── 4. FULLSCREEN IMAGE (image fills, text overlay) ───────────
+// ── 4. FULLSCREEN IMAGE — full-bleed photo with dark gradient overlay ──
 function layoutFullscreenImage(t) {
   const bg = t.photo ? `https://images.unsplash.com/${t.photo}?w=800&q=80` : '';
   return `<div class="vg-screen" style="position:relative;font-family:Inter,sans-serif;overflow:hidden;background:${t.tone}">
@@ -115,7 +116,7 @@ function layoutFullscreenImage(t) {
   </div>`;
 }
 
-// ── 5. VIDEO BG (gradient + play indicator) ───────────────────
+// ── 5. VIDEO BG — gradient + play button, no nav bar, centered play ──
 function layoutVideoBg(t) {
   return `<div class="vg-screen" style="background:linear-gradient(135deg,${t.tone} 0%,${t.accent}33 100%);color:${t.ink};font-family:Inter,sans-serif;display:flex;flex-direction:column;position:relative;overflow:hidden">
     <div style="position:absolute;top:-20%;right:-10%;width:300px;height:300px;border-radius:50%;background:${t.accent}22;filter:blur(60px)"></div>
@@ -132,7 +133,7 @@ function layoutVideoBg(t) {
   </div>`;
 }
 
-// ── 6. ASYMMETRIC (offset elements) ──────────────────────────
+// ── 6. ASYMMETRIC — offset rotated image card, overlapping elements ──
 function layoutAsymmetric(t) {
   const dark = isDark(t.tone);
   return `<div class="vg-screen" style="background:${t.tone};color:${t.ink};font-family:Inter,sans-serif;display:flex;flex-direction:column;position:relative;overflow:hidden">
@@ -153,7 +154,7 @@ function layoutAsymmetric(t) {
   </div>`;
 }
 
-// ── 7. PRODUCT FOCUS (product centered) ───────────────────────
+// ── 7. PRODUCT FOCUS — centered product image card, gallery-style ──
 function layoutProductFocus(t) {
   const dark = isDark(t.tone);
   return `<div class="vg-screen" style="background:${t.tone};color:${t.ink};font-family:Inter,sans-serif;display:flex;flex-direction:column">
@@ -172,7 +173,7 @@ function layoutProductFocus(t) {
   </div>`;
 }
 
-// ── 8. GRID CARDS (feature card grid) ─────────────────────────
+// ── 8. GRID CARDS — 4 feature cards in a row, card-heavy ───────
 function layoutGridCards(t) {
   const dark = isDark(t.tone);
   const cardBg = dark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.04)';
@@ -198,7 +199,7 @@ function layoutGridCards(t) {
   </div>`;
 }
 
-// ── 9. CAROUSEL (slider indicators) ───────────────────────────
+// ── 9. CAROUSEL — slider with dots and arrows, image panel ─────
 function layoutCarousel(t) {
   const dark = isDark(t.tone);
   return `<div class="vg-screen" style="background:${t.tone};color:${t.ink};font-family:Inter,sans-serif;display:flex;flex-direction:column">
@@ -226,12 +227,12 @@ function layoutCarousel(t) {
   </div>`;
 }
 
-// ── 10. MINIMAL (ultra clean) ─────────────────────────────────
+// ── 10. MINIMAL — ultra-thin font, no button border, accent line ──
 function layoutMinimal(t) {
   return `<div class="vg-screen" style="background:${t.tone};color:${t.ink};font-family:Inter,sans-serif;display:flex;flex-direction:column">
     ${navBar(t)}
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;gap:20px">
-      <div style="${FS(36)};font-weight:200;line-height:1.1;letter-spacing:-.04em;max-width:500px">${t.head || t.name}</div>
+      <div style="${FS(42)};font-weight:200;line-height:1.1;letter-spacing:-.04em;max-width:500px">${t.head || t.name}</div>
       <div style="width:40px;height:2px;background:${t.accent}"></div>
       <div style="${FS(12)};opacity:.6;max-width:300px;line-height:1.6">${t.sub || ''}</div>
       <span style="padding:12px 30px;border-radius:0;background:${t.accent};color:${onAccent(t.accent, t.tone)};${FS(11)};font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-top:4px">${t.cta || 'Start'}</span>
@@ -239,7 +240,7 @@ function layoutMinimal(t) {
   </div>`;
 }
 
-// ── 11. MAGAZINE (editorial) ──────────────────────────────────
+// ── 11. MAGAZINE — serif italic, editorial, byline, feature tag ──
 function layoutMagazine(t) {
   const dark = isDark(t.tone);
   return `<div class="vg-screen" style="background:${t.tone};color:${t.ink};font-family:Georgia,serif;display:flex;flex-direction:column">
@@ -265,7 +266,7 @@ function layoutMagazine(t) {
   </div>`;
 }
 
-// ── 12. SIDEBAR (sidebar nav + content) ───────────────────────
+// ── 12. SIDEBAR — app dashboard with left nav + KPI cards + chart ──
 function layoutSidebar(t) {
   const dark = isDark(t.tone);
   const sideBg = dark ? 'rgba(0,0,0,.3)' : 'rgba(0,0,0,.04)';
@@ -292,7 +293,7 @@ function layoutSidebar(t) {
   </div>`;
 }
 
-// ── 13. STATS (data-driven) ───────────────────────────────────
+// ── 13. STATS — big numbers row, data-driven hero ──────────────
 function layoutStats(t) {
   const dark = isDark(t.tone);
   return `<div class="vg-screen" style="background:${t.tone};color:${t.ink};font-family:Inter,sans-serif;display:flex;flex-direction:column">
@@ -311,7 +312,7 @@ function layoutStats(t) {
   </div>`;
 }
 
-// ── 14. TESTIMONIAL (quote hero) ──────────────────────────────
+// ── 14. TESTIMONIAL — big quote mark, italic, avatar + stars ────
 function layoutTestimonial(t) {
   const dark = isDark(t.tone);
   return `<div class="vg-screen" style="background:${t.tone};color:${t.ink};font-family:Inter,sans-serif;display:flex;flex-direction:column">
@@ -333,7 +334,7 @@ function layoutTestimonial(t) {
   </div>`;
 }
 
-// ── 15. DASHBOARD PREVIEW (SaaS) ──────────────────────────────
+// ── 15. DASHBOARD — SaaS app preview with KPIs + bar chart ──────
 function layoutDashboard(t) {
   const dark = isDark(t.tone);
   const panelBg = dark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.03)';
@@ -366,7 +367,7 @@ function layoutDashboard(t) {
   </div>`;
 }
 
-// ── 16. LOGO WALL (trust badges) ──────────────────────────────
+// ── 16. LOGO WALL — trust badges row at bottom ─────────────────
 function layoutLogoWall(t) {
   const dark = isDark(t.tone);
   const logoStyle = `${FS(13)};font-weight:800;opacity:.4;letter-spacing:-.02em`;
@@ -384,7 +385,7 @@ function layoutLogoWall(t) {
   </div>`;
 }
 
-// ── 17. BOOKING (form in hero) ────────────────────────────────
+// ── 17. BOOKING — form panel on right with input fields ────────
 function layoutBooking(t) {
   const dark = isDark(t.tone);
   const inputBg = dark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.04)';
@@ -408,7 +409,7 @@ function layoutBooking(t) {
   </div>`;
 }
 
-// ── 18. GALLERY (image grid) ──────────────────────────────────
+// ── 18. GALLERY — 2×2 image grid on right, text on left ────────
 function layoutGallery(t) {
   const dark = isDark(t.tone);
   return `<div class="vg-screen" style="background:${t.tone};color:${t.ink};font-family:Inter,sans-serif;display:flex;flex-direction:column">
@@ -429,7 +430,7 @@ function layoutGallery(t) {
   </div>`;
 }
 
-// ── 19. TIMELINE (steps) ─────────────────────────────────────
+// ── 19. TIMELINE — 4-step horizontal process with connected dots ──
 function layoutTimeline(t) {
   const dark = isDark(t.tone);
   return `<div class="vg-screen" style="background:${t.tone};color:${t.ink};font-family:Inter,sans-serif;display:flex;flex-direction:column">
@@ -449,7 +450,7 @@ function layoutTimeline(t) {
   </div>`;
 }
 
-// ── 20. BENTO GRID ────────────────────────────────────────────
+// ── 20. BENTO — asymmetric grid with spanning cell + 4 small cells ──
 function layoutBento(t) {
   const dark = isDark(t.tone);
   const cellBg = dark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.03)';
