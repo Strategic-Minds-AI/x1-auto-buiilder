@@ -4,7 +4,7 @@ import { Bot, Palette, Cable, Rocket, BarChart3, Search, UserPlus, Sparkles, Git
 const MODULES = [
   { to: "/agent-orchestrator", icon: Bot, title: "Agent Orchestrator", desc: "Monitor autonomous agents and assign tasks" },
   { to: "/brand-assets", icon: Palette, title: "Brand Assets", desc: "Logos, color palettes, and marketing imagery" },
-  { to: "/gpt-sync-logs", icon: Cable, title: "GPT Sync Logs", desc: "Content validation and sync history" },
+  { to: "/gpt-sync-logs", icon: Cable, title: "GPT Sync Dashboard", desc: "Monitor AI validation and send generator commands" },
   { to: "/mass-launch-console", icon: Rocket, title: "Mass Launch Console", desc: "Batch deployments of website variants" },
   { to: "/analytics", icon: BarChart3, title: "Analytics Dashboard", desc: "Traffic, performance, and SEO health" },
   { to: "/research-hub", icon: Search, title: "Research Hub", desc: "Business research and competitor benchmarks" },

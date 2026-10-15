@@ -9,6 +9,7 @@ import TemplateLibrary from "@/components/portal/TemplateLibrary";
 import MassLaunchConsole from "@/components/portal/MassLaunchConsole";
 import Campaigns from "@/components/portal/Campaigns";
 import SyncEngine from "@/components/portal/SyncEngine";
+import GPTSyncDashboard from "@/components/portal/GPTSyncDashboard";
 import WebsiteLibrary from "@/components/portal/WebsiteLibrary";
 import SiteTemplates from "@/components/portal/SiteTemplates";
 import ModulesGrid from "@/components/portal/ModulesGrid";
@@ -252,7 +253,7 @@ export default function Portal() {
       {tab === "launch" && <MassLaunchConsole onDone={() => setTab("campaigns")} />}
       {tab === "campaigns" && <Campaigns />}
       {tab === "modules" && <ModulesGrid />}
-      {tab === "sync" && <SyncEngine />}
+      {tab === "sync" && <GPTSyncDashboard />}
     </div>
   );
 }
