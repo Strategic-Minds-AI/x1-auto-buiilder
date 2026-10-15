@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import MiniSitePreview from "@/components/shared/MiniSitePreview";
-import { Globe, ExternalLink, Loader2, Sparkles, CheckCircle2, Search } from "lucide-react";
+import WebsitePreviewModal from "@/components/portal/WebsitePreviewModal";
+import { Globe, ExternalLink, Loader2, Sparkles, CheckCircle2, Search, Eye, Send } from "lucide-react";
 import BackButton from "@/components/shared/BackButton";
 
 export default function WebsiteLibrary() {
@@ -11,6 +12,9 @@ export default function WebsiteLibrary() {
   const [done, setDone] = useState({});
   const [error, setError] = useState({});
   const [query, setQuery] = useState("");
+  const [previewSite, setPreviewSite] = useState(null);
+  const [comments, setComments] = useState({});
+  const [enhancing, setEnhancing] = useState({});
 
   useEffect(() => { load(); }, []);
 
@@ -40,6 +44,23 @@ export default function WebsiteLibrary() {
     }
   };
 
+  const enhanceFromCard = async (id) => {
+    const comment = comments[id];
+    if (!comment || !comment.trim()) return;
+    setEnhancing((e) => ({ ...e, [id]: true }));
+    setError((e) => ({ ...e, [id]: null }));
+    try {
+      const res = await base44.functions.invoke("enhanceWebsite", { projectId: id, comment: comment.trim() });
+      // Update the site in the list with enhanced content
+      setSites((prev) => prev.map((s) => s.id === id ? { ...s, content: res.data.content } : s));
+      setComments((c) => ({ ...c, [id]: "" }));
+    } catch (err) {
+      setError((e) => ({ ...e, [id]: err.response?.data?.error || err.message || "Enhancement failed" }));
+    } finally {
+      setEnhancing((e) => ({ ...e, [id]: false }));
+    }
+  };
+
   const filtered = sites.filter((s) => {
     const q = query.toLowerCase();
     return !q || (s.business_name || "").toLowerCase().includes(q) || (s.industry || "").toLowerCase().includes(q);
@@ -59,7 +80,7 @@ export default function WebsiteLibrary() {
           </div>
           <div>
             <h1 className="text-2xl font-black text-slate-900">Website Library</h1>
-            <p className="text-sm text-slate-500">Every generated site with a live style preview. Universalize any site into a reusable template.</p>
+            <p className="text-sm text-slate-500">Every generated site with a live preview. View, enhance with AI comments, or universalize into a template.</p>
           </div>
         </div>
         <div className="relative max-w-md mt-4">
@@ -78,7 +99,7 @@ export default function WebsiteLibrary() {
           <Globe className="w-12 h-12 mx-auto mb-4 text-slate-300" />
           <h3 className="font-black text-xl mb-2 text-slate-900">No websites yet</h3>
           <p className="text-slate-500 text-sm max-w-md mx-auto">
-            Generate a site in the Website Generator and it will appear here, ready to be universalized into a reusable template.
+            Generate a site in the Website Generator and it will appear here.
           </p>
         </div>
       ) : (
@@ -104,11 +125,35 @@ export default function WebsiteLibrary() {
                   </div>
                   <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-white/50 capitalize shrink-0">{s.status}</span>
                 </div>
-                {s.deploy_url && (
-                  <a href={s.deploy_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-[#00d4ff] hover:underline mb-3">
-                    <ExternalLink className="w-3 h-3" /> View live site
-                  </a>
-                )}
+
+                {/* View Live Site — always present */}
+                <button
+                  onClick={() => setPreviewSite(s)}
+                  className="inline-flex items-center gap-1.5 text-xs text-[#00d4ff] hover:underline mb-3"
+                >
+                  <Eye className="w-3.5 h-3.5" /> View Live Site
+                </button>
+
+                {/* Comment + AI Regenerate */}
+                <div className="mb-3">
+                  <textarea
+                    value={comments[s.id] || ""}
+                    onChange={(e) => setComments((c) => ({ ...c, [s.id]: e.target.value }))}
+                    placeholder="Comment: tell the AI how to enhance this site..."
+                    className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-[#00d4ff]/40 transition resize-none"
+                    rows={2}
+                  />
+                  <button
+                    onClick={() => enhanceFromCard(s.id)}
+                    disabled={enhancing[s.id] || !comments[s.id]?.trim()}
+                    className="mt-1.5 w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-white/5 border border-[#00d4ff]/20 px-3 py-2 text-xs font-bold text-[#00d4ff] hover:bg-[#00d4ff]/10 transition disabled:opacity-40"
+                  >
+                    {enhancing[s.id] ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                    {enhancing[s.id] ? "Enhancing..." : "Regenerate with AI"}
+                  </button>
+                  {error[s.id] && <p className="mt-1.5 text-xs text-red-400">{error[s.id]}</p>}
+                </div>
+
                 <div className="mt-auto">
                   <button
                     onClick={() => universalize(s.id)}
@@ -122,12 +167,15 @@ export default function WebsiteLibrary() {
                       <CheckCircle2 className="w-3.5 h-3.5" /> Saved to Site Templates
                     </p>
                   )}
-                  {error[s.id] && <p className="mt-2 text-xs text-red-400">{error[s.id]}</p>}
                 </div>
               </div>
             </div>
           ))}
         </div>
+      )}
+
+      {previewSite && (
+        <WebsitePreviewModal site={previewSite} onClose={() => setPreviewSite(null)} />
       )}
     </div>
   );

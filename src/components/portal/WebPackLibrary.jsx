@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import VisualTemplateRender from "@/components/shared/VisualTemplateRender";
-import { Loader2, Package, Search, Globe } from "lucide-react";
+import { Loader2, Package, Search, Globe, CheckCircle2 } from "lucide-react";
 import BackButton from "@/components/shared/BackButton";
 
-export default function WebPackLibrary() {
+export default function WebPackLibrary({ onSelect, selectedId: extSelectedId }) {
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [industry, setIndustry] = useState("All");
+  const [selectedId, setSelectedId] = useState(extSelectedId || null);
 
   useEffect(() => { load(); }, []);
 
@@ -77,7 +78,7 @@ export default function WebPackLibrary() {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
           {filtered.map((t) => (
-            <div key={t.id} className="rounded-2xl bg-[#0d1117] border border-white/8 overflow-hidden group hover:border-[#00d4ff]/30 transition-all duration-200">
+            <div key={t.id} className={`rounded-2xl bg-[#0d1117] border-2 overflow-hidden group transition-all duration-200 ${selectedId === t.id ? "border-[#00d4ff] shadow-[0_0_20px_rgba(0,212,255,0.2)]" : "border-white/8 hover:border-[#00d4ff]/30"}`}>
               <div className="p-4 flex items-center justify-center bg-black/20" style={{ minHeight: "280px" }}>
                 <VisualTemplateRender template={t} displayW={400} />
               </div>
@@ -90,9 +91,22 @@ export default function WebPackLibrary() {
                   <span className="text-[11px] text-white/50">{t.industry}</span>
                   {t.layout && <span className="rounded-full bg-[#00d4ff]/10 border border-[#00d4ff]/20 px-2 py-0.5 text-[10px] font-semibold text-[#00d4ff]">{t.layout}</span>}
                 </div>
-                <div className="flex gap-1.5">
+                <div className="flex gap-1.5 mb-2">
                   {["tone", "ink", "accent"].map((k) => t[k] && <div key={k} className="w-5 h-5 rounded border border-white/10" style={{ background: t[k] }} />)}
                 </div>
+                <button
+                  onClick={() => {
+                    setSelectedId(selectedId === t.id ? null : t.id);
+                    if (onSelect) onSelect({ type: "webpack", template: t, id: t.id });
+                  }}
+                  className={`w-full rounded-lg px-3 py-2 text-xs font-bold transition ${
+                    selectedId === t.id
+                      ? "bg-[#00d4ff] text-[#0a0e14]"
+                      : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  {selectedId === t.id ? "✓ Selected" : "Select Pack"}
+                </button>
               </div>
             </div>
           ))}

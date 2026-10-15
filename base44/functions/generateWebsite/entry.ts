@@ -7,10 +7,10 @@ export default async function(req) {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
     const { businessWebsiteUrl, industry, businessName } = await req.json();
-    if (!businessWebsiteUrl || !industry) {
-      return Response.json({ error: 'businessWebsiteUrl and industry are required' }, { status: 400 });
+    if (!industry) {
+      return Response.json({ error: 'industry is required' }, { status: 400 });
     }
-    const result = await buildWebsiteBlueprint(base44, { businessWebsiteUrl, industry, businessName });
+    const result = await buildWebsiteBlueprint(base44, { businessWebsiteUrl: businessWebsiteUrl || '', industry, businessName: businessName || '' });
     return Response.json(result);
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

@@ -19,7 +19,7 @@ export default function OnboardingWizard({ onComplete, prefill }) {
   });
   const prefilled = !!prefill;
   const set = (k) => (e) => setData({ ...data, [k]: e.target.value });
-  const canNext = step === 0 ? data.businessName && data.businessWebsiteUrl : true;
+  const canNext = step === 0 ? data.businessName : true;
 
   const next = () => (step < 3 ? setStep(step + 1) : onComplete(data));
   const back = () => setStep(Math.max(0, step - 1));
@@ -66,10 +66,10 @@ export default function OnboardingWizard({ onComplete, prefill }) {
             <Field label="Business Name" icon={Building2}>
               <input value={data.businessName} onChange={set("businessName")} placeholder="Acme Epoxy Co." className="dd-input pl-10" />
             </Field>
-            <Field label="Business Website" icon={Globe}>
+            <Field label="Business Website (optional)" icon={Globe}>
               <input value={data.businessWebsiteUrl} onChange={set("businessWebsiteUrl")} placeholder="yourbusiness.com" className="dd-input pl-10" />
             </Field>
-            <p className="text-xs text-muted-foreground">We'll skip-trace this site to extract your services, value props, and brand tone.</p>
+            <p className="text-xs text-muted-foreground">We'll skip-trace this site to extract your services, value props, and brand tone. Leave blank to generate from industry research.</p>
           </div>
         )}
 

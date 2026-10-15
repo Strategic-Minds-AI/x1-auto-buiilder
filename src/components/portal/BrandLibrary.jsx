@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import BackButton from "@/components/shared/BackButton";
-import { Loader2, Sparkles, Search, Wand2 } from "lucide-react";
+import { Loader2, Sparkles, Search, Wand2, CheckCircle2 } from "lucide-react";
 
-export default function BrandLibrary() {
+export default function BrandLibrary({ onSelect, selectedId: extSelectedId }) {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [generating, setGenerating] = useState(false);
   const [genStatus, setGenStatus] = useState("");
+  const [selectedId, setSelectedId] = useState(extSelectedId || null);
 
   useEffect(() => { load(); }, []);
 
@@ -98,7 +99,7 @@ export default function BrandLibrary() {
           {filtered.map((p) => {
             const tokens = p.content?.colorTokens || {};
             return (
-              <div key={p.id} className="rounded-2xl bg-[#0d1117] border border-white/8 overflow-hidden group hover:border-[#00d4ff]/30 transition-all duration-200">
+              <div key={p.id} className={`rounded-2xl bg-[#0d1117] border-2 overflow-hidden group transition-all duration-200 ${selectedId === p.id ? "border-[#00d4ff] shadow-[0_0_20px_rgba(0,212,255,0.2)]" : "border-white/8 hover:border-[#00d4ff]/30"}`}>
                 <div className="aspect-[16/9] overflow-hidden bg-white/5">
                   {p.hero_image_url ? (
                     <img src={p.hero_image_url} alt={p.business_name} className="w-full h-full object-cover" />
@@ -124,6 +125,19 @@ export default function BrandLibrary() {
                       </div>
                     ))}
                   </div>
+                  <button
+                    onClick={() => {
+                      setSelectedId(selectedId === p.id ? null : p.id);
+                      if (onSelect) onSelect({ type: "brand", content: p.content, logoUrl: p.logo_url, heroUrl: p.hero_image_url, name: p.business_name, id: p.id });
+                    }}
+                    className={`mt-3 w-full rounded-lg px-3 py-2 text-xs font-bold transition ${
+                      selectedId === p.id
+                        ? "bg-[#00d4ff] text-[#0a0e14]"
+                        : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    {selectedId === p.id ? "✓ Selected" : "Select Brand"}
+                  </button>
                 </div>
               </div>
             );

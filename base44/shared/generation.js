@@ -84,7 +84,22 @@ const RESEARCH_SCHEMA = {
 
 export async function buildWebsiteBlueprint(base44, params) {
   const { businessWebsiteUrl, industry, businessName } = params;
-  const businessResearch = await skipTraceBusiness(base44, businessWebsiteUrl, industry, businessName);
+  let businessResearch;
+  if (businessWebsiteUrl && businessWebsiteUrl.trim()) {
+    businessResearch = await skipTraceBusiness(base44, businessWebsiteUrl, industry, businessName);
+  } else {
+    businessResearch = {
+      businessName: businessName || '',
+      tagline: '',
+      services: [],
+      serviceArea: '',
+      valueProps: [],
+      phone: '', email: '', address: '', hours: '',
+      tone: 'professional',
+      differentiators: [],
+      note: 'No website provided — generating from industry research'
+    };
+  }
   const benchmark = await benchmarkIndustry(base44, industry);
   const content = await base44.asServiceRole.integrations.Core.InvokeLLM({
     model: 'claude-sonnet-5',
