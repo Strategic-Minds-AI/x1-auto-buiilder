@@ -45,6 +45,7 @@ import PerformanceDashboard from '@/pages/PerformanceDashboard';
 import MockupIngestion from '@/pages/MockupIngestion';
 import FaultLine from '@/pages/FaultLine';
 import ClientPortal from '@/pages/ClientPortal';
+import UniversalGenerator from '@/pages/UniversalGenerator';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
 function App() {
@@ -96,6 +97,7 @@ function App() {
               <Route path="/mockup-ingestion" element={<MockupIngestion />} />
               <Route path="/fault-line" element={<FaultLine />} />
               <Route path="/client-portal" element={<ClientPortal />} />
+              <Route path="/universal-generator" element={<UniversalGenerator />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>

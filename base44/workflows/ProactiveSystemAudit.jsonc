@@ -1,0 +1,45 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "proactive_system_audit",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_audit": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "systemAudit",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Run System Audit",
+            "description": "Proactive audit, optimization suggestions, and upgrade recommendations"
+          }
+        }
+      }
+    ]
+  },
+  "name": "Proactive System Audit",
+  "description": "Daily proactive system audit that analyzes the entire Digital Dominance Factory platform, identifies optimization opportunities, suggests upgrades, and creates intelligence tasks with actionable recommendations. Runs at 9 AM every day.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 9 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  }
+}
