@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import PortalShell from "@/components/portal/PortalShell";
 import OnboardingWizard from "@/components/portal/OnboardingWizard";
@@ -22,8 +23,10 @@ import { Link } from "react-router-dom";
 import { CheckCircle2, Plus, Loader2, Rocket, ExternalLink, Library } from "lucide-react";
 
 export default function Portal() {
+  const location = useLocation();
+  const prefill = location.state?.prefill;
   const [tab, setTab] = useState("generator");
-  const [step, setStep] = useState("onboarding");
+  const [step, setStep] = useState(prefill ? "onboarding" : "onboarding");
   const [phase, setPhase] = useState(0);
   const [form, setForm] = useState(null);
   const [result, setResult] = useState(null);
@@ -151,7 +154,7 @@ export default function Portal() {
 
       {tab === "generator" && (
         <>
-          {step === "onboarding" && <OnboardingWizard onComplete={generate} />}
+          {step === "onboarding" && <OnboardingWizard onComplete={generate} prefill={prefill} />}
           {step === "generating" && <ProgressStep phase={phase} />}
           {step === "review" && result && (
             <BlueprintReview

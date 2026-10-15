@@ -6,17 +6,18 @@ const tones = ["Professional", "Friendly", "Premium", "Approachable", "Bold"];
 
 const stepLabels = ["Business", "Industry", "Markets", "Goals"];
 
-export default function OnboardingWizard({ onComplete }) {
+export default function OnboardingWizard({ onComplete, prefill }) {
   const [step, setStep] = useState(0);
   const [industryQuery, setIndustryQuery] = useState("");
   const [data, setData] = useState({
-    businessName: "",
-    businessWebsiteUrl: "",
-    industry: industries[0],
-    serviceArea: "",
-    goal: goals[0],
-    tone: tones[0],
+    businessName: prefill?.businessName || "",
+    businessWebsiteUrl: prefill?.businessWebsiteUrl || "",
+    industry: prefill?.industry || industries[0],
+    serviceArea: prefill?.serviceArea || "",
+    goal: prefill?.goal || goals[0],
+    tone: prefill?.tone || tones[0],
   });
+  const prefilled = !!prefill;
   const set = (k) => (e) => setData({ ...data, [k]: e.target.value });
   const canNext = step === 0 ? data.businessName && data.businessWebsiteUrl : true;
 
@@ -28,8 +29,9 @@ export default function OnboardingWizard({ onComplete }) {
       <div className="text-center mb-8">
         <h1 className="font-display font-bold text-3xl sm:text-4xl">Onboarding</h1>
         <p className="mt-2 text-muted-foreground">
-          Answer a few questions and we'll skip-trace your business, analyze the top 5 sites in your industry, and
-          build your website + template library.
+          {prefilled
+            ? "Your business data was auto-filled from skip-tracing. Review and launch to generate your website."
+            : "Answer a few questions and we'll skip-trace your business, analyze the top 5 sites in your industry, and build your website + template library."}
         </p>
       </div>
 

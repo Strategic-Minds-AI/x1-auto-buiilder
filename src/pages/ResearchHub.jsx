@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Loader2, Building2, TrendingUp, Search, ChevronDown, ArrowRight,
-  Globe, Phone, Mail, MapPin, Clock, Sparkles, Plus, CheckCircle2,
+  Globe, Phone, Mail, MapPin, Clock, Sparkles, Plus, CheckCircle2, Zap,
 } from "lucide-react";
 
 const INDUSTRIES = [
@@ -13,6 +13,7 @@ const INDUSTRIES = [
 ];
 
 export default function ResearchHub() {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(null);
@@ -24,7 +25,6 @@ export default function ResearchHub() {
   const [researching, setResearching] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
-  const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState(null);
 
   useEffect(() => { loadProjects(); }, []);
@@ -55,6 +55,8 @@ export default function ResearchHub() {
         businessName,
       });
       setResult(res.data);
+      setSavedId(res.data?.projectId || null);
+      await loadProjects();
     } catch (err) {
       setError(err.response?.data?.error || err.message || "Research failed");
     } finally {
@@ -62,25 +64,11 @@ export default function ResearchHub() {
     }
   };
 
-  const pushToOnboarding = async () => {
-    if (!result) return;
-    setSaving(true);
-    try {
-      const rec = await base44.entities.WebsiteProject.create({
-        business_name: result.businessResearch?.businessName || businessName || "",
-        business_website: result.sourceUrl || url,
-        industry: result.industry || industry,
-        status: "researching",
-        business_research: result.businessResearch,
-        benchmark: result.benchmark,
-      });
-      setSavedId(rec.id);
-      await loadProjects();
-    } catch (err) {
-      setError(err.message || "Save failed");
-    } finally {
-      setSaving(false);
-    }
+  // Auto-saved on research completion — the backend creates the WebsiteProject.
+  // This just navigates to the portal with the pre-filled onboarding data.
+  const continueToOnboarding = () => {
+    if (!result?.onboardingPrefill) return;
+    navigate("/portal", { state: { prefill: result.onboardingPrefill } });
   };
 
   return (
@@ -165,19 +153,17 @@ export default function ResearchHub() {
                 </div>
                 <p className="text-sm text-white/40">Structured data extracted from {result.sourceUrl}</p>
               </div>
-              {savedId ? (
-                <Link to="/portal" className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-5 py-2.5 text-sm font-bold text-white hover:bg-white/20 transition">
-                  Open in Portal <ArrowRight className="w-4 h-4" />
-                </Link>
-              ) : (
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-green-500/10 border border-green-500/20 px-3 py-1.5 text-xs font-semibold text-green-400">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Auto-saved
+                </span>
                 <button
-                  onClick={pushToOnboarding}
-                  disabled={saving}
-                  className="inline-flex items-center gap-2 rounded-xl bg-[#00d4ff] px-5 py-2.5 text-sm font-bold text-[#0a0e14] hover:brightness-110 transition disabled:opacity-60"
+                  onClick={continueToOnboarding}
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#00d4ff] px-5 py-2.5 text-sm font-bold text-[#0a0e14] hover:brightness-110 hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] transition"
                 >
-                  {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />} Push to Onboarding
+                  <Zap className="w-4 h-4" /> Continue to Onboarding <ArrowRight className="w-4 h-4" />
                 </button>
-              )}
+              </div>
             </div>
 
             {/* Business research */}
