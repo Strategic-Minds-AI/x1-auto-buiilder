@@ -80,15 +80,15 @@
     },
     {
       "function_name": "runSystemTests",
-      "description": "Run comprehensive system validation tests across all entities, deployed sites, and sandboxes. Returns a detailed report with score."
+      "description": "Run comprehensive system validation tests"
     },
     {
       "function_name": "autoFixCompliance",
-      "description": "Auto-fix compliance issues on deployed sites"
+      "description": "Auto-fix compliance issues"
     },
     {
       "function_name": "autoConvergeSite",
-      "description": "Auto-converge a site to fix rendering or deployment issues"
+      "description": "Auto-converge site to fix issues"
     },
     {
       "function_name": "runComplianceCheck",
@@ -96,7 +96,7 @@
     },
     {
       "function_name": "webScraper",
-      "description": "Scrape and analyze any URL for frontend testing \u2014 use this as your cloud browser to test deployed pages, check buttons, forms, and content"
+      "description": "Scrape URLs for frontend testing"
     },
     {
       "function_name": "systemAudit",
@@ -104,11 +104,11 @@
     },
     {
       "function_name": "deploySite",
-      "description": "Deploy or redeploy a site to Vercel to fix deployment issues"
+      "description": "Deploy or redeploy a site"
     },
     {
       "function_name": "provisionSandbox",
-      "description": "Provision or repair Railway/Vercel sandboxes"
+      "description": "Provision or repair sandboxes"
     },
     {
       "function_name": "batchValidateTemplates",
@@ -122,10 +122,17 @@
   "model": "automatic",
   "whatsapp_greeting": "Hello! I'm your Testing Agent \u2014 I continuously validate your entire platform, fix broken systems autonomously, and enforce 100% validation across all levels. Tell me to 'run tests' and I'll scan everything and deliver a report.",
   "telegram_greeting": null,
-  "memory": {
-    "enabled": true
+  "line_greeting": null,
+  "memory_config": {
+    "enabled": true,
+    "scope": "both",
+    "include_other_conversation_context": false,
+    "instructions": null
   },
-  "voice": null,
-  "allow_anonymous": false,
+  "voice_config": {
+    "voice_id": null
+  },
+  "emails_settings": null,
+  "allow_anonymous_access": false,
   "name": "testing_agent"
 }
