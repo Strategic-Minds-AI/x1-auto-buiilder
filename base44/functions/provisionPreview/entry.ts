@@ -37,7 +37,7 @@ export default async function(req) {
       }
 
       // Deploy to Vercel with noindex
-      const deployRes = await base44.functions.invoke('deploySite', { projectId });
+      const deployRes = await base44.functions.invoke('deploySite', { projectId, target: 'preview' });
       const previewUrl = deployRes.data?.url;
 
       if (!previewUrl) throw new Error('Deployment failed — no URL returned');
@@ -47,10 +47,10 @@ export default async function(req) {
         project_id: projectId,
         job_id: job.id,
         validation_type: 'functional',
-        result: 'pass',
-        score: complianceScore,
-        findings: ['Preview deployed successfully', 'Noindex headers applied', 'Compliance score: ' + complianceScore],
-        details: { previewUrl, complianceScore, deployedAt: new Date().toISOString() }
+        result: 'unknown',
+        score: 0,
+        findings: ['Vercel returned a preview URL (HTTP and noindex unverified)', 'Independent Chrome proof required before any PASS', 'Compliance blueprint score: ' + complianceScore],
+        details: { previewUrl, complianceScore, independentlyValidated: false, deployedAt: new Date().toISOString() }
       });
 
       // Update job as complete
@@ -74,7 +74,7 @@ export default async function(req) {
         validationId: validation.id,
         jobId: job.id,
         status: 'PREVIEW_READY',
-        message: 'Preview provisioned with noindex. Compliance score: ' + complianceScore
+        message: 'Preview URL issued. Actual route, indexing headers, and function checks require independent browser verification.'
       });
     } catch (deployError) {
       await base44.entities.GenerationJob.update(job.id, {

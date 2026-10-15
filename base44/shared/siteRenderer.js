@@ -17,6 +17,14 @@ function list(arr, render) {
 }
 
 export function renderSiteHtml(project) {
+  // Do not silently replace a selected premium full-page master with the
+  // legacy generic website renderer. A portable source-locked HTML bundle must
+  // be independently validated by the premium preview adapter first.
+  const premium = project?.design?.master_id || project?.content?.premium_master_id;
+  if (premium) {
+    throw new Error('PREMIUM_VISUAL_LOCK_REQUIRED: full-page approved master ' + String(premium) +
+      ' needs source-locked preview bundle and independent validation. Generic fallback forbidden.');
+  }
   const c = (project && project.content) || {};
   const br = (project && project.business_research) || {};
   const tokens = c.colorTokens || {};

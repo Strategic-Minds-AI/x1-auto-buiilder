@@ -58,8 +58,9 @@ export default async function(req) {
             }
           });
           score = visualResult.score || 0;
-          result = score >= 80 ? 'pass' : score >= 60 ? 'unknown' : 'fail';
-          findings = visualResult.findings || [];
+          // Blueprint-only AI opinion cannot certify pixel parity or real images.
+          result = 'unknown';
+          findings = [...(visualResult.findings || []), 'Blueprint assessment only; real browser screenshot parity is unmeasured'];
           recommendations = visualResult.recommendations || [];
         } catch (e) {
           result = 'blocked';
@@ -76,7 +77,8 @@ export default async function(req) {
           securityIssues.push('No deployment — preview not provisioned');
         }
         score = securityIssues.length === 0 ? 90 : Math.max(0, 90 - securityIssues.length * 20);
-        result = securityIssues.length === 0 ? 'pass' : 'fail';
+        // Word-scanning content is not authentication, tenancy, CSP or API security.
+        result = securityIssues.length === 0 ? 'unknown' : 'fail';
         findings = securityIssues.length > 0 ? securityIssues : ['No security issues found'];
       } else if (type === 'accessibility') {
         // Accessibility check via LLM
@@ -97,8 +99,9 @@ export default async function(req) {
             }
           });
           score = a11yResult.score || 0;
-          result = score >= 80 ? 'pass' : score >= 60 ? 'unknown' : 'fail';
-          findings = a11yResult.findings || [];
+          // LLM content critique is not a WCAG browser/assistive-tech audit.
+          result = 'unknown';
+          findings = [...(a11yResult.findings || []), 'Real DOM, contrast and keyboard audit required'];
           recommendations = a11yResult.recommendations || [];
         } catch (e) {
           result = 'blocked';

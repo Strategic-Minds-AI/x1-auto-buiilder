@@ -1,0 +1,22 @@
+{
+  "schema": "x1.premium-real-sites.integration.v1",
+  "status": "DEVELOPMENT_BRANCH_ONLY",
+  "base_sha": "2a2059ec614c326bf429a69f524c133a5a03761f",
+  "source_repo": "Strategic-Minds-AI/x1-auto-buiilder",
+  "source_masters": [
+    "argent",
+    "monolith",
+    "atelier"
+  ],
+  "mastersImportedText": true,
+  "binaryArtworkImported": false,
+  "completePortablePilot": "Strategic_Minds_Premium_Real_Site_Factory_Canary_V1.zip",
+  "test_scope": "static",
+  "real_browser_qa": "BLOCKED_BY_ADMINISTRATOR_IN_LOCAL_EXECUTOR",
+  "independent_release_approval": "REQUIRED",
+  "production_deployed": false,
+  "production_redirects_changed": false,
+  "external_asset_dependencies": "BLOCKED_UNTIL_OWNED_ASSET_BUCKET",
+  "publisher_connected": false,
+  "default_renderer_fallback_for_premium": "FAIL_CLOSED"
+}
