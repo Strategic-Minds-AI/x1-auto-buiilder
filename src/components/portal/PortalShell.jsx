@@ -85,6 +85,8 @@ const EXTERNAL_MODULES = [
   { to: "/client-portal", icon: Building2, label: "Client Portals" },
   { to: "/universal-generator", icon: Wand2, label: "Universal Generator" },
   { to: "/agent-instructions", icon: SlidersHorizontal, label: "Agent Instructions" },
+  { to: "/visual-builder", icon: Wand2, label: "Visual Builder" },
+  { to: "/builder-docs", icon: Brain, label: "Builder Docs" },
 ];
 
 export default function PortalShell({ activeTab, onTabChange, onNew, children }) {

@@ -47,6 +47,8 @@ import FaultLine from '@/pages/FaultLine';
 import ClientPortal from '@/pages/ClientPortal';
 import UniversalGenerator from '@/pages/UniversalGenerator';
 import AgentInstructions from '@/pages/AgentInstructions';
+import VisualBuilder from '@/pages/VisualBuilder';
+import BuilderDocs from '@/pages/BuilderDocs';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
 function App() {
@@ -100,6 +102,8 @@ function App() {
               <Route path="/client-portal" element={<ClientPortal />} />
               <Route path="/universal-generator" element={<UniversalGenerator />} />
               <Route path="/agent-instructions" element={<AgentInstructions />} />
+              <Route path="/visual-builder" element={<VisualBuilder />} />
+              <Route path="/builder-docs" element={<BuilderDocs />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>

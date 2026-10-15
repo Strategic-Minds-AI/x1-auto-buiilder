@@ -1,0 +1,70 @@
+{
+  "name": "Sandbox",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "Associated WebsiteProject id"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "railway",
+        "vercel"
+      ],
+      "description": "Sandbox platform"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "provisioning",
+        "active",
+        "destroyed",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "sandbox_id": {
+      "type": "string",
+      "description": "Platform sandbox or project ID"
+    },
+    "url": {
+      "type": "string",
+      "description": "Sandbox URL"
+    },
+    "config": {
+      "type": "object",
+      "description": "Sandbox configuration"
+    },
+    "destroyed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "platform"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
