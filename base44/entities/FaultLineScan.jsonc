@@ -1,0 +1,109 @@
+{
+  "name": "FaultLineScan",
+  "type": "object",
+  "properties": {
+    "website_url": {
+      "type": "string",
+      "description": "Website URL scanned"
+    },
+    "business_name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "scanning",
+        "scanned",
+        "outreach_drafted",
+        "outreach_sent",
+        "responded",
+        "closed"
+      ],
+      "default": "pending"
+    },
+    "problems_found": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Array of problems: {type, severity, description, recommendation}"
+    },
+    "problem_count": {
+      "type": "number",
+      "default": 0
+    },
+    "severity_score": {
+      "type": "number",
+      "description": "0-100, higher = more problems"
+    },
+    "outreach_message": {
+      "type": "string",
+      "description": "Generated outreach message"
+    },
+    "outreach_status": {
+      "type": "string",
+      "enum": [
+        "not_sent",
+        "drafted",
+        "sent",
+        "responded"
+      ],
+      "default": "not_sent"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "scan_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "industry": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "website_url"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

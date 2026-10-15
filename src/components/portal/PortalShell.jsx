@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Wand2, Library, Globe, LayoutTemplate, Rocket, LayoutGrid, Cable,
   Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown,
-  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2, Key, Plug
+  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2, Key, Plug, Brain, Scan, AlertTriangle
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -78,6 +78,10 @@ const EXTERNAL_MODULES = [
   { to: "/api-keys", icon: Key, label: "API Key Manager" },
   { to: "/api-connectors", icon: Plug, label: "API Connectors" },
   { to: "/sheets-setup", icon: Table, label: "Sheets Setup Guide" },
+  { to: "/intelligence-hub", icon: Brain, label: "Intelligence Hub" },
+  { to: "/performance-dashboard", icon: BarChart3, label: "Performance Dashboard" },
+  { to: "/mockup-ingestion", icon: Scan, label: "Mock-up Ingestion" },
+  { to: "/fault-line", icon: AlertTriangle, label: "Fault Line Scanner" },
 ];
 
 export default function PortalShell({ activeTab, onTabChange, onNew, children }) {

@@ -1,0 +1,126 @@
+{
+  "name": "IntelligenceTask",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Task title"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "discovery",
+        "research",
+        "strategy",
+        "build",
+        "test",
+        "deploy",
+        "outreach",
+        "measurement",
+        "governance",
+        "integration"
+      ],
+      "description": "Task category"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "p0",
+        "p1",
+        "p2",
+        "p3"
+      ],
+      "default": "p1"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "blocked",
+        "complete",
+        "skipped"
+      ],
+      "default": "not_started"
+    },
+    "description": {
+      "type": "string",
+      "description": "Task description"
+    },
+    "assigned_agent": {
+      "type": "string",
+      "description": "Agent assigned to this task"
+    },
+    "source_workbook": {
+      "type": "string",
+      "description": "Source workbook ID (e.g. DD-01)"
+    },
+    "source_id": {
+      "type": "string",
+      "description": "Source row ID from workbook"
+    },
+    "evidence_required": {
+      "type": "string",
+      "description": "What evidence is needed to mark complete"
+    },
+    "approval_class": {
+      "type": "string",
+      "enum": [
+        "safe",
+        "protected",
+        "production"
+      ],
+      "default": "safe"
+    },
+    "order": {
+      "type": "number",
+      "default": 0,
+      "description": "Display order"
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "phase0",
+        "phase1",
+        "phase2",
+        "phase3",
+        "phase4",
+        "phase5",
+        "phase6",
+        "phase7",
+        "phase8",
+        "phase9",
+        "phase10",
+        "phase11",
+        "phase12"
+      ],
+      "description": "Implementation phase"
+    }
+  },
+  "required": [
+    "title",
+    "category"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -40,6 +40,10 @@ import CommLibrary from '@/pages/CommLibrary';
 import ApiKeyManager from '@/pages/ApiKeyManager';
 import ApiConnectorSettings from '@/pages/ApiConnectorSettings';
 import SheetsSetupGuide from '@/pages/SheetsSetupGuide';
+import IntelligenceHub from '@/pages/IntelligenceHub';
+import PerformanceDashboard from '@/pages/PerformanceDashboard';
+import MockupIngestion from '@/pages/MockupIngestion';
+import FaultLine from '@/pages/FaultLine';
 
 function App() {
   return (
@@ -85,6 +89,10 @@ function App() {
               <Route path="/api-keys" element={<ApiKeyManager />} />
               <Route path="/api-connectors" element={<ApiConnectorSettings />} />
               <Route path="/sheets-setup" element={<SheetsSetupGuide />} />
+              <Route path="/intelligence-hub" element={<IntelligenceHub />} />
+              <Route path="/performance-dashboard" element={<PerformanceDashboard />} />
+              <Route path="/mockup-ingestion" element={<MockupIngestion />} />
+              <Route path="/fault-line" element={<FaultLine />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>
