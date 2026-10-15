@@ -1,0 +1,115 @@
+{
+  "name": "AgentProfile",
+  "type": "object",
+  "properties": {
+    "agent_id": {
+      "type": "string",
+      "description": "Unique agent identifier"
+    },
+    "name": {
+      "type": "string",
+      "description": "Agent display name"
+    },
+    "skill_category": {
+      "type": "string",
+      "description": "Primary skill category this agent covers"
+    },
+    "description": {
+      "type": "string",
+      "description": "What this agent does"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Agent capabilities"
+    },
+    "system_prompt": {
+      "type": "string",
+      "description": "System prompt for the agent"
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tools available to this agent"
+    },
+    "model": {
+      "type": "string",
+      "description": "Recommended LLM model"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Lucide icon name"
+    },
+    "color": {
+      "type": "string",
+      "description": "Accent color hex"
+    },
+    "autonomy_level": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "assisted",
+        "autonomous",
+        "fully_autonomous"
+      ],
+      "description": "Level of autonomy"
+    },
+    "industries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Applicable industries"
+    }
+  },
+  "required": [
+    "agent_id",
+    "name",
+    "skill_category"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

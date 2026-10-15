@@ -1,0 +1,112 @@
+{
+  "name": "CommChannel",
+  "type": "object",
+  "properties": {
+    "channel_id": {
+      "type": "string",
+      "description": "Unique channel identifier"
+    },
+    "name": {
+      "type": "string",
+      "description": "Channel display name"
+    },
+    "channel_type": {
+      "type": "string",
+      "enum": [
+        "sms",
+        "voice",
+        "email",
+        "whatsapp",
+        "mms",
+        "ivr",
+        "chat",
+        "push"
+      ],
+      "description": "Communication channel type"
+    },
+    "provider": {
+      "type": "string",
+      "description": "Provider (Twilio, Xtreme Comms, SendGrid, etc)"
+    },
+    "phone_number": {
+      "type": "string",
+      "description": "Phone number for SMS/voice channels"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "pending",
+        "error"
+      ],
+      "default": "active",
+      "description": "Channel status"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Channel capabilities"
+    },
+    "webhook_url": {
+      "type": "string",
+      "description": "Inbound webhook URL"
+    },
+    "description": {
+      "type": "string",
+      "description": "Channel description"
+    },
+    "config": {
+      "type": "object",
+      "description": "Additional channel configuration"
+    }
+  },
+  "required": [
+    "channel_id",
+    "name",
+    "channel_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

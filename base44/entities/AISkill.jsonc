@@ -1,0 +1,123 @@
+{
+  "name": "AISkill",
+  "type": "object",
+  "properties": {
+    "skill_id": {
+      "type": "string",
+      "description": "Unique skill identifier"
+    },
+    "name": {
+      "type": "string",
+      "description": "Skill name"
+    },
+    "category": {
+      "type": "string",
+      "description": "Skill category"
+    },
+    "description": {
+      "type": "string",
+      "description": "What this skill does"
+    },
+    "input_schema": {
+      "type": "object",
+      "description": "Expected input schema"
+    },
+    "output_schema": {
+      "type": "object",
+      "description": "Output schema"
+    },
+    "implementation_type": {
+      "type": "string",
+      "enum": [
+        "prompt",
+        "api",
+        "function",
+        "workflow",
+        "model",
+        "pipeline"
+      ],
+      "description": "How the skill is implemented"
+    },
+    "complexity": {
+      "type": "string",
+      "enum": [
+        "simple",
+        "moderate",
+        "advanced",
+        "expert"
+      ],
+      "description": "Complexity level"
+    },
+    "integration_points": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Where this skill can be integrated"
+    },
+    "example_use_cases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Example use cases"
+    },
+    "required_tools": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tools needed for this skill"
+    },
+    "model_requirements": {
+      "type": "string",
+      "description": "Model requirements"
+    }
+  },
+  "required": [
+    "skill_id",
+    "name",
+    "category"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

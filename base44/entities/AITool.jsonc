@@ -1,0 +1,241 @@
+{
+  "name": "AITool",
+  "type": "object",
+  "properties": {
+    "tool_id": {
+      "type": "string",
+      "description": "Unique tool identifier"
+    },
+    "name": {
+      "type": "string",
+      "description": "Tool name"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "content_generation",
+        "code_generation",
+        "image_generation",
+        "video_generation",
+        "audio_generation",
+        "data_analysis",
+        "nlp",
+        "computer_vision",
+        "speech",
+        "translation",
+        "chatbot",
+        "assistant",
+        "knowledge_mgmt",
+        "seo",
+        "marketing",
+        "sales",
+        "customer_support",
+        "design",
+        "prototyping",
+        "testing",
+        "devops",
+        "automation",
+        "research",
+        "analytics",
+        "security",
+        "database",
+        "cloud",
+        "collaboration",
+        "productivity",
+        "education",
+        "finance",
+        "legal",
+        "healthcare",
+        "hr",
+        "social_media",
+        "ad_creative",
+        "lead_gen",
+        "crm",
+        "email",
+        "scheduling",
+        "document",
+        "presentation",
+        "spreadsheet",
+        "form_builder",
+        "survey",
+        "polling",
+        "ab_testing",
+        "personalization",
+        "recommendation",
+        "search",
+        "transcription",
+        "summarization",
+        "sentiment",
+        "ner",
+        "classification",
+        "extraction",
+        "generation",
+        "editing",
+        "optimization",
+        "monitoring",
+        "alerting",
+        "reporting",
+        "visualization",
+        "etl",
+        "pipeline",
+        "integration",
+        "middleware",
+        "api_mgmt",
+        "auth",
+        "encryption",
+        "backup",
+        "recovery",
+        "migration",
+        "deployment",
+        "ci_cd",
+        "containerization",
+        "orchestration",
+        "observability",
+        "logging",
+        "tracing",
+        "profiling",
+        "debugging",
+        "testing_qa",
+        "load_testing",
+        "security_scan",
+        "compliance",
+        "governance",
+        "mlops",
+        "llm_ops",
+        "prompt_mgmt",
+        "rag",
+        "vector_db",
+        "embedding",
+        "fine_tuning",
+        "model_hosting",
+        "model_registry",
+        "experiment_tracking",
+        "feature_store",
+        "data_labeling",
+        "data_cleaning",
+        "data_governance",
+        "data_catalog",
+        "data_pipeline",
+        "data_warehouse",
+        "data_lake",
+        "bi",
+        "dashboard",
+        "reporting_automation"
+      ],
+      "description": "Tool category"
+    },
+    "description": {
+      "type": "string",
+      "description": "What the tool does"
+    },
+    "provider": {
+      "type": "string",
+      "description": "Company/provider"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Key capabilities"
+    },
+    "integration_type": {
+      "type": "string",
+      "enum": [
+        "api",
+        "sdk",
+        "webhook",
+        "oauth",
+        "cli",
+        "rest",
+        "graphql",
+        "grpc",
+        "websocket"
+      ],
+      "description": "How to integrate"
+    },
+    "pricing_model": {
+      "type": "string",
+      "enum": [
+        "free",
+        "freemium",
+        "paid",
+        "enterprise",
+        "usage_based"
+      ],
+      "description": "Pricing model"
+    },
+    "use_cases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Common use cases"
+    },
+    "website_url": {
+      "type": "string",
+      "description": "Official website"
+    },
+    "api_docs_url": {
+      "type": "string",
+      "description": "API documentation URL"
+    },
+    "popularity_score": {
+      "type": "number",
+      "description": "1-100 popularity score"
+    },
+    "skill_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Related skill tags"
+    }
+  },
+  "required": [
+    "tool_id",
+    "name",
+    "category"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
