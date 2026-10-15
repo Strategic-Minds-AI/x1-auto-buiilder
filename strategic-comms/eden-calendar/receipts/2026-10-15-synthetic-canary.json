@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "mission": "STRATEGIC-COMMS-M1",
+  "observed_at": "2026-10-15",
+  "branch": "feature/strategic-comms-eden-calendar-20261015",
+  "checks": [
+    {
+      "name": "base44_calendar_connector",
+      "status": "PASS",
+      "account": "jeremy@strategicmindsai.com",
+      "connected": true,
+      "connection_status": "active",
+      "granted_scopes": [
+        "https://www.googleapis.com/auth/calendar",
+        "email"
+      ],
+      "note": "Metadata verification only; actual provider event API execution not tested"
+    },
+    {
+      "name": "eden_x1_runtime",
+      "status": "PARTIAL",
+      "runtime_status": "planned",
+      "readiness": "partial"
+    },
+    {
+      "name": "synthetic_http_webhook_to_booking_request",
+      "status": "PASS",
+      "endpoint": "/v1/eden/synthetic-booking",
+      "http_status": 200,
+      "slot_count": 2,
+      "final_status": "AWAITING_APPROVAL",
+      "provider": "mock",
+      "calendar_event_created": false
+    },
+    {
+      "name": "cross_tenant_denial",
+      "status": "PASS",
+      "http_status": 403
+    },
+    {
+      "name": "approval_guard",
+      "status": "PASS",
+      "calendar_write": false
+    }
+  ],
+  "deployment": "NONE",
+  "secrets_changed": false,
+  "external_messages_sent": false,
+  "next_gate": "independent validator + provider freeBusy authenticated canary + live deployment approval"
+}
