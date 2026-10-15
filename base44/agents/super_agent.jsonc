@@ -277,6 +277,15 @@
       ]
     },
     {
+      "entity_name": "Sandbox",
+      "allowed_operations": [
+        "create",
+        "update",
+        "delete",
+        "read"
+      ]
+    },
+    {
       "function_name": "generateWebsite",
       "description": "Generate a complete website blueprint from business details"
     },
@@ -479,6 +488,10 @@
     {
       "function_name": "systemAudit",
       "description": "Proactive system audit \u2014 analyzes the platform, identifies optimizations, suggests upgrades, creates intelligence tasks. Returns system intelligence."
+    },
+    {
+      "function_name": "provisionSandbox",
+      "description": "Sandbox provisioner \u2014 create, destroy, and list sandboxes in Railway and Vercel. Full lifecycle management for isolated dev/test environments."
     }
   ],
   "context_files": [],
