@@ -8,7 +8,8 @@ import AssetStudio from "@/components/portal/AssetStudio";
 import TemplateLibrary from "@/components/portal/TemplateLibrary";
 import MassLaunchConsole from "@/components/portal/MassLaunchConsole";
 import Campaigns from "@/components/portal/Campaigns";
-import { CheckCircle2, Plus, Wand2, Library, Rocket } from "lucide-react";
+import SyncEngine from "@/components/portal/SyncEngine";
+import { CheckCircle2, Plus, Wand2, Library, Rocket, Cable } from "lucide-react";
 
 export default function Portal() {
   const [tab, setTab] = useState("generator");
@@ -119,6 +120,7 @@ export default function Portal() {
           <TabButton active={tab === "library"} onClick={() => setTab("library")} icon={Library} label="Template Library" />
           <TabButton active={tab === "launch"} onClick={() => setTab("launch")} icon={Rocket} label="Mass Launch" />
           <TabButton active={tab === "campaigns"} onClick={() => setTab("campaigns")} icon={Rocket} label="Campaigns" />
+          <TabButton active={tab === "sync"} onClick={() => setTab("sync")} icon={Cable} label="Sync Engine" />
         </div>
       </div>
 
@@ -182,6 +184,7 @@ export default function Portal() {
       {tab === "library" && <TemplateLibrary />}
       {tab === "launch" && <MassLaunchConsole onDone={() => setTab("campaigns")} />}
       {tab === "campaigns" && <Campaigns />}
+      {tab === "sync" && <SyncEngine />}
     </div>
   );
 }
