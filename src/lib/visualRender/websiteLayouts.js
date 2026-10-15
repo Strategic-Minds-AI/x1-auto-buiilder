@@ -35,6 +35,7 @@ function navBar(t, opts = {}) {
 }
 
 function heroImg(t, w, h) {
+  if (t.img) return `<img src="${t.img}" style="width:100%;height:100%;object-fit:cover" />`;
   if (!t.photo) return '';
   return `<img src="https://images.unsplash.com/${t.photo}?w=${w}&q=80" style="width:100%;height:100%;object-fit:cover" />`;
 }

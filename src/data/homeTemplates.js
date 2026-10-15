@@ -1,0 +1,148 @@
+// Comprehensive home page template data — all 19 industries covered
+// with working images (media.base44.com URLs) and rich, industry-specific content.
+
+const IMG_BASE_1 = "https://media.base44.com/images/public/6a77f4491f0bf92de9a3ed8b";
+const IMG_BASE_2 = "https://media.base44.com/images/public/6acfedce320afe2f706c6bfd";
+
+const PHOTOS = {
+  construction: "photo-1504307651254-35680f356dfd",
+  car: "photo-1503376780353-7e6692767b70",
+  home: "photo-1564013799919-ab6000f0a3e5",
+  abstract: "photo-1467232004574-p5cde63b4d62",
+  architecture: "photo-1486406146926-c627a92ad1ab",
+  law: "photo-1589829545856-d10d557cf95f",
+  dental: "photo-1606811971618-4486d14f3f99",
+  craft: "photo-1503387762-592deb58ef4f",
+  hotel: "photo-1571896349842-33c89424de2d",
+};
+
+export const INDUSTRY_IMAGES = {
+  "Legal": IMG_BASE_1 + "/73200760e_generated_image.png",
+  "Real Estate": IMG_BASE_1 + "/aac8fa18c_generated_image.png",
+  "Epoxy Flooring": IMG_BASE_1 + "/84000d10f_generated_image.png",
+  "Roofing": IMG_BASE_1 + "/6a72c6e87_generated_image.png",
+  "HVAC": IMG_BASE_1 + "/8e9292cb0_generated_image.png",
+  "Plumbing": IMG_BASE_1 + "/1d3f41b69_generated_image.png",
+  "Electrical": IMG_BASE_1 + "/22e023aa5_generated_image.png",
+  "Med Spa": IMG_BASE_1 + "/d89216fde_generated_image.png",
+  "Dental": IMG_BASE_1 + "/b091621aa_generated_image.png",
+  "Chiropractic": IMG_BASE_1 + "/4d25674b7_generated_image.png",
+  "Remodeling": IMG_BASE_1 + "/facd44e18_generated_image.png",
+  "Landscaping": IMG_BASE_1 + "/771c1b32a_generated_image.png",
+  "Solar": IMG_BASE_1 + "/6a2dd529e_generated_image.png",
+  "Pest Control": IMG_BASE_1 + "/48c18e646_generated_image.png",
+  "Moving": IMG_BASE_2 + "/45c755cef_generated_image.png",
+  "Auto Detailing": IMG_BASE_2 + "/7ea2bef36_generated_image.png",
+  "Restaurants": IMG_BASE_2 + "/5836c1a12_generated_image.png",
+  "Insurance": IMG_BASE_2 + "/f28e53677_generated_image.png",
+  "Mortgage": IMG_BASE_2 + "/24dd67241_generated_image.png",
+  "Cleaning Services": IMG_BASE_2 + "/358b2dd14_generated_image.png",
+};
+
+function tmpl(id, tid, name, industry, family, layout, tone, ink, accent, head, sub, eyebrow, cta, feature, feature_copy, photo) {
+  return { id, template_id: tid, name, category: "website", industry, family, layout, tone, ink, accent, head, sub, eyebrow, cta, feature, feature_copy, img: INDUSTRY_IMAGES[industry], photo };
+}
+
+export const HOME_TEMPLATES = [
+  // ── LEGAL ──
+  tmpl("ht-legal-1", "HT-L1", "Sterling Law Group", "Legal", "Editorial prestige with gold accents", "split-right", "#1a1a2e", "#e2e8f0", "#c9a96e", "Your Case. Our Mission.", "Aggressive representation. Proven results. Millions recovered for our clients.", "Free Consultation", "Schedule Consultation", "No Fee Unless We Win", "We work on contingency — you pay nothing unless we win your case.", PHOTOS.law),
+  tmpl("ht-legal-2", "HT-L2", "Apex Advocates", "Legal", "Bold authority with deep navy", "centered", "#0f172a", "#f1f5f9", "#3b82f6", "When Results Matter Most.", "Trusted legal counsel for personal injury, business litigation, and family law.", "20+ Years Experience", "Get Free Case Review", "24/7 Case Access", "Track your case progress in real-time through our secure client portal.", PHOTOS.law),
+  tmpl("ht-legal-3", "HT-L3", "Meridian Legal Partners", "Legal", "Minimalist trust with serif elegance", "magazine", "#111827", "#f9fafb", "#fbbf24", "Excellence in Every Verdict.", "A boutique firm delivering big-firm results with personal attention.", "Top Rated Lawyers", "Book a Strategy Session", "Award-Winning Team", "Recognized by Super Lawyers and Avvo for excellence in client advocacy.", PHOTOS.law),
+
+  // ── REAL ESTATE ──
+  tmpl("ht-realestate-1", "HT-RE1", "Halcyon Estates", "Real Estate", "Luxury minimalism with warm tones", "split-left", "#0c0a09", "#fafaf9", "#d4a574", "Where Luxury Finds Its Address.", "Curated luxury properties in the most exclusive communities.", "Private Listings Available", "View Listings", "Concierge Buying", "White-glove service from first viewing to closing day.", PHOTOS.home),
+  tmpl("ht-realestate-2", "HT-RE2", "Vantage Realty Group", "Real Estate", "Modern editorial with full-bleed imagery", "fullscreen-image", "#1c1917", "#fafaf9", "#f59e0b", "Find Your Next Chapter.", "From starter homes to luxury estates, we know the market inside out.", "500+ Homes Sold", "Start Your Search", "Market Leader", "Top 1% of agents nationwide with a 98% client satisfaction rate.", PHOTOS.home),
+  tmpl("ht-realestate-3", "HT-RE3", "Coastal Properties Co.", "Real Estate", "Bright coastal with airy whitespace", "centered", "#f8fafc", "#0f172a", "#0ea5e9", "Living by the Water, Perfected.", "Waterfront homes and condos in Florida's most desirable coastal markets.", "Waterfront Specialists", "Browse Waterfront Homes", "Virtual Tours", "Explore every listing with immersive 3D walkthroughs from anywhere.", PHOTOS.home),
+
+  // ── EPOXY FLOORING ──
+  tmpl("ht-epoxy-1", "HT-EF1", "Epoxy Masters USA", "Epoxy Flooring", "Industrial bold with metallic sheen", "split-left", "#0f172a", "#f8fafc", "#06b6d4", "Floors That Last a Lifetime.", "Premium epoxy and polyaspartic flooring for garages, commercial spaces, and patios.", "20-Year Warranty", "Get Free Quote", "Same-Day Installation", "Most residential floors completed in a single day with zero downtime.", PHOTOS.construction),
+  tmpl("ht-epoxy-2", "HT-EF2", "Surface Pro Coatings", "Epoxy Flooring", "Clean technical with showroom finish", "bento", "#111827", "#f9fafb", "#10b981", "Transform Your Concrete.", "Decorative metallic, flake, and solid-color epoxy systems engineered for durability.", "Commercial & Residential", "View Color Gallery", "UV-Stable Formulas", "Our polyaspartic topcoats never yellow, ensuring your floor stays brilliant for decades.", PHOTOS.construction),
+  tmpl("ht-epoxy-3", "HT-EF3", "Garage Floor Experts", "Epoxy Flooring", "High-contrast conversion-focused", "split-right", "#1e293b", "#f1f5f9", "#f59e0b", "Your Garage, Reimagined.", "Stop hiding your garage. Transform it with a showroom-quality epoxy floor.", "Free Design Consultation", "Book Your Install", "Lifetime Warranty", "We stand behind every floor with a transferable lifetime warranty.", PHOTOS.construction),
+
+  // ── ROOFING ──
+  tmpl("ht-roofing-1", "HT-R1", "Premier Roofing Co.", "Roofing", "Bold industrial authority", "split-left", "#0f172a", "#f8fafc", "#f59e0b", "Built to Last. Trusted by Thousands.", "Storm-ready roofing for homes and businesses. Licensed, insured, and built to code.", "Licensed & Insured", "Get Free Estimate", "Lifetime Warranty", "Every installation backed by our 25-year workmanship guarantee.", PHOTOS.construction),
+  tmpl("ht-roofing-2", "HT-R2", "StormGuard Roofing", "Roofing", "Emergency-first with urgent CTAs", "centered", "#111827", "#f9fafb", "#ef4444", "Storm Damage? We Respond Today.", "24/7 emergency tarping, insurance claims assistance, and full roof replacement.", "24/7 Emergency Service", "Call Now — We're Ready", "Insurance Claim Experts", "We work directly with your insurance adjuster to maximize your claim.", PHOTOS.construction),
+  tmpl("ht-roofing-3", "HT-R3", "Summit Roof Systems", "Roofing", "Premium craftsmanship with split layout", "magazine", "#1c1917", "#fafaf9", "#fbbf24", "Above the Rest. Beyond the Standard.", "Architectural shingles, metal roofing, and flat roof systems installed by master roofers.", "GAF Certified Master Installer", "Request Inspection", "Drone Roof Inspection", "Free high-definition drone inspection with every estimate — see your roof up close.", PHOTOS.construction),
+
+  // ── HVAC ──
+  tmpl("ht-hvac-1", "HT-HV1", "Apex HVAC Solutions", "HVAC", "Reliable service authority", "dashboard", "#111827", "#f9fafb", "#3b82f6", "Comfort You Can Count On.", "Heating and cooling experts serving homes and businesses 24/7 with upfront pricing.", "Same-Day Service Available", "Request Quote", "Energy Star Certified", "Lower your bills with high-efficiency systems installed by certified pros.", PHOTOS.construction),
+  tmpl("ht-hvac-2", "HT-HV2", "Climate Control Experts", "HVAC", "Clean modern with blue tech tones", "split-left", "#0f172a", "#f1f5f9", "#06b6d4", "Perfect Air. Perfect Comfort.", "Installation, repair, and maintenance for all major HVAC brands with transparent pricing.", "NATE Certified Technicians", "Schedule Service", "Maintenance Plans", "Annual plans starting at $149 — includes tune-ups, priority service, and repair discounts.", PHOTOS.construction),
+  tmpl("ht-hvac-3", "HT-HV3", "Rapid Air Mechanical", "HVAC", "Fast-response with urgent messaging", "centered", "#1e293b", "#f8fafc", "#f59e0b", "No AC? No Problem. We're On the Way.", "Emergency HVAC repair with 2-hour response times and no overtime charges.", "24/7 Emergency Repair", "Call for Fast Service", "No Overtime Fees", "Same flat rate whether it's 2 PM or 2 AM — no hidden charges, ever.", PHOTOS.construction),
+
+  // ── PLUMBING ──
+  tmpl("ht-plumbing-1", "HT-PL1", "Flow Plumbing Co.", "Plumbing", "Fast dependable service", "split-left", "#0f172a", "#f1f5f9", "#06b6d4", "Fast. Reliable. Licensed.", "From leaks to full repipes, we handle it all with upfront pricing and clean workmanship.", "24/7 Emergency Plumbing", "Call Now", "Upfront Pricing", "Know the cost before we start. No surprises, no hidden fees.", PHOTOS.construction),
+  tmpl("ht-plumbing-2", "HT-PL2", "Drain Doctor Plumbing", "Plumbing", "Clean clinical with friendly approach", "bento", "#f8fafc", "#0f172a", "#0ea5e9", "Your Home's Best Friend.", "Residential and commercial plumbing done right the first time, every time.", "Family Owned & Operated", "Book Appointment", "Camera Inspection", "We find the exact problem with high-definition sewer camera inspections — no guesswork.", PHOTOS.construction),
+  tmpl("ht-plumbing-3", "HT-PL3", "Pro Pipe Services", "Plumbing", "Bold industrial with urgent CTA", "split-right", "#111827", "#f9fafb", "#ef4444", "Pipe Problems? We Solve Them Today.", "Burst pipes, clogged drains, water heaters, and repipes — all in a day's work.", "Same-Day Service", "Get Emergency Help", "Tankless Water Heater Experts", "Upgrade to endless hot water and save 30% on energy costs with a tankless system.", PHOTOS.construction),
+
+  // ── ELECTRICAL ──
+  tmpl("ht-electrical-1", "HT-EL1", "Nova Electrical", "Electrical", "Clean technical precision", "centered", "#0a0e14", "#ffffff", "#00d4ff", "Powering Your World, Safely.", "Licensed electricians for residential and commercial projects. Code-compliant, every time.", "24/7 Emergency Service", "Schedule Inspection", "Same-Day Response", "Emergency calls answered within the hour, every day of the week.", PHOTOS.construction),
+  tmpl("ht-electrical-2", "HT-EL2", "Bright Spark Electric", "Electrical", "Friendly modern with bright accents", "split-left", "#f8fafc", "#0f172a", "#f59e0b", "Wired for Excellence.", "Panel upgrades, EV chargers, lighting design, and whole-home rewiring done right.", "Licensed Master Electricians", "Get a Free Estimate", "EV Charger Installation", "Certified Tesla and universal EV charger installation with same-day scheduling.", PHOTOS.construction),
+  tmpl("ht-electrical-3", "HT-EL3", "Volt Electric Group", "Electrical", "Dark tech with neon energy", "split-right", "#0f172a", "#f1f5f9", "#10b981", "The Power Behind Your Property.", "Commercial and residential electrical contractors delivering safe, code-perfect work.", "Commercial & Residential", "Request Consultation", "Generator Installation", "Keep your lights on with whole-home standby generator systems installed by pros.", PHOTOS.construction),
+
+  // ── MED SPA ──
+  tmpl("ht-medspa-1", "HT-MS1", "Aurora Aesthetics", "Med Spa", "Luxury wellness with soft gradients", "centered", "#1c1917", "#fafaf9", "#f9a8d4", "Reveal Your Best Self.", "Advanced aesthetic treatments in a serene, medical-grade environment.", "Medical Director Supervised", "Book Consultation", "Custom Treatment Plans", "Every treatment begins with a personalized consultation and skin analysis.", PHOTOS.abstract),
+  tmpl("ht-medspa-2", "HT-MS2", "Lumiere Skin Studio", "Med Spa", "Editorial beauty with elegant serif", "split-left", "#0c0a09", "#fafaf9", "#d4a574", "Where Art Meets Aesthetics.", "Botox, fillers, laser treatments, and medical-grade skincare tailored to you.", "Award-Winning Injectors", "Schedule Your Glow", "Membership Pricing", "Save 20% on all treatments with our monthly membership — no commitment required.", PHOTOS.abstract),
+  tmpl("ht-medspa-3", "HT-MS3", "Vitality Med Spa", "Med Spa", "Fresh clean with clinical trust", "bento", "#f8fafc", "#0f172a", "#0ea5e9", "Confidence, Engineered.", "Non-surgical body contouring, skin rejuvenation, and wellness in one beautiful space.", "FDA-Approved Treatments", "Start Your Journey", "Free Skin Consultation", "Meet with our medical team to create a personalized treatment plan at no cost.", PHOTOS.abstract),
+
+  // ── DENTAL ──
+  tmpl("ht-dental-1", "HT-DN1", "Aurora Dental", "Dental", "Warm clinical comfort", "bento", "#f8fafc", "#0f172a", "#0ea5e9", "Your Smile, Our Passion.", "Comprehensive dental care for the whole family in a relaxing, modern environment.", "Accepting New Patients", "Book Appointment", "Painless Dentistry", "Sedation options and gentle techniques for anxiety-free visits.", PHOTOS.dental),
+  tmpl("ht-dental-2", "HT-DN2", "Bright Smile Dental", "Dental", "Friendly approachable with warm tones", "centered", "#0c0a09", "#fafaf9", "#fbbf24", "A Dental Experience You'll Actually Enjoy.", "From routine cleanings to complete smile makeovers — we make every visit comfortable.", "5-Star Patient Reviews", "Schedule Your Visit", "Same-Day Crowns", "Custom ceramic crowns designed and placed in a single appointment with CEREC technology.", PHOTOS.dental),
+  tmpl("ht-dental-3", "HT-DN3", "Premier Dental Group", "Dental", "Premium editorial with clean whitespace", "split-right", "#111827", "#f9fafb", "#06b6d4", "Exceptional Care. Beautiful Smiles.", "Cosmetic, restorative, and implant dentistry performed by board-certified specialists.", "In-House Specialists", "Book Free Consultation", "Invisalign Provider", "Certified Diamond+ Invisalign provider with 500+ successful smile transformations.", PHOTOS.dental),
+
+  // ── CHIROPRACTIC ──
+  tmpl("ht-chiro-1", "HT-CH1", "Align Wellness Center", "Chiropractic", "Holistic healing with natural tones", "centered", "#f8fafc", "#0f172a", "#10b981", "Your Body, Aligned for Life.", "Chiropractic care, physical therapy, and wellness under one roof.", "Whole-Body Approach", "Book Free Consultation", "Insurance Accepted", "We accept most major insurance plans and offer affordable cash payment options.", PHOTOS.abstract),
+  tmpl("ht-chiro-2", "HT-CH2", "Spine Health Chiropractic", "Chiropractic", "Clinical trust with professional blue", "split-left", "#0f172a", "#f1f5f9", "#3b82f6", "Live Without Pain.", "Advanced spinal correction, decompression therapy, and corrective exercises.", "20+ Years Experience", "Schedule Appointment", "Non-Surgical Decompression", "Drug-free, surgery-free relief for herniated discs and chronic back pain.", PHOTOS.abstract),
+  tmpl("ht-chiro-3", "HT-CH3", "Active Life Chiropractic", "Chiropractic", "Energetic sports-focused with bold accents", "split-right", "#1e293b", "#f8fafc", "#f59e0b", "Move Better. Live Better.", "Sports chiropractic, injury rehabilitation, and performance optimization for all ages.", "Sports Injury Specialists", "Start Your Recovery", "Same-Day Appointments", "In pain? We'll see you today. Walk-ins welcome for acute injuries.", PHOTOS.abstract),
+
+  // ── REMODELING ──
+  tmpl("ht-remodel-1", "HT-RM1", "Heritage Workshop", "Remodeling", "Craft-first modern editorial", "magazine", "#1c1917", "#fafaf9", "#d4a574", "Where Craft Meets Home.", "Kitchen, bath, and whole-home remodeling with an obsessive attention to detail.", "Design-Build Specialists", "Start Your Project", "3D Design Renderings", "See your new kitchen or bath in photorealistic 3D before we swing a single hammer.", PHOTOS.craft),
+  tmpl("ht-remodel-2", "HT-RM2", "Modern Home Renovations", "Remodeling", "Clean modern with split layout", "split-left", "#0f172a", "#f8fafc", "#06b6d4", "Your Home, Reimagined.", "From concept to completion, we deliver renovations that transform how you live.", "Licensed & Insured", "Get Free Estimate", "Fixed-Price Contracts", "No surprise costs. We guarantee our pricing in writing before construction begins.", PHOTOS.craft),
+  tmpl("ht-remodel-3", "HT-RM3", "Elite Construction Group", "Remodeling", "Bold industrial with full-bleed imagery", "fullscreen-image", "#111827", "#f9fafb", "#f59e0b", "Built for How You Live.", "Custom homes, additions, and luxury renovations by master craftsmen.", "15-Year Warranty", "Book Consultation", "Project Management App", "Track your renovation in real-time with daily updates, photos, and timelines.", PHOTOS.craft),
+
+  // ── LANDSCAPING ──
+  tmpl("ht-landscape-1", "HT-LS1", "Verdant Landscape Co.", "Landscaping", "Natural organic with earthy tones", "split-left", "#1c1917", "#fafaf9", "#84cc16", "Your Outdoor Oasis Awaits.", "Landscape design, installation, and maintenance that transforms your property.", "Free Landscape Design", "Schedule Consultation", "Native Plant Specialists", "Water-wise landscapes that thrive in Florida's climate with minimal maintenance.", PHOTOS.abstract),
+  tmpl("ht-landscape-2", "HT-LS2", "Premier Lawn & Garden", "Landscaping", "Fresh clean with bright green accents", "bento", "#f8fafc", "#0f172a", "#10b981", "Curb Appeal, Perfected.", "Professional lawn care, hardscaping, and outdoor living spaces that impress.", "Weekly & Bi-Weekly Plans", "Get Free Quote", "Hardscape Experts", "Pavers, retaining walls, fire pits, and outdoor kitchens built to last.", PHOTOS.abstract),
+  tmpl("ht-landscape-3", "HT-LS3", "Tropical Scapes LLC", "Landscaping", "Tropical luxury with full-bleed imagery", "fullscreen-image", "#0c0a09", "#fafaf9", "#fbbf24", "Bring Paradise Home.", "Tropical landscape design, poolscaping, and luxury outdoor living construction.", "Pool & Patio Specialists", "View Portfolio", "Full-Service Design Build", "From concept to completion — one team, one vision, one stunning result.", PHOTOS.abstract),
+
+  // ── SOLAR ──
+  tmpl("ht-solar-1", "HT-SO1", "Lumen Energy", "Solar", "Eco-modern spatial storytelling", "centered", "#0f172a", "#f1f5f9", "#fbbf24", "Power Your Home with the Sun.", "Solar panel installation that slashes your electric bill and increases your home value.", "$0 Down Financing", "Get Solar Quote", "25-Year Warranty", "Industry-leading warranty on panels, inverters, and our workmanship.", PHOTOS.abstract),
+  tmpl("ht-solar-2", "HT-SO2", "SunForge Solar", "Solar", "Bold tech with energy-focused messaging", "split-left", "#111827", "#f9fafb", "#f59e0b", "Stop Renting Electricity. Own It.", "Lock in your energy costs with a custom solar system designed for your roof.", "Federal Tax Credit Eligible", "See If You Qualify", "Battery Storage Options", "Keep your lights on during outages with Tesla Powerwall and Enphase battery systems.", PHOTOS.abstract),
+  tmpl("ht-solar-3", "HT-SO3", "GreenVolt Energy", "Solar", "Clean minimal with sustainability focus", "split-right", "#f8fafc", "#0f172a", "#10b981", "Clean Energy. Real Savings.", "Residential and commercial solar with transparent pricing and zero-pressure sales.", "Certified Installers", "Start Saving Today", "Energy Monitoring", "Track your solar production and energy savings in real-time from your phone.", PHOTOS.abstract),
+
+  // ── PEST CONTROL ──
+  tmpl("ht-pest-1", "HT-PC1", "Shield Pest Defense", "Pest Control", "Bold protection with shield motif", "split-left", "#0f172a", "#f8fafc", "#ef4444", "Your Home, Protected.", "Comprehensive pest control for termites, ants, roaches, rodents, and more.", "Same-Day Service", "Get Free Inspection", "Quarterly Protection Plans", "Year-round protection with quarterly treatments and free re-service calls.", PHOTOS.abstract),
+  tmpl("ht-pest-2", "HT-PC2", "ProGuard Pest Control", "Pest Control", "Clean professional with green accents", "centered", "#f8fafc", "#0f172a", "#10b981", "Pest-Free. Guaranteed.", "Eco-friendly pest control that's safe for your family, pets, and the environment.", "Pet & Child Safe", "Schedule Treatment", "100% Satisfaction Guarantee", "If pests return between treatments, we return for free — no questions asked.", PHOTOS.abstract),
+  tmpl("ht-pest-3", "HT-PC3", "Termite Tech LLC", "Pest Control", "Technical specialist with urgent CTA", "split-right", "#111827", "#f9fafb", "#f59e0b", "Termites Don't Wait. Neither Do We.", "Termite inspection, treatment, and prevention backed by a $1M damage warranty.", "Free Termite Inspection", "Book Inspection Now", "Sentinel System Certified", "Advanced baiting and monitoring systems that eliminate entire termite colonies.", PHOTOS.abstract),
+
+  // ── MOVING ──
+  tmpl("ht-moving-1", "HT-MV1", "Smooth Move Co.", "Moving", "Friendly approachable with clean layout", "split-left", "#0f172a", "#f1f5f9", "#3b82f6", "We Make Moving Easy.", "Local and long-distance moving with full packing, loading, and unpacking services.", "Licensed & Insured", "Get Free Quote", "Flat-Rate Pricing", "No hidden fees, no hourly surprises. Your price is locked in before we lift a box.", PHOTOS.abstract),
+  tmpl("ht-moving-2", "HT-MV2", "Elite Movers USA", "Moving", "Premium service with bold CTA", "centered", "#111827", "#f9fafb", "#f59e0b", "Your Move, Handled with Care.", "White-glove moving for homes and offices. Every item wrapped, padded, and protected.", "5-Star Rated", "Book Your Move", "Storage Solutions", "Climate-controlled storage available for any duration — short or long term.", PHOTOS.abstract),
+  tmpl("ht-moving-3", "HT-MV3", "Quick Shift Movers", "Moving", "Fast efficient with split layout", "split-right", "#1e293b", "#f8fafc", "#06b6d4", "Same-Day Moves Available.", "Need to move fast? We handle last-minute and emergency moves with no extra charges.", "24/7 Availability", "Call for Same-Day", "Furniture Disassembly", "We take apart and reassemble your furniture at no additional cost.", PHOTOS.abstract),
+
+  // ── AUTO DETAILING ──
+  tmpl("ht-auto-1", "HT-AD1", "Vanta Motors", "Auto Detailing", "Premium performance with cinematic feel", "split-right", "#0a0a0a", "#ffffff", "#dc2626", "Precision Performance. Pure Passion.", "Premium auto detailing and ceramic coating for discerning vehicle owners.", "Book Your Detail", "Book Now", "Ceramic Coating", "5-year protection that keeps your paint looking showroom new.", PHOTOS.car),
+  tmpl("ht-auto-2", "HT-AD2", "Showroom Shine Detail", "Auto Detailing", "Clean modern with bright accents", "bento", "#f8fafc", "#0f172a", "#3b82f6", "Your Car, Better Than New.", "Interior deep clean, paint correction, and protective coatings that last.", "Mobile Detail Service", "Book Mobile Detail", "We Come to You", "Full-service mobile detailing at your home or office — we bring everything.", PHOTOS.car),
+  tmpl("ht-auto-3", "HT-AD3", "Apex Auto Spa", "Auto Detailing", "Dark luxury with gold accents", "fullscreen-image", "#111827", "#f9fafb", "#fbbf24", "Detailing for Those Who Demand More.", "Show-quality detailing, PPF installation, and window tinting by certified technicians.", "Luxury Vehicle Specialists", "Schedule Your Detail", "Paint Protection Film", "Self-healing PPF that protects your paint from rock chips, scratches, and UV damage.", PHOTOS.car),
+
+  // ── RESTAURANTS ──
+  tmpl("ht-rest-1", "HT-RS1", "Aster Bistro", "Restaurants", "Editorial dining with warm tones", "fullscreen-image", "#1c1917", "#fafaf9", "#fbbf24", "A Taste of Something Different.", "Seasonal menus, craft cocktails, and an atmosphere you'll want to stay in.", "Reservations Recommended", "Book a Table", "Private Dining Available", "Host your next event in our intimate private dining room for up to 30 guests.", PHOTOS.hotel),
+  tmpl("ht-rest-2", "HT-RS2", "Coastal Kitchen & Bar", "Restaurants", "Fresh coastal with airy layout", "split-left", "#f8fafc", "#0f172a", "#0ea5e9", "Fresh. Local. Unforgettable.", "Waterfront dining with daily catches, craft beer, and sunset views.", "Open 7 Days a Week", "View Menu & Reserve", "Happy Hour Daily", "Join us 4-6 PM for half-price oysters, drink specials, and bar bites.", PHOTOS.hotel),
+  tmpl("ht-rest-3", "HT-RS3", "Ember Steakhouse", "Restaurants", "Dark luxury with dramatic lighting", "split-right", "#0c0a09", "#fafaf9", "#dc2626", "Fire. Meat. Mastery.", "Dry-aged steaks, open-flame grilling, and an award-winning wine list.", "Top 10 Steakhouses", "Reserve Your Table", "Wine Pairing Dinners", "Monthly chef's table experiences with sommelier-paired courses.", PHOTOS.hotel),
+
+  // ── INSURANCE ──
+  tmpl("ht-ins-1", "HT-IN1", "Shield Insurance Group", "Insurance", "Trust-first with professional blue", "centered", "#0f172a", "#f1f5f9", "#3b82f6", "Protecting What Matters Most.", "Auto, home, life, and business insurance from providers you can trust.", "Free Policy Review", "Get a Quote", "Multi-Policy Discount", "Bundle home and auto to save up to 25% on your monthly premiums.", PHOTOS.abstract),
+  tmpl("ht-ins-2", "HT-IN2", "Premier Insurance Agency", "Insurance", "Clean modern with approachable tone", "split-left", "#f8fafc", "#0f172a", "#10b981", "Coverage You Can Count On.", "Personalized insurance solutions from an independent agent who shops for you.", "15+ Carriers", "Compare Quotes", "24/7 Claims Support", "File a claim anytime, day or night. We're with you every step of the way.", PHOTOS.abstract),
+  tmpl("ht-ins-3", "HT-IN3", "Liberty Insurance Partners", "Insurance", "Bold authority with split layout", "split-right", "#111827", "#f9fafb", "#f59e0b", "Your Family's Safety Net.", "Life insurance, health coverage, and financial planning under one roof.", "Free Consultation", "Schedule a Review", "Term Life from $15/mo", "Affordable term life coverage that protects your family's future.", PHOTOS.abstract),
+
+  // ── MORTGAGE ──
+  tmpl("ht-mortgage-1", "HT-MG1", "Summit Mortgage Group", "Mortgage", "Professional trust with clean layout", "centered", "#0f172a", "#f1f5f9", "#3b82f6", "Your Home Loan, Simplified.", "Conventional, FHA, VA, and jumbo loans with competitive rates and fast approvals.", "Pre-Approval in 24 Hours", "Get Pre-Approved", "No Origination Fees", "Save thousands at closing with zero origination fees on most loan programs.", PHOTOS.home),
+  tmpl("ht-mortgage-2", "HT-MG2", "Premier Lending Co.", "Mortgage", "Modern fintech with bold CTA", "split-left", "#111827", "#f9fafb", "#06b6d4", "From Application to Keys.", "A digital-first mortgage experience with real human support at every step.", "Online Application", "Start Your Application", "Rate Lock Guarantee", "Lock your rate for 90 days while you shop — if rates drop, we'll match the lower rate.", PHOTOS.home),
+  tmpl("ht-mortgage-3", "HT-MG3", "Liberty Home Loans", "Mortgage", "Friendly approachable with warm tones", "split-right", "#f8fafc", "#0f172a", "#f59e0b", "Making Homeownership Possible.", "First-time buyer programs, refinancing, and investment property loans.", "First-Time Buyer Specialists", "Talk to a Loan Officer", "Down Payment Assistance", "We help you find local and state programs that can cover your down payment.", PHOTOS.home),
+
+  // ── CLEANING SERVICES ──
+  tmpl("ht-clean-1", "HT-CL1", "Sparkle Clean Pros", "Cleaning Services", "Fresh clean with bright accents", "bento", "#f8fafc", "#0f172a", "#0ea5e9", "Clean Home, Clear Mind.", "Professional residential and commercial cleaning with eco-friendly products.", "Same-Day Availability", "Book Cleaning", "Eco-Friendly Products", "Non-toxic, pet-safe cleaning supplies that leave your home fresh and safe.", PHOTOS.abstract),
+  tmpl("ht-clean-2", "HT-CL2", "Pristine Property Services", "Cleaning Services", "Professional commercial with split layout", "split-left", "#0f172a", "#f1f5f9", "#10b981", "Spotless Spaces, Every Time.", "Office cleaning, post-construction cleanup, and recurring janitorial services.", "Commercial & Residential", "Get Free Quote", "Trusted & Background-Checked", "Every team member is vetted, trained, and insured for your peace of mind.", PHOTOS.abstract),
+  tmpl("ht-clean-3", "HT-CL3", "Deep Clean Specialists", "Cleaning Services", "Bold conversion-focused with urgent CTA", "centered", "#111827", "#f9fafb", "#3b82f6", "When Clean Isn't Enough, We Go Deep.", "Move-in/move-out deep cleaning, carpet shampooing, and pressure washing.", "100% Satisfaction Guarantee", "Book Deep Clean", "Re-Clean Guarantee", "If anything doesn't meet your standards, we'll return and re-clean it for free.", PHOTOS.abstract),
+];
+
+export const INDUSTRY_LIST = Object.keys(INDUSTRY_IMAGES);
