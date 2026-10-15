@@ -3,8 +3,8 @@ import { Bot, Palette, Cable, Rocket, BarChart3, Search, UserPlus, Sparkles, Git
 
 const MODULES = [
   { to: "/auto-builder", icon: Hammer, title: "Auto Builder", desc: "Guided step-by-step website creation journey" },
-  { to: "/app-factory", icon: Package, title: "App Factory", desc: "Desktop & mobile application layout templates" },
-  { to: "/video-studio", icon: Video, title: "Video Studio", desc: "AI-powered hero video and background loop generator" },
+  { to: "/portal", icon: Package, title: "App Factory", desc: "Desktop & mobile application layout templates" },
+  { to: "/portal", icon: Video, title: "Video Studio", desc: "AI-powered hero video and background loop generator" },
   { to: "/design-library", icon: LayoutTemplate, title: "Design Template Library", desc: "594 premium designs + app layout patterns" },
   { to: "/agent-orchestrator", icon: Bot, title: "Agent Orchestrator", desc: "Monitor autonomous agents and assign tasks" },
   { to: "/brand-assets", icon: Palette, title: "Brand Assets", desc: "Logos, color palettes, and marketing imagery" },
