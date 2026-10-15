@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Wand2, Library, Globe, LayoutTemplate, Rocket, LayoutGrid, Cable,
   Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown,
-  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2
+  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2, Key, Plug
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -75,6 +75,8 @@ const EXTERNAL_MODULES = [
   { to: "/agent-library", icon: Bot, label: "Agent Library" },
   { to: "/ai-skills-library", icon: Zap, label: "AI Skills Library" },
   { to: "/comm-library", icon: Radio, label: "AI Comms Library" },
+  { to: "/api-keys", icon: Key, label: "API Key Manager" },
+  { to: "/api-connectors", icon: Plug, label: "API Connectors" },
 ];
 
 export default function PortalShell({ activeTab, onTabChange, onNew, children }) {

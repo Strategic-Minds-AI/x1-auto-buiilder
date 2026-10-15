@@ -1,0 +1,74 @@
+{
+  "name": "AppApiKey",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Label for this API key"
+    },
+    "key_prefix": {
+      "type": "string",
+      "description": "First 12 chars for display (e.g. smk_a1b2c3d4)"
+    },
+    "key_hash": {
+      "type": "string",
+      "description": "SHA-256 hash of the full key \u2014 never store the raw key"
+    },
+    "scopes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "read",
+          "invoke",
+          "write",
+          "admin"
+        ]
+      },
+      "description": "Permissions granted to this key"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "revoked"
+      ],
+      "default": "active"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_used_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "name",
+    "key_prefix",
+    "key_hash"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

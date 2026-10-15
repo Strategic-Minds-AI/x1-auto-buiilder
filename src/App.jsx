@@ -37,6 +37,8 @@ import AIToolLibrary from '@/pages/AIToolLibrary';
 import AgentLibrary from '@/pages/AgentLibrary';
 import AISkillsLibrary from '@/pages/AISkillsLibrary';
 import CommLibrary from '@/pages/CommLibrary';
+import ApiKeyManager from '@/pages/ApiKeyManager';
+import ApiConnectorSettings from '@/pages/ApiConnectorSettings';
 
 function App() {
   return (
@@ -79,6 +81,8 @@ function App() {
               <Route path="/agent-library" element={<AgentLibrary />} />
               <Route path="/ai-skills-library" element={<AISkillsLibrary />} />
               <Route path="/comm-library" element={<CommLibrary />} />
+              <Route path="/api-keys" element={<ApiKeyManager />} />
+              <Route path="/api-connectors" element={<ApiConnectorSettings />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>
