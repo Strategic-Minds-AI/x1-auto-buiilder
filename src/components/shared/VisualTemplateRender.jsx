@@ -50,7 +50,7 @@ export default function VisualTemplateRender({ template, displayW = 280 }) {
     }
 
     // Desktop / mobile app patterns: use the pattern renderer
-    const patternObj = { id: template.template_id, name: template.name };
+    const patternObj = { id: template.template_id, name: template.name, layout: template.layout };
     const platform = isMobile ? "mobile" : "desktop";
     const r = renderPreview(patternObj, platform, config);
     return { ...r, vars: cssVars };

@@ -100,16 +100,42 @@ export const DESKTOP_APP_TYPES = [
   { type: 'content-cms', name: 'Content CMS', palettes: [{ tone: '#0f172a', ink: '#f8fafc', accent: '#22c55e' }, { tone: '#1a1a2e', ink: '#ffffff', accent: '#fbbf24' }], copies: [{ head: 'Content Manager', sub: 'Drafts, published, and scheduled' }, { head: 'Editorial Command', sub: 'Plan, write, and publish' }], layouts: ['sidebar-list', 'table-dense', 'split-detail', 'master-detail', 'tabbed-workspace', 'widget-grid', 'command-palette', 'kanban'] },
 ];
 
+export const DESKTOP_LAYOUT_NAMES = [
+  'sidebar-workspace', 'topnav-workspace', 'data-table', 'analytics-dashboard', 'kanban-board',
+  'email-hub', 'file-manager', 'calendar-week', 'gantt-timeline', 'form-builder',
+  'team-chat', 'funnel-view', 'inventory-grid', 'helpdesk-queue', 'pivot-table',
+  'onboarding-wizard', 'agent-console', 'split-editor', 'master-detail', 'widget-grid',
+  'card-masonry', 'timeline-feed', 'gallery-grid', 'settings-panel', 'map-dashboard',
+  'chart-fullscreen', 'comparison-table', 'tree-explorer', 'kanban-swimlanes', 'calendar-month',
+  'spreadsheet', 'dashboard-tiles', 'report-viewer', 'activity-feed', 'profile-card',
+  'notification-center', 'search-results', 'data-cards', 'metric-rings', 'progress-tracker',
+  'split-panes', 'tabbed-cards', 'list-detail', 'command-bar', 'workflow-editor',
+  'log-viewer', 'app-launcher', 'collapsible-sections', 'mini-chart-grid', 'kanban-calendar',
+];
+
+const EXTENDED_PALETTES = [
+  { tone: '#0f172a', ink: '#f8fafc', accent: '#3b82f6' }, { tone: '#0a0e27', ink: '#ffffff', accent: '#06b6d4' },
+  { tone: '#1a1a2e', ink: '#ffffff', accent: '#e94560' }, { tone: '#0d1117', ink: '#c9d1d9', accent: '#58a6ff' },
+  { tone: '#1e1b4b', ink: '#f8fafc', accent: '#818cf8' }, { tone: '#111827', ink: '#f9fafb', accent: '#10b981' },
+  { tone: '#0f172a', ink: '#f8fafc', accent: '#f59e0b' }, { tone: '#1c1917', ink: '#fafaf9', accent: '#f97316' },
+  { tone: '#0a1929', ink: '#ffffff', accent: '#6366f1' }, { tone: '#1a1a1a', ink: '#ffffff', accent: '#a855f7' },
+  { tone: '#0f0f0f', ink: '#ffffff', accent: '#ec4899' }, { tone: '#0c0c1c', ink: '#ffffff', accent: '#00ff88' },
+];
+
 export function generateDesktopTemplates() {
   const templates = [];
   let counter = 1;
+  let layoutIdx = 0;
   for (const at of DESKTOP_APP_TYPES) {
-    at.layouts.forEach((layout, layoutIdx) => {
-      const palette = at.palettes[layoutIdx % at.palettes.length];
-      const copy = at.copies[layoutIdx % at.copies.length];
+    const numLayouts = 10;
+    for (let i = 0; i < numLayouts; i++) {
+      const layout = DESKTOP_LAYOUT_NAMES[layoutIdx % DESKTOP_LAYOUT_NAMES.length];
+      layoutIdx++;
+      const palette = EXTENDED_PALETTES[(counter - 1) % EXTENDED_PALETTES.length];
+      const copy = at.copies[i % at.copies.length];
       templates.push({
         template_id: `DA${String(counter).padStart(3, '0')}`,
-        name: `${at.name} ${layoutIdx + 1}`,
+        name: `${at.name} ${i + 1}`,
         category: 'desktop_app',
         industry: at.type,
         family: `${layout} layout`,
@@ -124,10 +150,10 @@ export function generateDesktopTemplates() {
         feature: copy.head,
         feature_copy: copy.sub,
         photo: null,
-        source_package: 'desktop-patterns-v1',
+        source_package: 'desktop-patterns-v2',
       });
       counter++;
-    });
+    }
   }
   return templates;
 }
@@ -146,16 +172,33 @@ export const MOBILE_APP_TYPES = [
   { type: 'photo-editor', name: 'Photo Editor', palettes: [{ tone: '#0a0a0a', ink: '#ffffff', accent: '#fbbf24' }, { tone: '#0f0f0f', ink: '#ffffff', accent: '#ec4899' }], copies: [{ head: 'Edit', sub: 'Crop, filter, adjust' }, { head: 'Library', sub: 'Your photos' }], layouts: ['canvas-focus', 'tab-bar', 'card-stack', 'grid-grid', 'list-feed', 'story-rail', 'bottom-sheet', 'fab-list'] },
 ];
 
+export const MOBILE_LAYOUT_NAMES = [
+  'feed-list', 'card-swipe', 'tile-grid', 'search-explore', 'generic-list',
+  'onboarding-carousel', 'qr-scanner', 'checkout-flow', 'fitness-rings', 'food-menu',
+  'ride-tracking', 'notes-list', 'habit-tracker', 'event-ticket', 'forum-threads',
+  'course-player', 'health-vitals', 'chat-conversation', 'photo-grid', 'profile-tabbed',
+  'stories-rail', 'wallet-cards', 'music-player', 'map-explorer', 'settings-list',
+  'notification-list', 'calendar-agenda', 'task-checklist', 'expense-tracker', 'booking-calendar',
+  'product-detail', 'social-profile', 'video-player', 'weather-widget', 'podcast-player',
+  'reading-list', 'meditation-timer', 'sleep-tracker', 'water-reminder', 'budget-wizard',
+  'loyalty-cards', 'ar-camera', 'voice-recorder', 'barcode-lookup', 'emergency-quick',
+  'parking-finder', 'recipe-viewer', 'plant-identifier', 'transit-map', 'crypto-wallet',
+];
+
 export function generateMobileTemplates() {
   const templates = [];
   let counter = 1;
+  let layoutIdx = 0;
   for (const at of MOBILE_APP_TYPES) {
-    at.layouts.forEach((layout, layoutIdx) => {
-      const palette = at.palettes[layoutIdx % at.palettes.length];
-      const copy = at.copies[layoutIdx % at.copies.length];
+    const numLayouts = 10;
+    for (let i = 0; i < numLayouts; i++) {
+      const layout = MOBILE_LAYOUT_NAMES[layoutIdx % MOBILE_LAYOUT_NAMES.length];
+      layoutIdx++;
+      const palette = EXTENDED_PALETTES[(counter - 1) % EXTENDED_PALETTES.length];
+      const copy = at.copies[i % at.copies.length];
       templates.push({
         template_id: `MA${String(counter).padStart(3, '0')}`,
-        name: `${at.name} ${layoutIdx + 1}`,
+        name: `${at.name} ${i + 1}`,
         category: 'mobile_app',
         industry: at.type,
         family: `${layout} layout`,
@@ -170,10 +213,10 @@ export function generateMobileTemplates() {
         feature: copy.head,
         feature_copy: copy.sub,
         photo: null,
-        source_package: 'mobile-patterns-v1',
+        source_package: 'mobile-patterns-v2',
       });
       counter++;
-    });
+    }
   }
   return templates;
 }

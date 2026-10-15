@@ -6,6 +6,8 @@ import desktopPatterns from "@/lib/factory/registry/patterns/desktop_patterns.js
 import mobilePatterns from "@/lib/factory/registry/patterns/mobile_patterns.json";
 import experienceRecipes from "@/lib/factory/registry/patterns/experience_recipes.json";
 import { DEFAULT_CONFIG } from "./studioConfig.js";
+import { DESKTOP_LAYOUT_MAP } from "./desktopLayouts.js";
+import { MOBILE_LAYOUT_MAP } from "./mobileLayouts.js";
 
 export const GALLERY_FAMILIES = [
   { key: "desktop", label: "Desktop Archetypes", platform: "desktop", items: desktopPatterns },
@@ -327,14 +329,8 @@ const DESKTOP_EXTRA = { D21: emailHub, D22: fileManager, D23: calendarWeek, D24:
 
 function renderDesktop(t, config) {
   const ctx = ctxd(config);
-  let inner;
-  if (t.id === "D01") inner = sidebarWorkspace(ctx);
-  else if (t.id === "D02") inner = topnavWorkspace(ctx);
-  else if (t.id === "D03") inner = dataTable(ctx);
-  else if (t.id === "D04") inner = analytics(ctx);
-  else if (t.id === "D05" || t.id === "D06") inner = kanban(ctx);
-  else if (DESKTOP_EXTRA[t.id]) inner = DESKTOP_EXTRA[t.id](ctx);
-  else inner = sidebarWorkspace(ctx);
+  const fn = DESKTOP_LAYOUT_MAP[t.layout] || DESKTOP_LAYOUT_MAP["sidebar-workspace"];
+  const inner = fn(ctx);
   return { frame: "browser", designW: BROWSER.w, designH: BROWSER.h, html: `<div class="vg-screen">${inner}</div>` };
 }
 
@@ -567,13 +563,8 @@ const MOBILE_EXTRA = { M21: onboardingCarousel, M22: scanner, M23: checkout, M24
 
 function renderMobile(t, config) {
   const ctx = ctxd(config);
-  let inner;
-  if (t.id === "M01") inner = feed(ctx);
-  else if (t.id === "M02") inner = swipe(ctx);
-  else if (t.id === "M03") inner = tiles(ctx);
-  else if (t.id === "M04") inner = search(ctx);
-  else if (MOBILE_EXTRA[t.id]) inner = MOBILE_EXTRA[t.id](ctx);
-  else inner = genericMobile(ctx);
+  const fn = MOBILE_LAYOUT_MAP[t.layout] || MOBILE_LAYOUT_MAP["feed-list"];
+  const inner = fn(ctx);
   return { frame: "phone", designW: PHONE.w, designH: PHONE.h, html: `<div class="vg-screen">${inner}</div>` };
 }
 
