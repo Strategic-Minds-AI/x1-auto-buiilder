@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import SyncCommandPanel from "@/components/portal/SyncCommandPanel";
+import AutonomousSyncPanel from "@/components/portal/AutonomousSyncPanel";
 import { Cable, RefreshCw, CheckCircle2, XCircle, Loader2, Activity, AlertCircle, CheckCheck, KeyRound } from "lucide-react";
 
 export default function GPTSyncDashboard() {
@@ -54,6 +55,8 @@ export default function GPTSyncDashboard() {
         <StatCard label="Successful" value={stats.success} icon={CheckCheck} color="text-emerald-400" />
         <StatCard label="Failed" value={stats.error} icon={AlertCircle} color="text-destructive" />
       </div>
+
+      <AutonomousSyncPanel />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <SyncCommandPanel onCommandComplete={load} />

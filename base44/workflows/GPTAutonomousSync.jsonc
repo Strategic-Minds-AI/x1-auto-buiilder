@@ -1,0 +1,47 @@
+{
+  "name": "GPT Autonomous Sync",
+  "description": "Fully autonomous bi-directional JSON sync \u2014 pushes app state snapshots to the external GPT engine and pulls/executes pending commands every 5 minutes. No manual intervention required.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "interval",
+      "cron_expression": null,
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": 5,
+      "interval_unit": "minutes",
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "gpt_autonomous_sync",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "sync_cycle": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "gptAutonomousSync",
+            "args": {
+              "action": "cycle"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Run Bi-Directional Sync Cycle",
+            "description": "Push JSON snapshot to GPT engine, pull pending commands, execute them, and ack results"
+          }
+        }
+      }
+    ]
+  }
+}
