@@ -31,6 +31,12 @@ import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
 import OAuthConsent from '@/pages/OAuthConsent';
+import PerformanceReport from '@/pages/PerformanceReport';
+import CRM from '@/pages/CRM';
+import AIToolLibrary from '@/pages/AIToolLibrary';
+import AgentLibrary from '@/pages/AgentLibrary';
+import AISkillsLibrary from '@/pages/AISkillsLibrary';
+import CommLibrary from '@/pages/CommLibrary';
 
 function App() {
   return (
@@ -67,6 +73,12 @@ function App() {
               <Route path="/style-guide-editor" element={<StyleGuideEditor />} />
               <Route path="/design-library" element={<div className="portal-light min-h-screen bg-white"><PremiumDesignLibrary /></div>} />
               <Route path="/card-flyer-studio" element={<div className="portal-light min-h-screen bg-white"><CardFlyerStudio /></div>} />
+              <Route path="/performance-report" element={<PerformanceReport />} />
+              <Route path="/crm" element={<CRM />} />
+              <Route path="/ai-tool-library" element={<AIToolLibrary />} />
+              <Route path="/agent-library" element={<AgentLibrary />} />
+              <Route path="/ai-skills-library" element={<AISkillsLibrary />} />
+              <Route path="/comm-library" element={<CommLibrary />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>

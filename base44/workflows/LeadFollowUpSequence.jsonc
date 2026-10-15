@@ -1,0 +1,44 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "lead_follow_up_sequence",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "process_followups": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "processFollowUps"
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Process due follow-up emails",
+            "description": "Sends branded follow-ups to contacts with due scheduled emails"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Processes due follow-up emails for CRM contacts every hour \u2014 sends branded LeadFollowUp template to contacts with scheduled follow-ups",
+  "name": "Lead Follow-Up Sequence",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 * * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  }
+}

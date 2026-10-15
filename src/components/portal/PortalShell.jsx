@@ -65,10 +65,16 @@ const EXTERNAL_MODULES = [
   { to: "/business-name-studio", icon: Building2, label: "Name Studio" },
   { to: "/research-hub", icon: Search, label: "Research Hub" },
   { to: "/analytics", icon: BarChart3, label: "Analytics" },
+  { to: "/performance-report", icon: BarChart3, label: "Performance Report" },
+  { to: "/crm", icon: Building2, label: "AI CRM" },
   { to: "/brand-assets", icon: Palette, label: "Brand Assets" },
   { to: "/logo-workshop", icon: Sparkles, label: "Logo Workshop" },
   { to: "/style-guide-editor", icon: SlidersHorizontal, label: "Style Guide" },
   { to: "/project-timeline", icon: GitBranch, label: "Timeline" },
+  { to: "/ai-tool-library", icon: Package, label: "AI Tool Library" },
+  { to: "/agent-library", icon: Bot, label: "Agent Library" },
+  { to: "/ai-skills-library", icon: Zap, label: "AI Skills Library" },
+  { to: "/comm-library", icon: Radio, label: "AI Comms Library" },
 ];
 
 export default function PortalShell({ activeTab, onTabChange, onNew, children }) {
@@ -133,7 +139,7 @@ export default function PortalShell({ activeTab, onTabChange, onNew, children })
                 Modules
               </div>
               <div className="space-y-0.5">
-                {EXTERNAL_MODULES.slice(0, 4).map((m) => {
+                {EXTERNAL_MODULES.map((m) => {
                   const Icon = m.icon;
                   return (
                     <Link

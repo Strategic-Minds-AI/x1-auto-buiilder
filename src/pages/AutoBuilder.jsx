@@ -101,7 +101,7 @@ export default function AutoBuilder() {
         {step === "strategy" && vision && <StrategyStep vision={vision} accent={accent} onApprove={approveStrategy} />}
         {step === "name" && <NameStep accent={accent} vision={vision} strategy={strategy} onApprove={approveName} />}
         {step === "brand" && <BrandStep accent={accent} setAccent={setAccent} nameData={nameData} onApprove={approveBrand} />}
-        {step === "template" && <TemplateStep accent={accent} onApprove={approveTemplate} />}
+        {step === "template" && <TemplateStep accent={accent} vision={vision} strategy={strategy} onApprove={approveTemplate} />}
         {step === "website" && <WebsiteStep accent={accent} vision={vision} strategy={strategy} nameData={nameData} brandData={brandData} templateData={templateData} onApprove={approveWebsite} />}
         {step === "content" && <ContentStep accent={accent} websiteData={websiteData} onApprove={approveContent} />}
         {step === "compliance" && <ComplianceStep accent={accent} websiteData={websiteData} onApprove={approveCompliance} />}

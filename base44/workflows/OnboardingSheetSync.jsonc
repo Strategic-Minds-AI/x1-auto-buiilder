@@ -1,0 +1,45 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "onboarding_sheet_sync",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "sync_to_sheet": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "syncOnboardingToSheet",
+            "args": {
+              "projectId": "${ .trigger.entity_id }",
+              "businessName": "${ .trigger.data.business_name }",
+              "industry": "${ .trigger.data.industry }",
+              "businessWebsite": "${ .trigger.data.business_website }",
+              "businessResearch": "${ .trigger.data.business_research }",
+              "benchmark": "${ .trigger.data.benchmark }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Sync research to Google Sheet",
+            "description": "Appends skip-traced business data to centralized sheet"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Syncs business onboarding research data to a Google Sheet when a new WebsiteProject is created \u2014 centralized record of skip-traced data",
+  "name": "Onboarding Sheet Sync",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "WebsiteProject"
+    }
+  }
+}
