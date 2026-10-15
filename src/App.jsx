@@ -21,6 +21,7 @@ import ProjectTimeline from '@/pages/ProjectTimeline';
 import AssetRepository from '@/pages/AssetRepository';
 import CampaignMonitor from '@/pages/CampaignMonitor';
 import StyleGuideEditor from '@/pages/StyleGuideEditor';
+import PremiumDesignLibrary from '@/pages/PremiumDesignLibrary';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
@@ -57,6 +58,7 @@ function App() {
               <Route path="/asset-repository" element={<AssetRepository />} />
               <Route path="/campaign-monitor" element={<CampaignMonitor />} />
               <Route path="/style-guide-editor" element={<StyleGuideEditor />} />
+              <Route path="/design-library" element={<PremiumDesignLibrary />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>

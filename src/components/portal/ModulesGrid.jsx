@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Bot, Palette, Cable, Rocket, BarChart3, Search, UserPlus, Sparkles, GitBranch, Package, Monitor, SlidersHorizontal } from "lucide-react";
+import { Bot, Palette, Cable, Rocket, BarChart3, Search, UserPlus, Sparkles, GitBranch, Package, Monitor, SlidersHorizontal, LayoutTemplate } from "lucide-react";
 
 const MODULES = [
   { to: "/agent-orchestrator", icon: Bot, title: "Agent Orchestrator", desc: "Monitor autonomous agents and assign tasks" },
@@ -14,6 +14,7 @@ const MODULES = [
   { to: "/asset-repository", icon: Package, title: "Asset Repository", desc: "Centralized library of all assets" },
   { to: "/campaign-monitor", icon: Monitor, title: "Campaign Monitor", desc: "Monitor bulk launch campaigns" },
   { to: "/style-guide-editor", icon: SlidersHorizontal, title: "Style Guide Editor", desc: "Define universal brand styles" },
+  { to: "/design-library", icon: LayoutTemplate, title: "Design Template Library", desc: "77 premium designs + app layout patterns from Visual Factory" },
 ];
 
 export default function ModulesGrid() {

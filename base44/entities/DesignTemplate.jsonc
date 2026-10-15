@@ -1,0 +1,129 @@
+{
+  "name": "DesignTemplate",
+  "type": "object",
+  "properties": {
+    "template_id": {
+      "type": "string",
+      "description": "Unique template identifier (e.g. vanta-motors, D01, M01)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "website",
+        "desktop_app",
+        "mobile_app"
+      ],
+      "description": "Template category: business website, desktop app layout, or mobile app layout"
+    },
+    "industry": {
+      "type": "string",
+      "description": "Industry this template targets"
+    },
+    "family": {
+      "type": "string",
+      "description": "Design family / art direction description"
+    },
+    "layout": {
+      "type": "string",
+      "description": "Layout type identifier"
+    },
+    "tone": {
+      "type": "string",
+      "description": "Background color hex"
+    },
+    "ink": {
+      "type": "string",
+      "description": "Text/foreground color hex"
+    },
+    "accent": {
+      "type": "string",
+      "description": "Accent color hex"
+    },
+    "head": {
+      "type": "string",
+      "description": "Hero headline"
+    },
+    "sub": {
+      "type": "string",
+      "description": "Hero subheadline"
+    },
+    "eyebrow": {
+      "type": "string",
+      "description": "Eyebrow text above headline"
+    },
+    "cta": {
+      "type": "string",
+      "description": "Primary call-to-action label"
+    },
+    "feature": {
+      "type": "string",
+      "description": "Feature headline"
+    },
+    "feature_copy": {
+      "type": "string",
+      "description": "Feature description copy"
+    },
+    "photo": {
+      "type": "string",
+      "description": "Unsplash photo ID for hero image"
+    },
+    "interactive": {
+      "type": "string",
+      "description": "Interactive element type (selector, filter, tabs, booking, stepper, range)"
+    },
+    "source_package": {
+      "type": "string",
+      "description": "Which package this template was imported from"
+    }
+  },
+  "required": [
+    "template_id",
+    "name",
+    "category"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
