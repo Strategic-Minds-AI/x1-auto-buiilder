@@ -1,0 +1,40 @@
+{
+  "name": "Strategy to GPT Mission Sync",
+  "description": "When generateStrategies completes for a client (BuildProject moves to 'strategy' status), triggers gptSyncEngine to convert strategies into GPTMission objects, then notifies the communications_director to review mission alignment before it goes live to the agents.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "BuildProject",
+      "events": [
+        "update"
+      ]
+    },
+    "condition": "${ .trigger.data.status == \"strategy\" and .trigger.old_data.status != \"strategy\" }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "strategy_to_gpt_mission",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "sync_missions": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "syncStrategiesToMissions",
+            "args": {
+              "projectId": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Sync strategies to GPT missions",
+            "description": "Convert strategy to GPTMission and notify communications_director"
+          }
+        }
+      }
+    ]
+  }
+}

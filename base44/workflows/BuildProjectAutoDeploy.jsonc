@@ -1,0 +1,40 @@
+{
+  "name": "Build Project Auto Deploy",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "build_project_auto_deploy",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_pipeline": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "buildProjectPipeline",
+            "args": {
+              "projectId": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Run build pipeline",
+            "description": "Research templates, instantiate, deploy, notify master_orchestrator"
+          }
+        }
+      }
+    ]
+  },
+  "description": "When a new BuildProject is created, researches industry templates to identify a match, instantiates the template, deploys the site, and notifies the master_orchestrator once the deployment is live.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "BuildProject"
+    }
+  }
+}

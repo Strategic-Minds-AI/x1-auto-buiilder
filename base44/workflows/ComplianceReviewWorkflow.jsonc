@@ -1,0 +1,40 @@
+{
+  "name": "Compliance Review and Deploy",
+  "description": "When a WebsiteProject moves to 'Ready for Review' (preview_ready), triggers a ComplianceReport generation. If the report passes (score >= 80), automatically deploys the site. If it fails, assigns an AgentTask to the super_agent to fix the specific issues listed in the report.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "WebsiteProject",
+      "events": [
+        "update"
+      ]
+    },
+    "condition": "${ .trigger.data.status == \"preview_ready\" and .trigger.old_data.status != \"preview_ready\" }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "compliance_review_deploy",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "process_compliance": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "processComplianceReview",
+            "args": {
+              "projectId": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Process compliance review",
+            "description": "Run compliance check, deploy if pass or assign fix task if fail"
+          }
+        }
+      }
+    ]
+  }
+}
