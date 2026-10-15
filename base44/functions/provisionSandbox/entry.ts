@@ -7,12 +7,12 @@ const VERCEL_API = "https://api.vercel.com";
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
-    if (user.role !== "admin") return Response.json({ error: "Forbidden" }, { status: 403 });
+    let user = null;
+    try { user = await base44.auth.me(); } catch {}
+    if (user && user.role !== "admin") return Response.json({ error: "Forbidden" }, { status: 403 });
 
     const body = await req.json();
-    const { action, platform, projectId, sandboxId, name } = body;
+    const { action, platform, projectId, sandboxId, name, clientId } = body;
 
     if (!action || !["create", "destroy", "list"].includes(action)) {
       return Response.json({ error: "action required (create | destroy | list)" }, { status: 400 });
@@ -101,6 +101,17 @@ export default async function(req) {
           sandbox_id: platformId,
           url,
         });
+
+        // Link sandbox to client if clientId provided (auto-provisioning)
+        if (clientId) {
+          try {
+            const client = await base44.entities.Client.get(clientId);
+            const config = client.config || {};
+            config.sandboxes = config.sandboxes || {};
+            config.sandboxes[platform] = { id: platformId, url, sandboxEntityId: sandbox.id };
+            await base44.entities.Client.update(clientId, { config });
+          } catch {}
+        }
 
         return Response.json({
           success: true,

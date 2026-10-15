@@ -4,7 +4,7 @@ import BackButton from "@/components/shared/BackButton";
 import BuilderToolbar from "@/components/builder/BuilderToolbar";
 import BuilderChat from "@/components/builder/BuilderChat";
 import BuilderPreview from "@/components/builder/BuilderPreview";
-import { Loader2, ChevronDown, Plus } from "lucide-react";
+import { Loader2, ChevronDown, Plus, MessageCircle, Radio } from "lucide-react";
 
 const AGENT_NAME = "super_agent";
 
@@ -20,6 +20,17 @@ export default function VisualBuilder() {
   const [showProjectMenu, setShowProjectMenu] = useState(false);
 
   useEffect(() => { loadProjects(); startConversation(); }, []);
+
+  // Real-time preview — subscribe to WebsiteProject changes so the preview updates live
+  useEffect(() => {
+    const unsub = base44.entities.WebsiteProject.subscribe((event) => {
+      if (activeProject && event.data?.id === activeProject.id) {
+        setActiveProject(event.data);
+      }
+      if (event.type === "create") loadProjects();
+    });
+    return unsub;
+  }, [activeProject?.id]);
 
   const loadProjects = async () => {
     setLoadingProjects(true);
@@ -98,7 +109,16 @@ export default function VisualBuilder() {
             )}
           </div>
         </div>
-        <div className="text-xs text-white/40 font-semibold tracking-wide">VISUAL BUILDER · CHAT-GUIDED EDITOR</div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-semibold">
+            <Radio className="w-3 h-3 animate-pulse" /> LIVE
+          </div>
+          <a href={base44.agents.getWhatsAppConnectURL(AGENT_NAME)} target="_blank" title="Connect your phone via WhatsApp"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-[#25D366]/20 px-3 py-1.5 text-xs font-semibold text-[#25D366] hover:bg-[#25D366]/30 transition">
+            <MessageCircle className="w-3.5 h-3.5" /> Connect Phone
+          </a>
+          <div className="text-xs text-white/40 font-semibold tracking-wide">VISUAL BUILDER</div>
+        </div>
       </div>
 
       {/* Toolbar */}

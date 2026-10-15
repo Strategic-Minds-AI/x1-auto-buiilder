@@ -1,0 +1,62 @@
+{
+  "name": "Auto Sandbox Provision",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "Client"
+    }
+  },
+  "description": "Automatically provisions Railway and Vercel sandboxes when a new client is created, linking them to the client config",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "auto_sandbox_provision",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "provision_railway": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "provisionSandbox",
+            "args": {
+              "action": "create",
+              "platform": "railway",
+              "clientId": "${ .trigger.entity_id }",
+              "name": "${ .trigger.data.slug // .trigger.data.name }"
+            }
+          },
+          "then": "provision_vercel",
+          "x-base44": {
+            "title": "Provision Railway sandbox",
+            "description": "Create Railway project for client"
+          }
+        }
+      },
+      {
+        "provision_vercel": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "provisionSandbox",
+            "args": {
+              "action": "create",
+              "platform": "vercel",
+              "clientId": "${ .trigger.entity_id }",
+              "name": "${ .trigger.data.slug // .trigger.data.name }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Provision Vercel sandbox",
+            "description": "Create Vercel project for client"
+          }
+        }
+      }
+    ]
+  }
+}

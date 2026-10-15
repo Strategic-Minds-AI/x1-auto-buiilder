@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import ReactMarkdown from "react-markdown";
-import { Send, Loader2, Bot, Sparkles, Wand2, Rocket, Shield } from "lucide-react";
+import { Send, Loader2, Bot, Sparkles, Wand2, Rocket, Shield, MessageCircle } from "lucide-react";
 
 const AGENT_NAME = "super_agent";
 
@@ -38,6 +38,10 @@ export default function BuilderChat({ conversation, messages, onMessages, loadin
           <div className="text-sm font-bold text-slate-800">AI Builder Chat</div>
           <div className="text-[10px] text-slate-400">Super Agent · Full Platform Access</div>
         </div>
+        <a href={base44.agents.getWhatsAppConnectURL(AGENT_NAME)} target="_blank" title="Connect via WhatsApp"
+          className="p-1.5 rounded-lg text-slate-400 hover:text-[#25D366] hover:bg-[#25D366]/10 transition">
+          <MessageCircle className="w-4 h-4" />
+        </a>
       </div>
 
       {/* Messages */}
