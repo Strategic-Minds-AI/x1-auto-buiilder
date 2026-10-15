@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Wand2, Library, Globe, LayoutTemplate, Rocket, LayoutGrid, Cable,
   Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown,
-  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio
+  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -22,6 +22,7 @@ const NAV_GROUPS = [
       { tab: "app-factory", icon: Package, label: "App Factory" },
       { tab: "video-studio", icon: Video, label: "Video Studio" },
       { tab: "universal-library", icon: Boxes, label: "Universal Library" },
+      { tab: "card-flyer", icon: CreditCard, label: "Card & Flyer Studio" },
     ],
   },
   {

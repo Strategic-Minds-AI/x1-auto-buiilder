@@ -24,6 +24,7 @@ import CampaignMonitor from '@/pages/CampaignMonitor';
 import LaunchMonitorPage from '@/components/portal/LaunchMonitor';
 import StyleGuideEditor from '@/pages/StyleGuideEditor';
 import PremiumDesignLibrary from '@/pages/PremiumDesignLibrary';
+import CardFlyerStudio from '@/pages/CardFlyerStudio';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
@@ -63,6 +64,7 @@ function App() {
               <Route path="/launch-monitor" element={<div className="portal-light min-h-screen bg-white"><LaunchMonitorPage /></div>} />
               <Route path="/style-guide-editor" element={<StyleGuideEditor />} />
               <Route path="/design-library" element={<div className="portal-light min-h-screen bg-white"><PremiumDesignLibrary /></div>} />
+              <Route path="/card-flyer-studio" element={<div className="portal-light min-h-screen bg-white"><CardFlyerStudio /></div>} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>

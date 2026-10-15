@@ -10,6 +10,7 @@ import PremiumDesignLibrary from "@/pages/PremiumDesignLibrary";
 import AppFactory from "@/pages/AppFactory";
 import VideoStudio from "@/pages/VideoStudio";
 import MassLaunchConsoleV2 from "@/components/masslaunch/MassLaunchConsoleV2";
+import CardFlyerStudio from "@/pages/CardFlyerStudio";
 import ComplianceDashboard from "@/components/portal/ComplianceDashboard";
 import UniversalLibrary from "@/components/portal/UniversalLibrary";
 import SocialCalendar from "@/components/portal/SocialCalendar";
@@ -249,6 +250,7 @@ export default function Portal() {
       {tab === "app-factory" && <AppFactory />}
       {tab === "video-studio" && <VideoStudio />}
       {tab === "universal-library" && <UniversalLibrary />}
+      {tab === "card-flyer" && <CardFlyerStudio />}
       {tab === "modules" && <ModulesGrid />}
       {tab === "quality" && <QualityDashboard />}
       {tab === "gpt-bridge" && <GPTBridge />}
