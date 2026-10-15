@@ -1,0 +1,39 @@
+<mjml>
+  <mj-head>
+    <mj-title>New Lead: {{lead_name}}</mj-title>
+    <mj-preview>A new lead has been captured</mj-preview>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-section background-color="#ffffff" padding="0 36px" />
+      <mj-text color="#475569" font-size="15px" line-height="1.6" padding="0" />
+      <mj-button background-color="#00d4ff" color="#0b1523" border-radius="16px" font-weight="700" inner-padding="14px 28px" align="left" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#0b1523">
+    <mj-section background-color="#00d4ff" padding="20px 36px">
+      <mj-column>
+        <mj-image src="https://media.base44.com/images/public/6acfedce320afe2f706c6bfd/22fdb73df_logo.png" alt="Digital Dominance Factory" width="140px" href="https://unlimitedwebsites.net" />
+      </mj-column>
+    </mj-section>
+    <mj-section padding="40px 36px 12px">
+      <mj-column>
+        <mj-text font-size="28px" font-weight="700" color="#0b1523">New Lead Captured</mj-text>
+        <mj-text color="#475569">A new lead has been submitted through your website. Review the details below and follow up promptly.</mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section padding="12px 36px">
+      <mj-column>
+        <mj-text><strong>Name:</strong> {{lead_name}}</mj-text>
+        <mj-text><strong>Email:</strong> {{lead_email}}</mj-text>
+        <mj-text><strong>Service Interest:</strong> {{service}}</mj-text>
+        <mj-text><strong>Message:</strong> {{message}}</mj-text>
+        <mj-button href="https://unlimitedwebsites.net">View in CRM</mj-button>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#0b1523" padding="20px 36px">
+      <mj-column>
+        <mj-text color="#94a3b8" font-size="12px" align="center">© 2026 Digital Dominance Factory. All rights reserved.</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

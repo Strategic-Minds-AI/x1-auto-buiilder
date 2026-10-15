@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Wand2, Library, Globe, LayoutTemplate, Rocket, LayoutGrid, Cable,
-  Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown,
+  Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown, Mail,
   Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2, Key, Plug, Brain, Scan, AlertTriangle
 } from "lucide-react";
 
@@ -88,6 +88,7 @@ const EXTERNAL_MODULES = [
   { to: "/visual-builder", icon: Wand2, label: "Visual Builder" },
   { to: "/builder-docs", icon: Brain, label: "Builder Docs" },
   { to: "/system-tests", icon: Shield, label: "System Tests" },
+  { to: "/email-templates", icon: Mail, label: "Email Templates" },
 ];
 
 export default function PortalShell({ activeTab, onTabChange, onNew, children }) {
