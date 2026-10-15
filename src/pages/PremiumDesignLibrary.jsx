@@ -6,6 +6,7 @@ import {
   Loader2, Search, Globe, Monitor, Smartphone, Sparkles, Layout,
   Wand2, ChevronDown, Filter, X, Check, Maximize2
 } from "lucide-react";
+import BackButton from "@/components/shared/BackButton";
 
 const CATEGORIES = [
   { key: "website", label: "Business Websites", icon: Globe, desc: "418 industry-specific designs" },
@@ -196,6 +197,7 @@ export default function PremiumDesignLibrary() {
 
       {/* Main content — templates beside the sidebar */}
       <div className="flex-1 min-w-0 p-6 lg:p-8">
+        <BackButton />
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center justify-between gap-4 mb-4">

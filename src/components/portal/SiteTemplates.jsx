@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { LayoutTemplate, Loader2, Sparkles, Search } from "lucide-react";
 import MiniSitePreview from "@/components/shared/MiniSitePreview";
 import TemplateInstantiator from "@/components/portal/TemplateInstantiator";
+import BackButton from "@/components/shared/BackButton";
 
 export default function SiteTemplates() {
   const [templates, setTemplates] = useState([]);
@@ -36,6 +37,7 @@ export default function SiteTemplates() {
 
   return (
     <div className="p-6 lg:p-8">
+      <BackButton />
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
           <div className="w-10 h-10 rounded-xl bg-[#00d4ff]/10 flex items-center justify-center">

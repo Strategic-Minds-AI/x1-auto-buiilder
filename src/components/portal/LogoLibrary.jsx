@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Loader2, Palette, Search, Sparkles, Download } from "lucide-react";
+import BackButton from "@/components/shared/BackButton";
+import { Loader2, Palette, Search, Sparkles, Wand2, Download } from "lucide-react";
 
 export default function LogoLibrary() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
+  const [generating, setGenerating] = useState(false);
+  const [genStatus, setGenStatus] = useState("");
 
   useEffect(() => { load(); }, []);
 
@@ -14,11 +17,31 @@ export default function LogoLibrary() {
     try {
       const { items } = await base44.entities.WebsiteProject.filter(
         { logo_url: { $exists: true } },
-        { sort: "-created_date", limit: 100, fields: ["business_name", "industry", "logo_url", "accent_color"] }
+        { sort: "-created_date", limit: 500, fields: ["business_name", "industry", "logo_url", "accent_color"] }
       );
       setProjects(items || []);
     } catch { setProjects([]); }
     finally { setLoading(false); }
+  };
+
+  const generate = async () => {
+    setGenerating(true);
+    setGenStatus("Generating 300 business profiles...");
+    try {
+      await base44.functions.invoke("populateLibraries", { count: 300 });
+      setGenStatus("Generating logo images (batch 1)...");
+      for (let i = 0; i < 15; i++) {
+        setGenStatus(`Generating logo images (batch ${i + 1}/15)...`);
+        await base44.functions.invoke("generateAssetBatch", { batchSize: 20 });
+      }
+      setGenStatus("Complete!");
+      await load();
+    } catch (e) {
+      alert("Generation failed: " + (e.message || "unknown"));
+    } finally {
+      setGenerating(false);
+      setGenStatus("");
+    }
   };
 
   const filtered = projects.filter((p) => {
@@ -32,15 +55,26 @@ export default function LogoLibrary() {
 
   return (
     <div className="p-6 lg:p-8">
+      <BackButton />
       <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-[#00d4ff]/10 flex items-center justify-center">
-            <Palette className="w-5 h-5 text-[#00d4ff]" />
+        <div className="flex items-center justify-between gap-4 mb-2">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#00d4ff]/10 flex items-center justify-center">
+              <Palette className="w-5 h-5 text-[#00d4ff]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-black text-slate-900">Logo Library</h1>
+              <p className="text-sm text-slate-500">{projects.length} logos, organized by industry</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-black text-slate-900">Logo Library</h1>
-            <p className="text-sm text-slate-500">Every generated logo, organized by industry</p>
-          </div>
+          <button
+            onClick={generate}
+            disabled={generating}
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#00d4ff] to-[#0066ff] px-5 py-2.5 text-sm font-bold text-[#0a0e14] hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] transition disabled:opacity-50"
+          >
+            {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
+            {generating ? genStatus : "Generate 300 Logos"}
+          </button>
         </div>
         <div className="relative max-w-md mt-4">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -56,7 +90,8 @@ export default function LogoLibrary() {
       {filtered.length === 0 ? (
         <div className="text-center py-24">
           <Palette className="w-12 h-12 mx-auto mb-4 text-slate-300" />
-          <p className="text-slate-500 text-sm">No logos yet. Generate a website with assets to populate this library.</p>
+          <p className="text-slate-500 text-sm mb-2">No logos yet.</p>
+          <p className="text-slate-400 text-xs">Click "Generate 300 Logos" to populate this library.</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">

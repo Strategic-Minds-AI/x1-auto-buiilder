@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Loader2, Video, Play, Smartphone, Monitor, Volume2, VolumeX, Sparkles } from "lucide-react";
+import BackButton from "@/components/shared/BackButton";
 
 export default function VideoStudio() {
   const [prompt, setPrompt] = useState("");
@@ -36,6 +37,7 @@ export default function VideoStudio() {
 
   return (
     <div className="p-6 lg:p-8 max-w-5xl mx-auto">
+      <BackButton />
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">

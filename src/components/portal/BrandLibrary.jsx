@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Loader2, Sparkles, Search } from "lucide-react";
+import BackButton from "@/components/shared/BackButton";
+import { Loader2, Sparkles, Search, Wand2 } from "lucide-react";
 
 export default function BrandLibrary() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
+  const [generating, setGenerating] = useState(false);
+  const [genStatus, setGenStatus] = useState("");
 
   useEffect(() => { load(); }, []);
 
@@ -14,11 +17,31 @@ export default function BrandLibrary() {
     try {
       const { items } = await base44.entities.WebsiteProject.filter(
         { content: { $exists: true } },
-        { sort: "-created_date", limit: 100, fields: ["business_name", "industry", "logo_url", "hero_image_url", "content"] }
+        { sort: "-created_date", limit: 500, fields: ["business_name", "industry", "logo_url", "hero_image_url", "content"] }
       );
       setProjects(items || []);
     } catch { setProjects([]); }
     finally { setLoading(false); }
+  };
+
+  const generate = async () => {
+    setGenerating(true);
+    setGenStatus("Generating 300 brand profiles...");
+    try {
+      await base44.functions.invoke("populateLibraries", { count: 300 });
+      setGenStatus("Generating brand images (batch 1)...");
+      for (let i = 0; i < 15; i++) {
+        setGenStatus(`Generating brand images (batch ${i + 1}/15)...`);
+        await base44.functions.invoke("generateAssetBatch", { batchSize: 20 });
+      }
+      setGenStatus("Complete!");
+      await load();
+    } catch (e) {
+      alert("Generation failed: " + (e.message || "unknown"));
+    } finally {
+      setGenerating(false);
+      setGenStatus("");
+    }
   };
 
   const filtered = projects.filter((p) => {
@@ -32,15 +55,26 @@ export default function BrandLibrary() {
 
   return (
     <div className="p-6 lg:p-8">
+      <BackButton />
       <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-[#00d4ff]/10 flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-[#00d4ff]" />
+        <div className="flex items-center justify-between gap-4 mb-2">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#00d4ff]/10 flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-[#00d4ff]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-black text-slate-900">Brand Library</h1>
+              <p className="text-sm text-slate-500">{projects.length} complete brand systems — logos, colors, imagery, and voice</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-black text-slate-900">Brand Library</h1>
-            <p className="text-sm text-slate-500">Complete brand systems — logos, colors, imagery, and voice</p>
-          </div>
+          <button
+            onClick={generate}
+            disabled={generating}
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#00d4ff] to-[#0066ff] px-5 py-2.5 text-sm font-bold text-[#0a0e14] hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] transition disabled:opacity-50"
+          >
+            {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
+            {generating ? genStatus : "Generate 300 Brands"}
+          </button>
         </div>
         <div className="relative max-w-md mt-4">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -56,7 +90,8 @@ export default function BrandLibrary() {
       {filtered.length === 0 ? (
         <div className="text-center py-24">
           <Sparkles className="w-12 h-12 mx-auto mb-4 text-slate-300" />
-          <p className="text-slate-500 text-sm">No brand systems yet. Generate a website to create a brand.</p>
+          <p className="text-slate-500 text-sm mb-2">No brand systems yet.</p>
+          <p className="text-slate-400 text-xs">Click "Generate 300 Brands" to populate this library.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -64,7 +99,6 @@ export default function BrandLibrary() {
             const tokens = p.content?.colorTokens || {};
             return (
               <div key={p.id} className="rounded-2xl bg-[#0d1117] border border-white/8 overflow-hidden group hover:border-[#00d4ff]/30 transition-all duration-200">
-                {/* Hero image */}
                 <div className="aspect-[16/9] overflow-hidden bg-white/5">
                   {p.hero_image_url ? (
                     <img src={p.hero_image_url} alt={p.business_name} className="w-full h-full object-cover" />
@@ -74,7 +108,6 @@ export default function BrandLibrary() {
                     </div>
                   )}
                 </div>
-                {/* Brand info */}
                 <div className="p-4">
                   <div className="flex items-center gap-3 mb-3">
                     {p.logo_url && <img src={p.logo_url} alt="" className="w-10 h-10 object-contain rounded-lg bg-white/5 p-1" />}
@@ -83,7 +116,6 @@ export default function BrandLibrary() {
                       <div className="text-[11px] text-white/40 truncate">{p.industry}</div>
                     </div>
                   </div>
-                  {/* Color tokens */}
                   <div className="flex gap-1.5">
                     {["primary", "secondary", "accent", "background", "text"].map((k) => tokens[k] && (
                       <div key={k} className="flex-1 group/swatch">

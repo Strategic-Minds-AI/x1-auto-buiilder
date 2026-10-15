@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import VisualTemplateRender from "@/components/shared/VisualTemplateRender";
 import { Loader2, Package, Search, Globe } from "lucide-react";
+import BackButton from "@/components/shared/BackButton";
 
 export default function WebPackLibrary() {
   const [templates, setTemplates] = useState([]);
@@ -37,6 +38,7 @@ export default function WebPackLibrary() {
 
   return (
     <div className="p-6 lg:p-8">
+      <BackButton />
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
           <div className="w-10 h-10 rounded-xl bg-[#00d4ff]/10 flex items-center justify-center">

@@ -8,8 +8,10 @@ import {
 import {
   Shield, ShieldCheck, ShieldAlert, Loader2, RefreshCw, ChevronDown,
   ChevronUp, Globe, TrendingUp, Wrench, CheckCircle2, XCircle, AlertTriangle,
-  FileText, Download
+  FileText, Download, Activity, PieChart as PieIcon
 } from "lucide-react";
+import { PieChart, Pie, AreaChart, Area, Cell as PieCell } from "recharts";
+import BackButton from "@/components/shared/BackButton";
 
 const CATEGORIES = ["SEO", "AEO", "GEO", "Technical", "Content"];
 const CATEGORY_COLORS = {
@@ -91,6 +93,28 @@ export default function ComplianceDashboard() {
     }));
   }, [siteReports]);
 
+  // Score trend over time (all reports chronologically)
+  const trendData = useMemo(() => {
+    const sorted = [...reports].sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
+    return sorted.map((r, i) => ({
+      date: new Date(r.created_date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      score: r.overall_score || 0,
+      round: r.round || 1,
+      idx: i
+    }));
+  }, [reports]);
+
+  // Status distribution for pie chart
+  const statusDistribution = useMemo(() => {
+    const scored = Object.values(siteReports);
+    return [
+      { name: "Passing (80+)", value: scored.filter(r => (r.overall_score || 0) >= 80).length, color: "#10b981" },
+      { name: "Needs Fix (50-79)", value: scored.filter(r => (r.overall_score || 0) >= 50 && (r.overall_score || 0) < 80).length, color: "#f59e0b" },
+      { name: "Failing (<50)", value: scored.filter(r => (r.overall_score || 0) < 50).length, color: "#ef4444" },
+      { name: "Pending", value: projects.length - scored.length, color: "#94a3b8" },
+    ].filter(d => d.value > 0);
+  }, [siteReports, projects]);
+
   // Before/after comparison data
   const fixComparisonData = useMemo(() => {
     return Object.values(siteReports)
@@ -126,6 +150,7 @@ export default function ComplianceDashboard() {
 
   return (
     <div className="p-6 lg:p-8">
+      <BackButton />
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
@@ -174,6 +199,52 @@ export default function ComplianceDashboard() {
               <div className="text-xs text-slate-500">Avg improvement after auto-fix</div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Score trend over time */}
+      {trendData.length > 0 && (
+        <div className="rounded-2xl bg-white border border-slate-200 p-5 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Activity className="w-4 h-4 text-[#00d4ff]" />
+            <h3 className="text-sm font-bold text-slate-900">Compliance Score Trend Over Time</h3>
+          </div>
+          <ResponsiveContainer width="100%" height={220}>
+            <AreaChart data={trendData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+              <defs>
+                <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#00d4ff" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#00d4ff" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} interval="preserveStartEnd" />
+              <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "#64748b" }} />
+              <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e2e8f0", fontSize: 12 }} />
+              <Area type="monotone" dataKey="score" stroke="#00d4ff" strokeWidth={2} fill="url(#scoreGradient)" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
+      {/* Status distribution pie + charts */}
+      {statusDistribution.length > 0 && (
+        <div className="rounded-2xl bg-white border border-slate-200 p-5 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <PieIcon className="w-4 h-4 text-[#00d4ff]" />
+            <h3 className="text-sm font-bold text-slate-900">Site Status Distribution</h3>
+          </div>
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie data={statusDistribution} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} innerRadius={40} label>
+                {statusDistribution.map((entry, i) => (
+                  <PieCell key={i} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e2e8f0", fontSize: 12 }} />
+              <Legend wrapperStyle={{ fontSize: 11 }} />
+            </PieChart>
+          </ResponsiveContainer>
         </div>
       )}
 
