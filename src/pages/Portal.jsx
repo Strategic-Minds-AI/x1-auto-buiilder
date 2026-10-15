@@ -1,21 +1,24 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import PortalNav from "@/components/portal/PortalNav";
+import PortalShell from "@/components/portal/PortalShell";
 import OnboardingWizard from "@/components/portal/OnboardingWizard";
 import ProgressStep from "@/components/portal/ProgressStep";
 import BlueprintReview from "@/components/portal/BlueprintReview";
 import AssetStudio from "@/components/portal/AssetStudio";
 import PremiumDesignLibrary from "@/pages/PremiumDesignLibrary";
-import MassLaunchConsole from "@/components/portal/MassLaunchConsole";
 import MassLaunchConsoleV2 from "@/components/masslaunch/MassLaunchConsoleV2";
 import Campaigns from "@/components/portal/Campaigns";
-import SyncEngine from "@/components/portal/SyncEngine";
 import GPTSyncDashboard from "@/components/portal/GPTSyncDashboard";
 import WebsiteLibrary from "@/components/portal/WebsiteLibrary";
 import SiteTemplates from "@/components/portal/SiteTemplates";
 import ModulesGrid from "@/components/portal/ModulesGrid";
+import LogoLibrary from "@/components/portal/LogoLibrary";
+import BrandLibrary from "@/components/portal/BrandLibrary";
+import ImageLibrary from "@/components/portal/ImageLibrary";
+import WebPackLibrary from "@/components/portal/WebPackLibrary";
+import AppPackLibrary from "@/components/portal/AppPackLibrary";
 import { Link } from "react-router-dom";
-import { CheckCircle2, Plus, Wand2, Library, Rocket, Cable, ExternalLink, Loader2, Globe, LayoutTemplate, Hammer, LayoutGrid } from "lucide-react";
+import { CheckCircle2, Plus, Loader2, Rocket, ExternalLink, Library } from "lucide-react";
 
 export default function Portal() {
   const [tab, setTab] = useState("generator");
@@ -138,39 +141,9 @@ export default function Portal() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <PortalNav onNew={() => { reset(); setTab("generator"); }} />
-
-      <div className="bg-primary/10 border-b border-primary/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <Hammer className="w-5 h-5 text-primary" />
-            <div>
-              <div className="text-sm font-bold text-foreground">New: Guided Auto Builder</div>
-              <div className="text-xs text-muted-foreground">A step-by-step journey — Vision → Strategy → Brand → Website → Launch, with a library for every stage.</div>
-            </div>
-          </div>
-          <Link to="/auto-builder" className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110 transition whitespace-nowrap">
-            <Hammer className="w-4 h-4" /> Open Auto Builder
-          </Link>
-        </div>
-      </div>
-
-      <div className="border-b border-border bg-background/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex gap-1 overflow-x-auto">
-          <TabButton active={tab === "generator"} onClick={() => setTab("generator")} icon={Wand2} label="Website Generator" />
-          <TabButton active={tab === "library"} onClick={() => setTab("library")} icon={Library} label="Template Library" />
-          <TabButton active={tab === "sites"} onClick={() => setTab("sites")} icon={Globe} label="Website Library" />
-          <TabButton active={tab === "templates"} onClick={() => setTab("templates")} icon={LayoutTemplate} label="Site Templates" />
-          <TabButton active={tab === "launch"} onClick={() => setTab("launch")} icon={Rocket} label="Mass Launch" />
-          <TabButton active={tab === "campaigns"} onClick={() => setTab("campaigns")} icon={Rocket} label="Campaigns" />
-          <TabButton active={tab === "modules"} onClick={() => setTab("modules")} icon={LayoutGrid} label="Modules" />
-          <TabButton active={tab === "sync"} onClick={() => setTab("sync")} icon={Cable} label="Sync Engine" />
-        </div>
-      </div>
-
+    <PortalShell activeTab={tab} onTabChange={setTab} onNew={() => { reset(); setTab("generator"); }}>
       {error && tab === "generator" && (
-        <div className="max-w-2xl mx-auto px-4 mt-4 rounded-xl border border-destructive/40 bg-destructive/10 text-destructive text-sm p-3">
+        <div className="max-w-2xl mx-auto px-4 mt-4 rounded-xl border border-red-500/40 bg-red-500/10 text-red-400 text-sm p-3">
           {error}
         </div>
       )}
@@ -200,24 +173,24 @@ export default function Portal() {
           )}
           {step === "saved" && (
             <div className="max-w-xl mx-auto px-4 py-20 text-center">
-              <div className="inline-flex w-16 h-16 rounded-2xl bg-primary/15 items-center justify-center mb-6">
-                <CheckCircle2 className="w-8 h-8 text-primary" />
+              <div className="inline-flex w-16 h-16 rounded-2xl bg-[#00d4ff]/15 items-center justify-center mb-6">
+                <CheckCircle2 className="w-8 h-8 text-[#00d4ff]" />
               </div>
-              <h2 className="font-display font-bold text-2xl mb-2">Project Saved</h2>
-              <p className="text-muted-foreground mb-4">
+              <h2 className="font-black text-2xl mb-2 text-white">Project Saved</h2>
+              <p className="text-white/50 mb-4">
                 Your website blueprint and assets are saved, and {templates.length} industry templates were added to your library.
               </p>
               <div className="flex flex-col items-center gap-3 w-full">
                 <div className="flex items-center justify-center gap-3">
                   <button
                     onClick={reset}
-                    className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground hover:brightness-110 transition"
+                    className="inline-flex items-center gap-2 rounded-full bg-white/10 px-6 py-3 text-sm font-semibold text-white hover:bg-white/20 transition"
                   >
                     <Plus className="w-4 h-4" /> Create Another
                   </button>
                   <button
                     onClick={() => setTab("library")}
-                    className="inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 text-sm font-semibold text-foreground hover:bg-secondary transition"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/15 px-6 py-3 text-sm font-semibold text-white/70 hover:text-[#00d4ff] hover:border-[#00d4ff]/40 transition"
                   >
                     <Library className="w-4 h-4" /> View Templates
                   </button>
@@ -226,17 +199,17 @@ export default function Portal() {
                   <button
                     onClick={deployToVercel}
                     disabled={deploying}
-                    className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:brightness-110 transition disabled:opacity-60"
+                    className="inline-flex items-center gap-2 rounded-full bg-[#00d4ff] px-6 py-3 text-sm font-bold text-[#0a0e14] hover:brightness-110 hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] transition disabled:opacity-60"
                   >
                     {deploying ? <Loader2 className="w-4 h-4 animate-spin" /> : <Rocket className="w-4 h-4" />} Deploy to Vercel
                   </button>
                   {deployError && (
-                    <p className="mt-3 text-left text-sm text-destructive">{deployError}</p>
+                    <p className="mt-3 text-left text-sm text-red-400">{deployError}</p>
                   )}
                   {deployUrl && (
-                    <div className="mt-3 rounded-xl border border-border bg-background/60 p-3 text-left">
-                      <p className="text-xs text-muted-foreground mb-1">Live site deployed:</p>
-                      <a href={deployUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary break-all hover:underline">
+                    <div className="mt-3 rounded-xl border border-white/10 bg-[#0d1117] p-3 text-left">
+                      <p className="text-xs text-white/40 mb-1">Live site deployed:</p>
+                      <a href={deployUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00d4ff] break-all hover:underline">
                         {deployUrl} <ExternalLink className="w-3.5 h-3.5 shrink-0" />
                       </a>
                     </div>
@@ -251,23 +224,15 @@ export default function Portal() {
       {tab === "library" && <PremiumDesignLibrary />}
       {tab === "sites" && <WebsiteLibrary />}
       {tab === "templates" && <SiteTemplates />}
+      {tab === "logos" && <LogoLibrary />}
+      {tab === "brands" && <BrandLibrary />}
+      {tab === "images" && <ImageLibrary />}
+      {tab === "web-packs" && <WebPackLibrary />}
+      {tab === "app-packs" && <AppPackLibrary />}
       {tab === "launch" && <MassLaunchConsoleV2 onDeployed={() => setTab("campaigns")} />}
       {tab === "campaigns" && <Campaigns />}
       {tab === "modules" && <ModulesGrid />}
       {tab === "sync" && <GPTSyncDashboard />}
-    </div>
-  );
-}
-
-function TabButton({ active, onClick, icon: Icon, label }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`inline-flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition whitespace-nowrap ${
-        active ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      <Icon className="w-4 h-4" /> {label}
-    </button>
+    </PortalShell>
   );
 }

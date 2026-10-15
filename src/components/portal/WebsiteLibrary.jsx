@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Image } from "@/components/ui/image";
 import MiniSitePreview from "@/components/shared/MiniSitePreview";
-import { Globe, ExternalLink, Loader2, Sparkles, CheckCircle2 } from "lucide-react";
+import { Globe, ExternalLink, Loader2, Sparkles, CheckCircle2, Search } from "lucide-react";
 
 export default function WebsiteLibrary() {
   const [sites, setSites] = useState([]);
@@ -10,6 +9,7 @@ export default function WebsiteLibrary() {
   const [busy, setBusy] = useState({});
   const [done, setDone] = useState({});
   const [error, setError] = useState({});
+  const [query, setQuery] = useState("");
 
   useEffect(() => { load(); }, []);
 
@@ -21,11 +21,8 @@ export default function WebsiteLibrary() {
         { sort: "-created_date", limit: 50, fields: ["business_name", "industry", "location", "status", "deploy_url", "logo_url", "hero_image_url", "content"] }
       );
       setSites(items || []);
-    } catch (e) {
-      setSites([]);
-    } finally {
-      setLoading(false);
-    }
+    } catch { setSites([]); }
+    finally { setLoading(false); }
   };
 
   const universalize = async (id) => {
@@ -42,80 +39,94 @@ export default function WebsiteLibrary() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="max-w-6xl mx-auto px-4 py-16 text-center text-muted-foreground">
-        <Loader2 className="w-6 h-6 animate-spin inline mr-2" /> Loading your websites…
-      </div>
-    );
-  }
+  const filtered = sites.filter((s) => {
+    const q = query.toLowerCase();
+    return !q || (s.business_name || "").toLowerCase().includes(q) || (s.industry || "").toLowerCase().includes(q);
+  });
 
-  if (sites.length === 0) {
-    return (
-      <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-        <Globe className="w-10 h-10 mx-auto mb-4 text-muted-foreground" />
-        <h3 className="font-display font-bold text-xl mb-2">No websites yet</h3>
-        <p className="text-muted-foreground">
-          Generate a site in the Website Generator and it will appear here, ready to be universalized into a reusable template.
-        </p>
-      </div>
-    );
+  if (loading) {
+    return <div className="flex justify-center py-24"><Loader2 className="h-8 w-8 animate-spin text-[#00d4ff]" /></div>;
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="p-6 lg:p-8">
       <div className="mb-6">
-        <h2 className="font-display font-bold text-2xl mb-1">Website Library</h2>
-        <p className="text-muted-foreground text-sm">
-          Every generated site, with a live style preview. Universalize any site into a reusable industry template.
-        </p>
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-10 h-10 rounded-xl bg-[#00d4ff]/10 flex items-center justify-center">
+            <Globe className="w-5 h-5 text-[#00d4ff]" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-black text-white">Website Library</h1>
+            <p className="text-sm text-white/40">Every generated site with a live style preview. Universalize any site into a reusable template.</p>
+          </div>
+        </div>
+        <div className="relative max-w-md mt-4">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+          <input
+            className="w-full rounded-xl bg-[#0d1117] border border-white/10 pl-11 pr-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#00d4ff]/50 transition"
+            placeholder="Search websites…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
       </div>
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {sites.map((s) => (
-          <div key={s.id} className="rounded-2xl border border-border bg-card overflow-hidden flex flex-col group hover:border-primary/40 transition">
-            <MiniSitePreview
-              heroImage={s.hero_image_url}
-              logoUrl={s.logo_url}
-              headline={s.content?.hero?.headline}
-              subheadline={s.content?.hero?.subheadline}
-              colorTokens={s.content?.colorTokens}
-              ctaLabel={s.content?.hero?.primaryCta}
-              className="rounded-none border-0 border-b border-border"
-            />
-            <div className="p-4 flex flex-col flex-1">
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <div className="min-w-0">
-                  <h3 className="font-semibold truncate">{s.business_name || "Untitled"}</h3>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {s.industry}{s.location ? " · " + s.location : ""}
-                  </p>
+
+      {filtered.length === 0 ? (
+        <div className="text-center py-24">
+          <Globe className="w-12 h-12 mx-auto mb-4 text-white/20" />
+          <h3 className="font-black text-xl mb-2 text-white">No websites yet</h3>
+          <p className="text-white/40 text-sm max-w-md mx-auto">
+            Generate a site in the Website Generator and it will appear here, ready to be universalized into a reusable template.
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((s) => (
+            <div key={s.id} className="rounded-2xl bg-[#0d1117] border border-white/8 overflow-hidden flex flex-col group hover:border-[#00d4ff]/30 transition-all duration-200">
+              <MiniSitePreview
+                heroImage={s.hero_image_url}
+                logoUrl={s.logo_url}
+                headline={s.content?.hero?.headline}
+                subheadline={s.content?.hero?.subheadline}
+                colorTokens={s.content?.colorTokens}
+                ctaLabel={s.content?.hero?.primaryCta}
+                className="rounded-none border-0 border-b border-white/8"
+              />
+              <div className="p-4 flex flex-col flex-1">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-white truncate">{s.business_name || "Untitled"}</h3>
+                    <p className="text-xs text-white/40 truncate">
+                      {s.industry}{s.location ? " · " + s.location : ""}
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-white/50 capitalize shrink-0">{s.status}</span>
                 </div>
-                <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] capitalize shrink-0">{s.status}</span>
-              </div>
-              {s.deploy_url && (
-                <a href={s.deploy_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mb-3">
-                  <ExternalLink className="w-3 h-3" /> View live site
-                </a>
-              )}
-              <div className="mt-auto">
-                <button
-                  onClick={() => universalize(s.id)}
-                  disabled={!!busy[s.id]}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:brightness-110 transition disabled:opacity-60"
-                >
-                  {busy[s.id] ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Universalize → Template
-                </button>
-                {done[s.id] && !error[s.id] && (
-                  <p className="mt-2 text-xs text-primary inline-flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Saved to Site Templates
-                  </p>
+                {s.deploy_url && (
+                  <a href={s.deploy_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-[#00d4ff] hover:underline mb-3">
+                    <ExternalLink className="w-3 h-3" /> View live site
+                  </a>
                 )}
-                {error[s.id] && <p className="mt-2 text-xs text-destructive">{error[s.id]}</p>}
+                <div className="mt-auto">
+                  <button
+                    onClick={() => universalize(s.id)}
+                    disabled={!!busy[s.id]}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-[#00d4ff] px-4 py-2.5 text-sm font-bold text-[#0a0e14] hover:brightness-110 hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] transition disabled:opacity-60"
+                  >
+                    {busy[s.id] ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Universalize → Template
+                  </button>
+                  {done[s.id] && !error[s.id] && (
+                    <p className="mt-2 text-xs text-[#00d4ff] inline-flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Saved to Site Templates
+                    </p>
+                  )}
+                  {error[s.id] && <p className="mt-2 text-xs text-red-400">{error[s.id]}</p>}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

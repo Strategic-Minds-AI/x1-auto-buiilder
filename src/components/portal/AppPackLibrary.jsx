@@ -1,0 +1,106 @@
+import { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
+import VisualTemplateRender from "@/components/shared/VisualTemplateRender";
+import { Loader2, Monitor, Search } from "lucide-react";
+
+export default function AppPackLibrary() {
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("desktop_app");
+
+  useEffect(() => { load(); }, []);
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      const { items } = await base44.entities.DesignTemplate.filter(
+        { category: { $in: ["desktop_app", "mobile_app"] } },
+        { sort: "category", limit: 500, fields: ["template_id", "name", "category", "industry", "family", "layout", "tone", "ink", "accent", "head", "sub", "eyebrow", "cta"] }
+      );
+      setTemplates(items || []);
+    } catch { setTemplates([]); }
+    finally { setLoading(false); }
+  };
+
+  const filtered = templates.filter((t) => {
+    const matchesCat = t.category === category;
+    const q = query.toLowerCase();
+    const matchesQuery = !q || (t.name || "").toLowerCase().includes(q) || (t.industry || "").toLowerCase().includes(q) || (t.family || "").toLowerCase().includes(q);
+    return matchesCat && matchesQuery;
+  });
+
+  if (loading) {
+    return <div className="flex justify-center py-24"><Loader2 className="h-8 w-8 animate-spin text-[#00d4ff]" /></div>;
+  }
+
+  return (
+    <div className="p-6 lg:p-8">
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-10 h-10 rounded-xl bg-[#00d4ff]/10 flex items-center justify-center">
+            <Monitor className="w-5 h-5 text-[#00d4ff]" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-black text-white">App Pack Library</h1>
+            <p className="text-sm text-white/40">Desktop and mobile application layout patterns</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-3 mt-4">
+          <div className="relative flex-1 min-w-[200px] max-w-md">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+            <input
+              className="w-full rounded-xl bg-[#0d1117] border border-white/10 pl-11 pr-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#00d4ff]/50 transition"
+              placeholder="Search app packs…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+          <div className="flex gap-1.5">
+            <button
+              onClick={() => setCategory("desktop_app")}
+              className={`rounded-full px-4 py-2 text-[13px] font-bold transition ${category === "desktop_app" ? "bg-[#00d4ff] text-[#0a0e14]" : "bg-white/5 text-white/50 hover:text-white"}`}
+            >
+              Desktop
+            </button>
+            <button
+              onClick={() => setCategory("mobile_app")}
+              className={`rounded-full px-4 py-2 text-[13px] font-bold transition ${category === "mobile_app" ? "bg-[#00d4ff] text-[#0a0e14]" : "bg-white/5 text-white/50 hover:text-white"}`}
+            >
+              Mobile
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="text-sm text-white/40 mb-4">{filtered.length} {category === "desktop_app" ? "desktop" : "mobile"} app packs</div>
+
+      {filtered.length === 0 ? (
+        <div className="text-center py-24">
+          <Monitor className="w-12 h-12 mx-auto mb-4 text-white/20" />
+          <p className="text-white/40 text-sm">No app packs found. Generate templates to populate this library.</p>
+        </div>
+      ) : (
+        <div className={category === "mobile_app" ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4" : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"}>
+          {filtered.map((t) => (
+            <div key={t.id} className="rounded-2xl bg-[#0d1117] border border-white/8 overflow-hidden group hover:border-[#00d4ff]/30 transition-all duration-200">
+              <div className="p-4 flex items-center justify-center bg-black/20" style={{ minHeight: category === "mobile_app" ? "360px" : "280px" }}>
+                <VisualTemplateRender template={t} displayW={category === "mobile_app" ? 240 : 380} />
+              </div>
+              <div className="p-3 border-t border-white/8">
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <h3 className="font-bold text-[13px] text-white truncate">{t.name}</h3>
+                  <span className="rounded-md bg-white/5 px-1.5 py-0.5 text-[10px] text-white/40 shrink-0 font-mono">{t.template_id}</span>
+                </div>
+                <div className="text-[11px] text-white/40 truncate">{t.family || t.industry}</div>
+                <div className="flex gap-1.5 mt-2">
+                  {["tone", "ink", "accent"].map((k) => t[k] && <div key={k} className="w-5 h-5 rounded border border-white/10" style={{ background: t[k] }} />)}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
