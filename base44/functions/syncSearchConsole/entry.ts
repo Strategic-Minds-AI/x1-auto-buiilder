@@ -32,7 +32,11 @@ export default async function(req) {
     }
 
     // Query Search Console API for search performance
-    const siteUrl = propertyUrl || (projectId ? (await base44.entities.WebsiteProject.get(projectId))?.deploy_url : '');
+    let siteUrl = propertyUrl;
+    if (!siteUrl && projectId) {
+      const proj = await base44.entities.WebsiteProject.get(projectId);
+      siteUrl = proj?.deploy_url || proj?.business_website || '';
+    }
     if (!siteUrl) {
       return Response.json({ status: 'NOT_CONFIGURED', message: 'No site URL configured for this project.' });
     }

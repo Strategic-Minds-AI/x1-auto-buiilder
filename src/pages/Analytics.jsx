@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import PageHeader from "@/components/shared/PageHeader";
 import { Loader2 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
+import SearchConsolePanel from "@/components/analytics/SearchConsolePanel";
 
 const PIE_COLORS = ["#00d4ff", "#0099ff", "#6366f1", "#f59e0b", "#ef4444", "#10b981"];
 
@@ -64,6 +65,9 @@ export default function Analytics() {
             </ResponsiveContainer>
           </div>
         </div>
+
+        {/* Google Search Console */}
+        <SearchConsolePanel />
       </div>
     </div>
   );
