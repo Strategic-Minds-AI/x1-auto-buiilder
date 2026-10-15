@@ -1,0 +1,154 @@
+{
+  "name": "ApexOpportunity",
+  "type": "object",
+  "properties": {
+    "industry": {
+      "type": "string",
+      "description": "Primary industry"
+    },
+    "subindustry": {
+      "type": "string",
+      "description": "Sub-industry or niche"
+    },
+    "service_or_product": {
+      "type": "string",
+      "description": "Specific service or product"
+    },
+    "buyer_intent": {
+      "type": "string",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "default": "medium"
+    },
+    "geography": {
+      "type": "string",
+      "description": "State/region scope"
+    },
+    "offer": {
+      "type": "string",
+      "description": "Proposed offer"
+    },
+    "demand_score": {
+      "type": "number",
+      "description": "0-100 buyer demand score"
+    },
+    "competition_score": {
+      "type": "number",
+      "description": "0-100 competition level (higher = more competition)"
+    },
+    "profitability_score": {
+      "type": "number",
+      "description": "0-100 profitability potential"
+    },
+    "overall_score": {
+      "type": "number",
+      "description": "0-100 weighted overall score"
+    },
+    "buyer_organizations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "competitors": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "pricing_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "strategy_options": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "simulations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "identified",
+        "researched",
+        "scored",
+        "selected",
+        "approved",
+        "building",
+        "live",
+        "failed"
+      ],
+      "default": "identified"
+    },
+    "confidence": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "inferred",
+        "simulated",
+        "unknown"
+      ],
+      "default": "inferred"
+    },
+    "source_links": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "next_actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "canary": {
+      "type": "boolean",
+      "default": false,
+      "description": "Is this the first synthetic national canary?"
+    }
+  },
+  "required": [
+    "industry",
+    "service_or_product"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
