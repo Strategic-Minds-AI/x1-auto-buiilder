@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {escapeTwiml,normalizeTurn,proposeFreeSlots,authorizeBooking} from './booking-guards.mjs';
+test('escapes all XML metacharacters',()=>assert.equal(escapeTwiml(`R&D <"Sam's">`),'R&amp;D &lt;&quot;Sam&apos;s&quot;&gt;'));
+test('stable call turn key',()=>assert.equal(normalizeTurn({callSid:'CA123456',turnIndex:2,tenantId:'t1',speech:'hello'}).idempotency_key,'CA123456:2'));
+test('rejects tenantless turn',()=>assert.throws(()=>normalizeTurn({callSid:'CA123456',turnIndex:1}),/MISSING_TENANT/));
+test('busy slots removed',()=>{const slots=proposeFreeSlots({requestedStart:'2026-11-02T14:00:00Z',requestedEnd:'2026-11-02T15:30:00Z',busy:[{start:'2026-11-02T14:30:00Z',end:'2026-11-02T15:00:00Z'}]});assert.equal(slots.length,2);assert.equal(slots[0].start,'2026-11-02T14:00:00.000Z');assert.equal(slots[1].start,'2026-11-02T15:00:00.000Z');});
+test('no approval blocks all booking',()=>assert.equal(authorizeBooking({tenantId:'t1',calendarId:'cal',start:'2026-11-02T14:00Z',end:'2026-11-02T14:30Z',requestId:'req1'},null).allowed,false));
+test('wrong tenant approval blocks booking',()=>assert.equal(authorizeBooking({tenantId:'t1',calendarId:'cal',start:'a',end:'b',requestId:'req1'},{status:'approved',action:'calendar.create',tenantId:'t2',calendarId:'cal',requestId:'req1',receiptId:'r1',expiresAt:'2027-01-01T00:00Z'},Date.parse('2026-10-15T00:00Z')).allowed,false));
+test('scoped approval yields authorization only',()=>{const x=authorizeBooking({tenantId:'t1',calendarId:'cal',start:'a',end:'b',requestId:'req1'},{status:'approved',action:'calendar.create',tenantId:'t1',calendarId:'cal',requestId:'req1',receiptId:'r1',expiresAt:'2027-01-01T00:00Z'},Date.parse('2026-10-15T00:00Z'));assert.equal(x.allowed,true);assert.equal(x.mode,'AUTHORIZED_BUT_NOT_EXECUTED');});
