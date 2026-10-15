@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Wand2, Library, Globe, LayoutTemplate, Rocket, LayoutGrid, Cable,
   Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown,
-  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap
+  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -14,6 +14,13 @@ const NAV_GROUPS = [
       { tab: "library", icon: Library, label: "Template Library" },
       { tab: "sites", icon: Globe, label: "Website Library" },
       { tab: "templates", icon: LayoutTemplate, label: "Site Templates" },
+    ],
+  },
+  {
+    label: "Factory",
+    items: [
+      { tab: "app-factory", icon: Package, label: "App Factory" },
+      { tab: "video-studio", icon: Video, label: "Video Studio" },
     ],
   },
   {

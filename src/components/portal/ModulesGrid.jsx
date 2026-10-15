@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
-import { Bot, Palette, Cable, Rocket, BarChart3, Search, UserPlus, Sparkles, GitBranch, Package, Monitor, SlidersHorizontal, LayoutTemplate, Hammer } from "lucide-react";
+import { Bot, Palette, Cable, Rocket, BarChart3, Search, UserPlus, Sparkles, GitBranch, Package, Monitor, SlidersHorizontal, LayoutTemplate, Hammer, Video } from "lucide-react";
 
 const MODULES = [
   { to: "/auto-builder", icon: Hammer, title: "Auto Builder", desc: "Guided step-by-step website creation journey" },
+  { to: "/app-factory", icon: Package, title: "App Factory", desc: "Desktop & mobile application layout templates" },
+  { to: "/video-studio", icon: Video, title: "Video Studio", desc: "AI-powered hero video and background loop generator" },
   { to: "/design-library", icon: LayoutTemplate, title: "Design Template Library", desc: "594 premium designs + app layout patterns" },
   { to: "/agent-orchestrator", icon: Bot, title: "Agent Orchestrator", desc: "Monitor autonomous agents and assign tasks" },
   { to: "/brand-assets", icon: Palette, title: "Brand Assets", desc: "Logos, color palettes, and marketing imagery" },

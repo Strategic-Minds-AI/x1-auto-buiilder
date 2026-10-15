@@ -10,6 +10,8 @@ import Home from '@/pages/Home';
 import Portal from '@/pages/Portal';
 import AutoBuilder from '@/pages/AutoBuilder';
 import ApexCommand from '@/pages/ApexCommand';
+import AppFactory from '@/pages/AppFactory';
+import VideoStudio from '@/pages/VideoStudio';
 import AgentOrchestrator from '@/pages/AgentOrchestrator';
 import BrandAssets from '@/pages/BrandAssets';
 import GPTSyncLogs from '@/pages/GPTSyncLogs';
@@ -49,6 +51,8 @@ function App() {
               <Route path="/portal" element={<Portal />} />
               <Route path="/auto-builder" element={<AutoBuilder />} />
               <Route path="/apex-command" element={<ApexCommand />} />
+              <Route path="/app-factory" element={<div className="portal-light min-h-screen bg-white"><AppFactory /></div>} />
+              <Route path="/video-studio" element={<div className="portal-light min-h-screen bg-white"><VideoStudio /></div>} />
               <Route path="/agent-orchestrator" element={<AgentOrchestrator />} />
               <Route path="/brand-assets" element={<BrandAssets />} />
               <Route path="/gpt-sync-logs" element={<GPTSyncLogs />} />

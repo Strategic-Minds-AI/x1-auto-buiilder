@@ -7,6 +7,8 @@ import ProgressStep from "@/components/portal/ProgressStep";
 import BlueprintReview from "@/components/portal/BlueprintReview";
 import AssetStudio from "@/components/portal/AssetStudio";
 import PremiumDesignLibrary from "@/pages/PremiumDesignLibrary";
+import AppFactory from "@/pages/AppFactory";
+import VideoStudio from "@/pages/VideoStudio";
 import MassLaunchConsoleV2 from "@/components/masslaunch/MassLaunchConsoleV2";
 import Campaigns from "@/components/portal/Campaigns";
 import GPTSyncDashboard from "@/components/portal/GPTSyncDashboard";
@@ -237,6 +239,8 @@ export default function Portal() {
       {tab === "launch" && <MassLaunchConsoleV2 onDeployed={() => setTab("campaigns")} />}
       {tab === "monitor" && <LaunchMonitor />}
       {tab === "campaigns" && <Campaigns />}
+      {tab === "app-factory" && <AppFactory />}
+      {tab === "video-studio" && <VideoStudio />}
       {tab === "modules" && <ModulesGrid />}
       {tab === "sync" && <GPTSyncDashboard />}
       {tab === "sheets" && <GoogleSheetsSync />}
