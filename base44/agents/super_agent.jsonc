@@ -491,7 +491,7 @@
     },
     {
       "function_name": "provisionSandbox",
-      "description": "Sandbox provisioner \u2014 create, destroy, and list sandboxes in Railway and Vercel. Full lifecycle management for isolated dev/test environments."
+      "description": "Sandbox provisioner \u2014 create, destroy, and list sandboxes in Railway and Vercel"
     }
   ],
   "context_files": [],
