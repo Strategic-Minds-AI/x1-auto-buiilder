@@ -1,0 +1,111 @@
+{
+  "name": "DigitalCardFlyer",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Display name for this card/flyer"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "business_card",
+        "flyer"
+      ],
+      "description": "Card or flyer"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "style_id": {
+      "type": "string",
+      "description": "Selected style template id"
+    },
+    "style_name": {
+      "type": "string"
+    },
+    "layout": {
+      "type": "string"
+    },
+    "color_treatment": {
+      "type": "string"
+    },
+    "typography": {
+      "type": "string"
+    },
+    "accent": {
+      "type": "string",
+      "description": "Brand accent color hex"
+    },
+    "ink": {
+      "type": "string",
+      "description": "Text/ink color hex"
+    },
+    "tone": {
+      "type": "string",
+      "description": "Background tone color hex"
+    },
+    "content": {
+      "type": "object",
+      "description": "Card/flyer content fields: name, title, company, phone, email, website, address, tagline, headline, subheadline, body, services, offer, cta"
+    },
+    "preview_html": {
+      "type": "string",
+      "description": "Cached preview HTML"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "generated",
+        "approved"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "name",
+    "type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
