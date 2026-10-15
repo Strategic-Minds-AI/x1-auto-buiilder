@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import PageHeader from "@/components/shared/PageHeader";
 import VisualTemplateRender from "@/components/shared/VisualTemplateRender";
-import { Loader2, Search, Globe, Monitor, Smartphone, Sparkles, Layout } from "lucide-react";
+import { Loader2, Search, Globe, Monitor, Smartphone, Sparkles, Layout, Wand2 } from "lucide-react";
 
 const CATEGORIES = [
   { key: "website", label: "Business Websites", icon: Globe, desc: "40 industries × 11 layouts = 418 structurally distinct designs" },
@@ -17,8 +17,21 @@ export default function PremiumDesignLibrary() {
   const [industryFilter, setIndustryFilter] = useState("All");
   const [layoutFilter, setLayoutFilter] = useState("All");
   const [query, setQuery] = useState("");
+  const [generating, setGenerating] = useState(null);
 
   useEffect(() => { load(); }, []);
+
+  const generate = async (cat) => {
+    setGenerating(cat);
+    try {
+      await base44.functions.invoke("generateDesignTemplates", { category: cat });
+      await load();
+    } catch (e) {
+      alert("Generation failed: " + (e.message || "unknown error"));
+    } finally {
+      setGenerating(null);
+    }
+  };
 
   const load = async () => {
     setLoading(true);
@@ -65,6 +78,17 @@ export default function PremiumDesignLibrary() {
                 </div>
                 <div className="text-sm font-bold">{c.label}</div>
                 <div className="text-xs text-muted-foreground mt-0.5">{c.desc}</div>
+                <button
+                  onClick={(e) => { e.stopPropagation(); generate(c.key); }}
+                  disabled={generating !== null}
+                  className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-full bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition disabled:opacity-50"
+                >
+                  {generating === c.key ? (
+                    <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generating…</>
+                  ) : (
+                    <><Wand2 className="w-3.5 h-3.5" /> {count > 0 ? "Regenerate" : "Generate"} Templates</>
+                  )}
+                </button>
               </button>
             );
           })}
