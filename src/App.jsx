@@ -17,6 +17,7 @@ import MassLaunchConsolePage from '@/pages/MassLaunchConsolePage';
 import Analytics from '@/pages/Analytics';
 import ResearchHub from '@/pages/ResearchHub';
 import BusinessOnboarding from '@/pages/BusinessOnboarding';
+import BusinessNameStudio from '@/pages/BusinessNameStudio';
 import LogoWorkshop from '@/pages/LogoWorkshop';
 import ProjectTimeline from '@/pages/ProjectTimeline';
 import AssetRepository from '@/pages/AssetRepository';
@@ -57,6 +58,7 @@ function App() {
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/research-hub" element={<ResearchHub />} />
               <Route path="/business-onboarding" element={<BusinessOnboarding />} />
+              <Route path="/business-name-studio" element={<BusinessNameStudio />} />
               <Route path="/logo-workshop" element={<LogoWorkshop />} />
               <Route path="/project-timeline" element={<ProjectTimeline />} />
               <Route path="/asset-repository" element={<AssetRepository />} />

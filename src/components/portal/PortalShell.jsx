@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Wand2, Library, Globe, LayoutTemplate, Rocket, LayoutGrid, Cable,
   Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown,
-  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database
+  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -62,6 +62,7 @@ const EXTERNAL_MODULES = [
   { to: "/apex-command", icon: Zap, label: "APEX Command" },
   { to: "/auto-builder", icon: Hammer, label: "Auto Builder" },
   { to: "/agent-orchestrator", icon: Bot, label: "Agents" },
+  { to: "/business-name-studio", icon: Building2, label: "Name Studio" },
   { to: "/research-hub", icon: Search, label: "Research Hub" },
   { to: "/analytics", icon: BarChart3, label: "Analytics" },
   { to: "/brand-assets", icon: Palette, label: "Brand Assets" },
