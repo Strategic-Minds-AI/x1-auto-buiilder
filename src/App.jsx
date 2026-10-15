@@ -46,6 +46,7 @@ import MockupIngestion from '@/pages/MockupIngestion';
 import FaultLine from '@/pages/FaultLine';
 import ClientPortal from '@/pages/ClientPortal';
 import UniversalGenerator from '@/pages/UniversalGenerator';
+import UniversalGeneratorStudio from '@/pages/UniversalGeneratorStudio';
 import AgentInstructions from '@/pages/AgentInstructions';
 import VisualBuilder from '@/pages/VisualBuilder';
 import BuilderDocs from '@/pages/BuilderDocs';
@@ -111,6 +112,7 @@ function App() {
               <Route path="/fault-line" element={<FaultLine />} />
               <Route path="/client-portal" element={<ClientPortal />} />
               <Route path="/universal-generator" element={<UniversalGenerator />} />
+              <Route path="/universal-studio" element={<UniversalGeneratorStudio />} />
               <Route path="/agent-instructions" element={<AgentInstructions />} />
               <Route path="/visual-builder" element={<VisualBuilder />} />
               <Route path="/builder-docs" element={<BuilderDocs />} />

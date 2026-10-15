@@ -85,6 +85,7 @@ const EXTERNAL_MODULES = [
   { to: "/fault-line", icon: AlertTriangle, label: "Fault Line Scanner" },
   { to: "/client-portal", icon: Building2, label: "Client Portals" },
   { to: "/universal-generator", icon: Wand2, label: "Universal Generator" },
+  { to: "/universal-studio", icon: Wand2, label: "Generation Studio" },
   { to: "/agent-instructions", icon: SlidersHorizontal, label: "Agent Instructions" },
   { to: "/visual-builder", icon: Wand2, label: "Visual Builder" },
   { to: "/builder-docs", icon: Brain, label: "Builder Docs" },

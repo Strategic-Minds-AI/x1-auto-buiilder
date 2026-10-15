@@ -1,0 +1,143 @@
+{
+  "name": "GenerationItem",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Item title"
+    },
+    "generation_type": {
+      "type": "string",
+      "enum": [
+        "report",
+        "proposal",
+        "bid",
+        "website",
+        "platform",
+        "workflow",
+        "system",
+        "document",
+        "content",
+        "code",
+        "strategy",
+        "email",
+        "social",
+        "landing",
+        "funnel",
+        "brand",
+        "custom"
+      ],
+      "default": "custom",
+      "description": "What type of generation this is"
+    },
+    "industry": {
+      "type": "string",
+      "description": "Target industry"
+    },
+    "category": {
+      "type": "string",
+      "description": "Industry category"
+    },
+    "subcategory": {
+      "type": "string",
+      "description": "Industry subcategory"
+    },
+    "amount": {
+      "type": "number",
+      "default": 1,
+      "description": "Number of items to generate"
+    },
+    "prompt": {
+      "type": "string",
+      "description": "Generation prompt or instructions"
+    },
+    "content": {
+      "type": "string",
+      "description": "Generated content in markdown"
+    },
+    "file_type": {
+      "type": "string",
+      "enum": [
+        "markdown",
+        "text",
+        "html",
+        "pdf",
+        "json"
+      ],
+      "default": "markdown",
+      "description": "Preferred file type for saving"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "generated",
+        "regenerated",
+        "archived"
+      ],
+      "default": "draft"
+    },
+    "parent_id": {
+      "type": "string",
+      "description": "Parent item id for regenerated items"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "shared_via": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Where this item was shared"
+    }
+  },
+  "required": [
+    "title",
+    "generation_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
