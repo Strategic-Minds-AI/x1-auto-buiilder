@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import VisualTemplateRender from "@/components/shared/VisualTemplateRender";
+import TemplateViewer from "@/components/shared/TemplateViewer";
 import {
   Loader2, Search, Globe, Monitor, Smartphone, Sparkles, Layout,
-  Wand2, ChevronDown, Filter, X, Check
+  Wand2, ChevronDown, Filter, X, Check, Maximize2
 } from "lucide-react";
 
 const CATEGORIES = [
@@ -21,6 +22,7 @@ export default function PremiumDesignLibrary() {
   const [query, setQuery] = useState("");
   const [generating, setGenerating] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [viewerTemplate, setViewerTemplate] = useState(null);
 
   useEffect(() => { load(); }, []);
 
@@ -241,27 +243,39 @@ export default function PremiumDesignLibrary() {
             : "grid grid-cols-1 xl:grid-cols-2 gap-6"
           }>
             {filtered.map((t) => (
-              <TemplateCard key={t.id} template={t} previewW={previewW} />
+              <TemplateCard key={t.id} template={t} previewW={previewW} onOpen={() => setViewerTemplate(t)} />
             ))}
           </div>
         )}
       </div>
+
+      {viewerTemplate && (
+        <TemplateViewer template={viewerTemplate} onClose={() => setViewerTemplate(null)} onSelect={() => setViewerTemplate(null)} />
+      )}
     </div>
   );
 }
 
-function TemplateCard({ template: t, previewW }) {
+function TemplateCard({ template: t, previewW, onOpen }) {
   const [hovered, setHovered] = useState(false);
   return (
     <div
-      className="rounded-2xl bg-[#0d1117] border border-white/8 overflow-hidden flex flex-col transition-all duration-200"
+      className="rounded-2xl bg-[#0d1117] border border-white/8 overflow-hidden flex flex-col transition-all duration-200 cursor-pointer"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={onOpen}
       style={hovered ? { borderColor: "rgba(0,212,255,0.4)", boxShadow: "0 0 30px rgba(0,212,255,0.08)" } : {}}
     >
       {/* Live visual rendering */}
-      <div className="p-5 flex items-center justify-center bg-black/20" style={{ minHeight: t.category === "mobile_app" ? "380px" : "320px" }}>
+      <div className="relative p-5 flex items-center justify-center bg-black/20" style={{ minHeight: t.category === "mobile_app" ? "380px" : "320px" }}>
         <VisualTemplateRender template={t} displayW={previewW} />
+        {hovered && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-t-2xl">
+            <span className="inline-flex items-center gap-2 rounded-full bg-[#00d4ff] px-4 py-2 text-xs font-bold text-[#0a0e14]">
+              <Maximize2 className="w-3.5 h-3.5" /> Open Fullscreen
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Metadata */}
@@ -289,6 +303,7 @@ function TemplateCard({ template: t, previewW }) {
         </div>
 
         <button
+          onClick={(e) => { e.stopPropagation(); onOpen(); }}
           className="mt-auto w-full inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-2.5 text-[12px] font-bold text-white/70 hover:bg-[#00d4ff] hover:text-[#0a0e14] hover:border-[#00d4ff] transition-all duration-150"
         >
           <Sparkles className="w-3.5 h-3.5" /> Select Template
