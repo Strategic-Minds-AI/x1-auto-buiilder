@@ -4,6 +4,9 @@ import BackButton from "@/components/shared/BackButton";
 import BuilderToolbar from "@/components/builder/BuilderToolbar";
 import BuilderChat from "@/components/builder/BuilderChat";
 import BuilderPreview from "@/components/builder/BuilderPreview";
+import ComponentsPanel from "@/components/builder/ComponentsPanel";
+import ThemePanel from "@/components/builder/ThemePanel";
+import SettingsPanel from "@/components/builder/SettingsPanel";
 import { Loader2, ChevronDown, Plus, MessageCircle, Radio, Rocket } from "lucide-react";
 
 const AGENT_NAME = "super_agent";
@@ -19,6 +22,7 @@ export default function VisualBuilder() {
   const [deploying, setDeploying] = useState(false);
   const [provisioning, setProvisioning] = useState(false);
   const [showProjectMenu, setShowProjectMenu] = useState(false);
+  const [activePanel, setActivePanel] = useState(null);
 
   useEffect(() => { loadProjects(); startConversation(); }, []);
 
@@ -95,6 +99,15 @@ export default function VisualBuilder() {
     sendMessage("Generate a new website project. Ask me for the business name, industry, and location.");
   };
 
+  const handleAddComponent = (section) => {
+    sendMessage(`Add a ${section} to the current project. Generate the content and update the preview.`);
+    setActivePanel(null);
+  };
+
+  const handleApplyTheme = (color) => {
+    setActivePanel(null);
+  };
+
   return (
     <div className="h-screen flex flex-col bg-slate-100">
       {/* Top bar */}
@@ -143,10 +156,11 @@ export default function VisualBuilder() {
       </div>
 
       {/* Toolbar */}
-      <BuilderToolbar project={activeProject} onGenerate={handleNewProject} onDeploy={handleDeploy} onNewProject={handleNewProject} deploying={deploying} />
+      <BuilderToolbar project={activeProject} onGenerate={handleNewProject} onDeploy={handleDeploy} onNewProject={handleNewProject} deploying={deploying}
+        onComponents={() => setActivePanel("components")} onTheme={() => setActivePanel("theme")} onSettings={() => setActivePanel("settings")} />
 
       {/* Split layout */}
-      <div className="flex-1 flex min-h-0">
+      <div className="flex-1 flex min-h-0 relative">
         {/* Chat — left 40% */}
         <div className="w-2/5 min-w-[320px] max-w-[480px] shrink-0">
           <BuilderChat conversation={conversation} messages={messages} loading={chatLoading} onSend={sendMessage} onMessages={setMessages} />
@@ -155,6 +169,10 @@ export default function VisualBuilder() {
         <div className="flex-1 min-w-0">
           <BuilderPreview project={activeProject} previewMode={previewMode} onModeChange={setPreviewMode} loading={chatLoading} />
         </div>
+        {/* Slide-in panels */}
+        {activePanel === "components" && <ComponentsPanel onClose={() => setActivePanel(null)} onAdd={handleAddComponent} />}
+        {activePanel === "theme" && <ThemePanel project={activeProject} onClose={() => setActivePanel(null)} onApply={handleApplyTheme} />}
+        {activePanel === "settings" && <SettingsPanel project={activeProject} onClose={() => setActivePanel(null)} onUpdate={loadProjects} />}
       </div>
     </div>
   );

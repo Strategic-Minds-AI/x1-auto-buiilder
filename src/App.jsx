@@ -49,6 +49,7 @@ import UniversalGenerator from '@/pages/UniversalGenerator';
 import AgentInstructions from '@/pages/AgentInstructions';
 import VisualBuilder from '@/pages/VisualBuilder';
 import BuilderDocs from '@/pages/BuilderDocs';
+import SystemTestDashboard from '@/pages/SystemTestDashboard';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
 function App() {
@@ -104,6 +105,7 @@ function App() {
               <Route path="/agent-instructions" element={<AgentInstructions />} />
               <Route path="/visual-builder" element={<VisualBuilder />} />
               <Route path="/builder-docs" element={<BuilderDocs />} />
+              <Route path="/system-tests" element={<SystemTestDashboard />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>

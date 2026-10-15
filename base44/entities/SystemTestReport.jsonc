@@ -1,0 +1,83 @@
+{
+  "name": "SystemTestReport",
+  "type": "object",
+  "properties": {
+    "test_suite": {
+      "type": "string",
+      "description": "Test suite name"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "running",
+        "passed",
+        "failed",
+        "partial"
+      ],
+      "default": "running"
+    },
+    "total_tests": {
+      "type": "number",
+      "default": 0
+    },
+    "passed_tests": {
+      "type": "number",
+      "default": 0
+    },
+    "failed_tests": {
+      "type": "number",
+      "default": 0
+    },
+    "score": {
+      "type": "number",
+      "description": "0-100 validation score"
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Array of {test, status, detail}"
+    },
+    "fixes_applied": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Array of {issue, fix, status}"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "test_suite",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

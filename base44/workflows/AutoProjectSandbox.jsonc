@@ -1,0 +1,64 @@
+{
+  "name": "Auto Project Sandbox",
+  "description": "Automatically provisions Railway and Vercel sandboxes when a new website project is created in the portal",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "WebsiteProject"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "auto_project_sandbox",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "provision_railway": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "provisionSandbox",
+            "args": {
+              "action": "create",
+              "platform": "railway",
+              "projectId": "${ .trigger.entity_id }",
+              "clientId": "${ .trigger.data.client_id }",
+              "name": "${ .trigger.data.business_name }"
+            }
+          },
+          "then": "provision_vercel",
+          "x-base44": {
+            "title": "Provision Railway sandbox",
+            "description": "Create Railway project for website"
+          }
+        }
+      },
+      {
+        "provision_vercel": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "provisionSandbox",
+            "args": {
+              "action": "create",
+              "platform": "vercel",
+              "projectId": "${ .trigger.entity_id }",
+              "clientId": "${ .trigger.data.client_id }",
+              "name": "${ .trigger.data.business_name }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Provision Vercel sandbox",
+            "description": "Create Vercel project for website"
+          }
+        }
+      }
+    ]
+  }
+}

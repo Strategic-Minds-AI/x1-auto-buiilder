@@ -1,7 +1,7 @@
 import { Wand2, FileCode, Layout, Palette, Rocket, Settings, Globe, Loader2, ChevronDown } from "lucide-react";
 import { useState } from "react";
 
-export default function BuilderToolbar({ project, onGenerate, onDeploy, onNewProject, deploying }) {
+export default function BuilderToolbar({ project, onGenerate, onDeploy, onNewProject, deploying, onComponents, onTheme, onSettings }) {
   const [showPages, setShowPages] = useState(false);
 
   return (
@@ -23,13 +23,13 @@ export default function BuilderToolbar({ project, onGenerate, onDeploy, onNewPro
             </div>
           )}
         </div>
-        <button className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 transition">
+        <button onClick={onComponents} className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-[#00d4ff] transition">
           <Layout className="w-4 h-4" /> Components
         </button>
-        <button className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 transition">
+        <button onClick={onTheme} className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-[#00d4ff] transition">
           <Palette className="w-4 h-4" /> Theme
         </button>
-        <button className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 transition">
+        <button onClick={onSettings} className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-[#00d4ff] transition">
           <Settings className="w-4 h-4" /> Settings
         </button>
       </div>
