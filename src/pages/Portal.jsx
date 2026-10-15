@@ -11,7 +11,8 @@ import Campaigns from "@/components/portal/Campaigns";
 import SyncEngine from "@/components/portal/SyncEngine";
 import WebsiteLibrary from "@/components/portal/WebsiteLibrary";
 import SiteTemplates from "@/components/portal/SiteTemplates";
-import { CheckCircle2, Plus, Wand2, Library, Rocket, Cable, ExternalLink, Loader2, Globe, LayoutTemplate } from "lucide-react";
+import { Link } from "react-router-dom";
+import { CheckCircle2, Plus, Wand2, Library, Rocket, Cable, ExternalLink, Loader2, Globe, LayoutTemplate, Hammer } from "lucide-react";
 
 export default function Portal() {
   const [tab, setTab] = useState("generator");
@@ -136,6 +137,21 @@ export default function Portal() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <PortalNav onNew={() => { reset(); setTab("generator"); }} />
+
+      <div className="bg-primary/10 border-b border-primary/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <Hammer className="w-5 h-5 text-primary" />
+            <div>
+              <div className="text-sm font-bold text-foreground">New: Guided Auto Builder</div>
+              <div className="text-xs text-muted-foreground">A step-by-step journey — Vision → Strategy → Brand → Website → Launch, with a library for every stage.</div>
+            </div>
+          </div>
+          <Link to="/auto-builder" className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110 transition whitespace-nowrap">
+            <Hammer className="w-4 h-4" /> Open Auto Builder
+          </Link>
+        </div>
+      </div>
 
       <div className="border-b border-border bg-background/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex gap-1 overflow-x-auto">

@@ -1,0 +1,94 @@
+{
+  "name": "BuildProject",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Project name"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "vision",
+        "strategy",
+        "building",
+        "complete"
+      ],
+      "default": "draft"
+    },
+    "current_step": {
+      "type": "string",
+      "description": "Current journey step key",
+      "default": "project"
+    },
+    "vision": {
+      "type": "object",
+      "description": "Approved vision { statement, type, tagline, alternatives }"
+    },
+    "strategy": {
+      "type": "object",
+      "description": "Approved strategy { name, summary, tactics }"
+    },
+    "addons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Selected capability addons"
+    },
+    "accent_color": {
+      "type": "string",
+      "description": "Chosen accent hex color",
+      "default": "#00d4ff"
+    },
+    "vision_type": {
+      "type": "string",
+      "description": "Proven vision type chosen (e.g. Build a Website)"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -8,6 +8,7 @@ import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Home from '@/pages/Home';
 import Portal from '@/pages/Portal';
+import AutoBuilder from '@/pages/AutoBuilder';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
@@ -29,6 +30,7 @@ function App() {
             {/* Protected */}
             <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
               <Route path="/portal" element={<Portal />} />
+              <Route path="/auto-builder" element={<AutoBuilder />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>
