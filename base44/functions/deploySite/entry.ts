@@ -15,12 +15,19 @@ export default async function(req) {
     const project = await base44.entities.WebsiteProject.get(projectId);
     if (!project) return Response.json({ error: 'Project not found' }, { status: 404 });
     if (!project.content) return Response.json({ error: 'Project has no generated content to deploy' }, { status: 400 });
+    // Guardrail: this shared adapter is PREVIEW-ONLY. Protected release lives elsewhere.
+    if (body.target === 'production' || body.production === true) {
+      return Response.json({ error: 'PRODUCTION_RELEASE_BLOCKED: independent Guardian receipt and operator approval required' }, { status: 403 });
+    }
 
     const token = secrets.get('VERCEL_TOKEN');
     if (!token) return Response.json({ error: 'Vercel token not configured. Set VERCEL_TOKEN in dashboard -> Secrets.' }, { status: 500 });
     const teamId = secrets.get('VERCEL_TEAM_ID');
 
-    const html = renderSiteHtml(project);
+    const baseHtml = renderSiteHtml(project);
+    // An emitted preview MUST carry a search-engine exclusion marker even when
+    // a legacy renderer does not yet output it. This is not proof of HTTP headers.
+    const html = baseHtml.replace(/<head>/i, '<head><meta name="robots" content="noindex,nofollow,noarchive">');
     const name = slugify(project.business_name || project.industry || 'site') + '-' + String(project.id).slice(0, 6);
 
     const endpoint = 'https://api.vercel.com/v13/deployments' + (teamId ? '?teamId=' + encodeURIComponent(teamId) : '');
@@ -29,9 +36,15 @@ export default async function(req) {
       headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: name,
-        files: [{ file: 'index.html', data: html }],
+        files: [
+          { file: 'index.html', data: html },
+          { file: 'robots.txt', data: 'User-agent: *\\nDisallow: /\\n' },
+          { file: 'vercel.json', data: JSON.stringify({ headers: [
+            { source: '/(.*)', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }] }
+          ] }) }
+        ],
         projectSettings: { framework: null },
-        target: 'production'
+        // OMIT target: Vercel API default is Preview; never set target to production.
       }),
       signal: AbortSignal.timeout(60000)
     });
@@ -49,7 +62,9 @@ export default async function(req) {
       deploy_id: deployId
     });
 
-    return Response.json({ url: deployUrl, id: deployId, projectId: projectId });
+    return Response.json({ url: deployUrl, id: deployId, projectId: projectId,
+      targetRequested: 'preview', status: 'PREVIEW_DEPLOYED_UNVERIFIED',
+      independentValidationRequired: true });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

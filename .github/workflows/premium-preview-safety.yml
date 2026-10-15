@@ -1,0 +1,23 @@
+name: Premium Preview Release-Safety Contract
+on:
+  pull_request:
+    paths:
+      - 'base44/shared/siteRenderer.js'
+      - 'base44/functions/deploySite/entry.ts'
+      - 'base44/functions/provisionPreview/entry.ts'
+      - 'base44/functions/runValidation/entry.ts'
+      - 'premium-factory/**'
+      - 'scripts/verify-premium-preview-safety.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  release-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/verify-premium-preview-safety.mjs
