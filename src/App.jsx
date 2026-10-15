@@ -54,6 +54,7 @@ import EmailTemplateLibrary from '@/pages/EmailTemplateLibrary';
 import EntityLibrary from '@/pages/EntityLibrary';
 import PlatformDashboard from '@/pages/PlatformDashboard';
 import WorkflowLibrary from '@/pages/WorkflowLibrary';
+import ApiDocs from '@/pages/ApiDocs';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
 function App() {
@@ -114,6 +115,7 @@ function App() {
               <Route path="/entity-library" element={<EntityLibrary />} />
               <Route path="/platform-dashboard" element={<PlatformDashboard />} />
               <Route path="/workflow-library" element={<WorkflowLibrary />} />
+              <Route path="/api-docs" element={<ApiDocs />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Wand2, Library, Globe, LayoutTemplate, Rocket, LayoutGrid, Cable,
-  Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown, Mail, Workflow,
+  Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown, Mail, Workflow, Code,
   Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2, Key, Plug, Brain, Scan, AlertTriangle
 } from "lucide-react";
 
@@ -76,6 +76,7 @@ const EXTERNAL_MODULES = [
   { to: "/ai-skills-library", icon: Zap, label: "AI Skills Library" },
   { to: "/comm-library", icon: Radio, label: "AI Comms Library" },
   { to: "/api-keys", icon: Key, label: "API Key Manager" },
+  { to: "/api-docs", icon: Code, label: "API Documentation" },
   { to: "/api-connectors", icon: Plug, label: "API Connectors" },
   { to: "/sheets-setup", icon: Table, label: "Sheets Setup Guide" },
   { to: "/intelligence-hub", icon: Brain, label: "Intelligence Hub" },
