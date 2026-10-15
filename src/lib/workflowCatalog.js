@@ -40,6 +40,20 @@ export const WORKFLOW_CATALOG = [
     desc: "Generates social media content when a new project is created.",
     steps: [{ name: "generate_social", function: "generateSocialCreative", title: "Generate social content" }] },
 
+  { name: "Website Project Auto Pipeline", file: "WebsiteProjectAutoPipeline", trigger: "entity", triggerEntity: "WebsiteProject", status: "active", category: "Operations",
+    desc: "When a new WebsiteProject is created, automatically runs the full pipeline: business research, template selection, content generation, brand assets, deployment, social calendar, compliance check, and orchestrator notification.",
+    steps: [
+      { name: "research", function: "researchBusiness", title: "Research business" },
+      { name: "templates", function: "researchIndustryTemplates", title: "Research templates" },
+      { name: "instantiate", function: "instantiateTemplate", title: "Instantiate template" },
+      { name: "content", function: "generateWebsite", title: "Generate content" },
+      { name: "assets", function: "generateAssets", title: "Generate assets" },
+      { name: "deploy", function: "deploySite", title: "Deploy site" },
+      { name: "social", function: "generateSocialScheduleV2", title: "Generate social calendar" },
+      { name: "compliance", function: "runComplianceCheck", title: "Run compliance" },
+      { name: "notify", function: "websiteProjectPipeline", title: "Notify orchestrator" },
+    ] },
+
   // Analytics
   { name: "Scheduled Analytics Sync", file: "ScheduledAnalyticsSync", trigger: "scheduled", status: "inactive", category: "Analytics",
     desc: "Syncs Google Analytics and Search Console data on a schedule.",

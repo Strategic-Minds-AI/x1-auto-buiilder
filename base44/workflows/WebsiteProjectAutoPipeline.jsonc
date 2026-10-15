@@ -1,0 +1,40 @@
+{
+  "name": "Website Project Auto Pipeline",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "website_project_auto_pipeline",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_full_pipeline": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "websiteProjectPipeline",
+            "args": {
+              "projectId": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Run full project pipeline",
+            "description": "Research business, select template, generate content + assets, deploy, generate social calendar, run compliance, notify orchestrator"
+          }
+        }
+      }
+    ]
+  },
+  "description": "When a new WebsiteProject is created, automatically runs the full pipeline: business research, industry template research, template instantiation, content generation, brand asset generation, site deployment, social calendar generation, compliance check, and orchestrator notification \u2014 all without manual clicks.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "WebsiteProject"
+    }
+  }
+}

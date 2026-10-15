@@ -1,24 +1,44 @@
 import { useState, useEffect, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import BackButton from "@/components/shared/BackButton";
-import { Loader2, Search, Wand2, Bot, Zap, Shield, Code, BarChart3, Mail, TrendingUp, Heart, Search as SearchIcon, Palette, CheckCircle, Server, ShieldCheck, DollarSign, Scale, Users, ClipboardList, Package, Rocket, Settings, PenTool, Sparkles } from "lucide-react";
+import { Loader2, Search, Wand2, Bot, Zap, Shield, Code, BarChart3, Mail, TrendingUp, Heart, Search as SearchIcon, Palette, CheckCircle, Server, ShieldCheck, DollarSign, Scale, Users, ClipboardList, Package, Rocket, Settings, PenTool, Sparkles, Plus, X, CheckCircle2 } from "lucide-react";
 
 const ICON_MAP = { PenTool, Shield, Sparkles, Mail, TrendingUp, Heart, BarChart3, Search: SearchIcon, Palette, Code, CheckCircle, Server, ShieldCheck, DollarSign, Scale, Users, ClipboardList, Package, Rocket, Settings, Bot, Zap };
 
 export default function AgentLibrary() {
   const [agents, setAgents] = useState([]);
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [seeding, setSeeding] = useState(false);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(null);
+  const [assigning, setAssigning] = useState(null);
+  const [assignments, setAssignments] = useState({});
 
   useEffect(() => { load(); }, []);
 
   const load = async () => {
     setLoading(true);
     try {
-      const { items } = await base44.entities.AgentProfile.filter({}, { sort: "skill_category", limit: 100 });
-      setAgents(items || []);
+      const [agentPage, taskPage, projPage] = await Promise.all([
+        base44.entities.AgentProfile.filter({}, { sort: "skill_category", limit: 100 }),
+        base44.entities.AgentTask.filter({}, { sort: "-created_date", limit: 200, fields: ["assigned_to", "project_id", "status"] }),
+        base44.entities.WebsiteProject.filter({}, { sort: "-created_date", limit: 50, fields: ["business_name", "industry", "status"] }),
+      ]);
+      const agentList = agentPage.items || [];
+      setAgents(agentList);
+      setProjects(projPage.items || []);
+      // Build assignment map: agent_id -> [project_ids]
+      const map = {};
+      (taskPage.items || []).forEach((t) => {
+        if (t.assigned_to && t.project_id) {
+          if (!map[t.assigned_to]) map[t.assigned_to] = new Set();
+          map[t.assigned_to].add(t.project_id);
+        }
+      });
+      const assignMap = {};
+      Object.keys(map).forEach((k) => { assignMap[k] = Array.from(map[k]); });
+      setAssignments(assignMap);
     } catch { setAgents([]); }
     finally { setLoading(false); }
   };
@@ -30,9 +50,30 @@ export default function AgentLibrary() {
     finally { setSeeding(false); }
   };
 
+  const assignToProject = async (agent, projectId) => {
+    if (!projectId) return;
+    try {
+      const proj = projects.find((p) => p.id === projectId);
+      await base44.entities.AgentTask.create({
+        title: `${agent.name} assigned to ${proj?.business_name || "project"}`,
+        agent_name: agent.agent_id,
+        task: `Agent ${agent.name} assigned to project "${proj?.business_name || projectId}". Category: ${agent.skill_category}. Autonomy: ${agent.autonomy_level}.`,
+        status: "pending",
+        priority: "medium",
+        project_id: projectId,
+        assigned_to: agent.agent_id,
+      });
+      setAssignments((prev) => ({
+        ...prev,
+        [agent.agent_id]: [...(prev[agent.agent_id] || []), projectId]
+      }));
+      setAssigning(null);
+    } catch (e) { alert("Assignment failed: " + (e.message || "unknown")); }
+  };
+
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
-    return agents.filter((a) => !q || (a.name || "").toLowerCase().includes(q) || (a.skill_category || "").toLowerCase().includes(q) || (a.description || "").toLowerCase().includes(q));
+    return agents.filter((a) => !q || (a.name || "").toLowerCase().includes(q) || (a.skill_category || "").toLowerCase().includes(q) || (a.description || "").toLowerCase().includes(q) || (a.capabilities || []).some((c) => c.toLowerCase().includes(q)));
   }, [agents, query]);
 
   return (
@@ -86,13 +127,51 @@ export default function AgentLibrary() {
                       <span key={i} className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">{cap}</span>
                     ))}
                   </div>
-                  <div className="flex items-center justify-between text-[10px] text-slate-400">
+                  <div className="flex items-center justify-between text-[10px] text-slate-400 mb-2">
                     <span>Autonomy: <span className="font-semibold text-slate-600">{a.autonomy_level}</span></span>
                     <span>Model: <span className="font-semibold text-slate-600">{a.model}</span></span>
                   </div>
+                  {/* Assignment badge */}
+                  {assignments[a.agent_id]?.length > 0 && (
+                    <div className="mb-2 inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                      <CheckCircle2 className="w-2.5 h-2.5" /> Assigned to {assignments[a.agent_id].length} project{assignments[a.agent_id].length > 1 ? "s" : ""}
+                    </div>
+                  )}
+                  <button onClick={(e) => { e.stopPropagation(); setAssigning(a); }}
+                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#00d4ff]/10 px-3 py-1.5 text-xs font-bold text-[#00d4ff] hover:bg-[#00d4ff]/20 transition">
+                    <Plus className="w-3 h-3" /> Assign to Project
+                  </button>
                 </div>
               );
             })}
+          </div>
+        )}
+
+        {/* Assignment modal */}
+        {assigning && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setAssigning(null)}>
+            <div className="bg-white rounded-2xl p-5 w-full max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Assign {assigning.name}</h3>
+                  <p className="text-xs text-slate-500">{assigning.skill_category?.replace(/_/g, " ")} · {assigning.autonomy_level}</p>
+                </div>
+                <button onClick={() => setAssigning(null)} className="text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
+              </div>
+              <div className="space-y-1.5 max-h-64 overflow-y-auto">
+                {projects.length === 0 && <p className="text-xs text-slate-400 text-center py-4">No projects available. Create a project first.</p>}
+                {projects.map((p) => (
+                  <button key={p.id} onClick={() => assignToProject(assigning, p.id)}
+                    className="w-full flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2.5 text-left hover:border-[#00d4ff]/40 hover:bg-[#00d4ff]/5 transition">
+                    <div>
+                      <div className="text-sm font-semibold text-slate-700">{p.business_name || "Untitled"}</div>
+                      <div className="text-[10px] text-slate-400">{p.industry} · {p.status}</div>
+                    </div>
+                    <Plus className="w-4 h-4 text-slate-400" />
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 

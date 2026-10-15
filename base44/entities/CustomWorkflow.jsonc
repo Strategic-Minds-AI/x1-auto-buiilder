@@ -1,0 +1,156 @@
+{
+  "name": "CustomWorkflow",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Workflow name"
+    },
+    "description": {
+      "type": "string",
+      "description": "What this workflow does",
+      "maxLength": 1000
+    },
+    "trigger_type": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "entity_create",
+        "entity_update",
+        "scheduled",
+        "webhook"
+      ],
+      "default": "manual",
+      "description": "How this workflow is triggered"
+    },
+    "trigger_entity": {
+      "type": "string",
+      "description": "Entity name for entity triggers"
+    },
+    "trigger_config": {
+      "type": "object",
+      "description": "Additional trigger configuration (schedule, conditions, etc)"
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "action",
+              "agent",
+              "condition",
+              "delay",
+              "trigger",
+              "output"
+            ]
+          },
+          "label": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "config": {
+            "type": "object"
+          },
+          "position": {
+            "type": "object"
+          }
+        }
+      },
+      "description": "Workflow nodes (drag-and-drop blocks)"
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Connections between nodes"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "paused",
+        "archived"
+      ],
+      "default": "draft"
+    },
+    "category": {
+      "type": "string",
+      "description": "Workflow category for grouping"
+    },
+    "last_run_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "run_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "name",
+    "trigger_type",
+    "nodes"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
