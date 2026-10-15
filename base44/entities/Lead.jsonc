@@ -1,0 +1,76 @@
+{
+  "name": "Lead",
+  "type": "object",
+  "properties": {
+    "form_type": {
+      "type": "string",
+      "enum": [
+        "contact",
+        "quotation",
+        "newsletter",
+        "newsletter_v2",
+        "pricing",
+        "search"
+      ],
+      "description": "Which form the submission came from"
+    },
+    "name": {
+      "type": "string",
+      "description": "Submitter name"
+    },
+    "email": {
+      "type": "string",
+      "description": "Submitter email"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Submitter phone"
+    },
+    "website": {
+      "type": "string",
+      "description": "Submitter website"
+    },
+    "service": {
+      "type": "string",
+      "description": "Service of interest"
+    },
+    "message": {
+      "type": "string",
+      "description": "Message body"
+    },
+    "query": {
+      "type": "string",
+      "description": "Search query that led to the lead"
+    },
+    "plan_title": {
+      "type": "string",
+      "description": "Pricing plan title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Additional notes",
+      "maxLength": 1000
+    }
+  },
+  "required": [
+    "form_type"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Phone, Menu, X } from "lucide-react";
+import { Phone, Menu, X, LayoutGrid } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const navLinks = [
   { label: "Industries", href: "#industries" },
@@ -49,12 +50,20 @@ export default function Header() {
             ))}
           </nav>
 
-          <a
-            href="tel:+17722090266"
-            className="hidden lg:inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground hover:brightness-110 transition"
-          >
-            <Phone className="w-4 h-4" /> (772) 209-0266
-          </a>
+          <div className="hidden lg:flex items-center gap-3">
+            <Link
+              to="/portal"
+              className="inline-flex items-center gap-2 rounded-full border border-primary/40 px-5 py-2.5 text-sm font-semibold text-primary hover:bg-primary/10 transition"
+            >
+              <LayoutGrid className="w-4 h-4" /> Client Portal
+            </Link>
+            <a
+              href="tel:+17722090266"
+              className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground hover:brightness-110 transition"
+            >
+              <Phone className="w-4 h-4" /> (772) 209-0266
+            </a>
+          </div>
 
           <button
             className="lg:hidden text-foreground p-1"
@@ -79,9 +88,15 @@ export default function Header() {
                 {l.label}
               </a>
             ))}
+            <Link
+              to="/portal"
+              className="inline-flex items-center gap-2 rounded-full border border-primary/40 px-5 py-2.5 text-sm font-semibold text-primary hover:bg-primary/10 transition w-fit"
+            >
+              <LayoutGrid className="w-4 h-4" /> Client Portal
+            </Link>
             <a
               href="tel:+17722090266"
-              className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground mt-2 w-fit"
+              className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground w-fit"
             >
               <Phone className="w-4 h-4" /> (772) 209-0266
             </a>
