@@ -5,7 +5,7 @@ import LocationPicker from "@/components/masslaunch/LocationPicker";
 import CompliancePanel from "@/components/masslaunch/CompliancePanel";
 import {
   Rocket, Globe, Building2, Search, Loader2, CheckCircle2, Library,
-  CheckSquare, Square, Layers, ShieldCheck, Crown,
+  CheckSquare, Square, Layers, ShieldCheck, Crown, ShieldCheck as ValidateIcon,
 } from "lucide-react";
 
 const goals = ["More qualified leads", "Online bookings", "Phone calls", "Quote requests", "Brand awareness"];
@@ -30,6 +30,8 @@ export default function MassLaunchConsoleV2({ onDone }) {
   const [launchingMaster, setLaunchingMaster] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [error, setError] = useState("");
+  const [validating, setValidating] = useState(false);
+  const [validationResults, setValidationResults] = useState(null);
 
   useEffect(() => {
     if (mode === "existing") loadExisting();
@@ -96,6 +98,20 @@ export default function MassLaunchConsoleV2({ onDone }) {
     }
   };
 
+  const runValidation = async () => {
+    setValidating(true);
+    setError("");
+    setValidationResults(null);
+    try {
+      const res = await base44.functions.invoke("batchValidateTemplates", {});
+      setValidationResults(res.data);
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || "Validation failed");
+    } finally {
+      setValidating(false);
+    }
+  };
+
   const toggleSelect = (id) => {
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
@@ -146,6 +162,12 @@ export default function MassLaunchConsoleV2({ onDone }) {
           className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${mode === "master" ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground hover:text-foreground"}`}
         >
           <Crown className="w-4 h-4" /> Auto Builder Master
+        </button>
+        <button
+          onClick={() => setMode("validate")}
+          className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${mode === "validate" ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground hover:text-foreground"}`}
+        >
+          <ValidateIcon className="w-4 h-4" /> Template Validation
         </button>
       </div>
 
@@ -239,6 +261,106 @@ export default function MassLaunchConsoleV2({ onDone }) {
           </div>
 
           <LocationPicker selected={locations} onChange={setLocations} />
+        </div>
+      )}
+
+      {/* Template Validation mode — batch-validate all design templates through APEX engine */}
+      {mode === "validate" && (
+        <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <ValidateIcon className="w-4 h-4 text-primary" />
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">APEX Template Validation Engine</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Process and validate all template implementations through the APEX engine. Checks metadata completeness, render fidelity, and category validity.
+              </p>
+            </div>
+            <button
+              onClick={runValidation}
+              disabled={validating}
+              className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-bold text-accent-foreground disabled:opacity-50"
+            >
+              {validating ? <Loader2 className="w-4 h-4 animate-spin" /> : <ValidateIcon className="w-4 h-4" />}
+              {validating ? "Validating…" : "Start Mass Validation"}
+            </button>
+          </div>
+
+          {error && <div className="rounded-lg border border-destructive/40 bg-destructive/10 text-destructive text-sm p-3">{error}</div>}
+
+          {validationResults && (
+            <div className="space-y-4">
+              {/* Summary */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-xl border border-border bg-background/60 p-3">
+                  <div className="text-xs text-muted-foreground mb-1">Total Templates</div>
+                  <div className="text-2xl font-bold">{validationResults.total}</div>
+                </div>
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
+                  <div className="text-xs text-emerald-400 mb-1">Passed</div>
+                  <div className="text-2xl font-bold text-emerald-400">{validationResults.passed}</div>
+                </div>
+                <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-3">
+                  <div className="text-xs text-destructive mb-1">Failed</div>
+                  <div className="text-2xl font-bold text-destructive">{validationResults.failed}</div>
+                </div>
+                <div className="rounded-xl border border-primary/30 bg-primary/10 p-3">
+                  <div className="text-xs text-primary mb-1">Pass Rate</div>
+                  <div className="text-2xl font-bold text-primary">{validationResults.passRate}%</div>
+                </div>
+              </div>
+
+              {/* By category */}
+              <div>
+                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">By Category</div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {Object.entries(validationResults.byCategory || {}).map(([cat, stats]) => (
+                    <div key={cat} className="rounded-xl border border-border bg-background/60 p-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-semibold capitalize">{cat.replace("_", " ")}</span>
+                        <span className="text-xs text-muted-foreground">{stats.passed}/{stats.total}</span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                        <div className="h-full bg-emerald-500" style={{ width: `${stats.total > 0 ? (stats.passed / stats.total) * 100 : 0}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Failures */}
+              {validationResults.failures && validationResults.failures.length > 0 && (
+                <div>
+                  <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                    Failed Templates ({validationResults.failures.length} shown)
+                  </div>
+                  <div className="max-h-60 overflow-y-auto space-y-1">
+                    {validationResults.failures.map((f) => (
+                      <div key={f.id} className="flex items-center justify-between rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-xs">
+                        <div className="min-w-0">
+                          <span className="font-semibold">{f.name || f.template_id}</span>
+                          <span className="text-muted-foreground ml-2">{f.category}</span>
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          {f.issues.map((issue, i) => (
+                            <span key={i} className="rounded-full bg-destructive/10 text-destructive px-2 py-0.5 text-[10px] font-mono">{issue}</span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {validationResults.passRate === 100 && (
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                  <span className="text-sm font-semibold text-emerald-400">All {validationResults.total} templates passed validation!</span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 

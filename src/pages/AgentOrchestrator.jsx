@@ -1,7 +1,15 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import PageHeader from "@/components/shared/PageHeader";
-import { Loader2, Plus, Bot, CheckCircle, AlertCircle, Clock } from "lucide-react";
+import { Loader2, Plus, Bot, CheckCircle, AlertCircle, Clock, Zap, PlayCircle, Shield, Radio, BarChart3, DollarSign, Sparkles } from "lucide-react";
+
+const SUPER_AGENTS = [
+  { id: "seo_sentinel", name: "SEO Sentinel", icon: Shield, task: "Run compliance checks on all launched sites and auto-fix failing Google standards to 90%+ score", priority: "high" },
+  { id: "social_media_manager", name: "Social Media Manager", icon: Sparkles, task: "Generate 30-day social media content calendars for all active projects across all platforms", priority: "medium" },
+  { id: "communications_director", name: "Communications Director", icon: Radio, task: "Draft email campaigns and client outreach sequences for active projects", priority: "medium" },
+  { id: "analytics_watcher", name: "Analytics Watcher", icon: BarChart3, task: "Sync Google Analytics 4 and Search Console data for all connected properties and generate performance reports", priority: "high" },
+  { id: "monetization_agent", name: "Monetization Agent", icon: DollarSign, task: "Analyze pricing intelligence data and generate competitive pricing strategies for all active industries", priority: "medium" },
+];
 
 const STATUS_META = {
   pending: { icon: Clock, color: "text-muted-foreground", bg: "bg-muted" },
@@ -16,6 +24,10 @@ export default function AgentOrchestrator() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ agent_name: "", task: "", priority: "medium", assigned_to: "" });
+  const [initializing, setInitializing] = useState(false);
+  const [executing, setExecuting] = useState(false);
+  const [initMessage, setInitMessage] = useState(null);
+  const [execMessage, setExecMessage] = useState(null);
 
   const load = async () => {
     setLoading(true);
@@ -46,6 +58,59 @@ export default function AgentOrchestrator() {
     load();
   };
 
+  const initializeAgents = async () => {
+    setInitializing(true);
+    try {
+      // Check for existing tasks per agent to avoid duplicates
+      const existing = await base44.entities.AgentTask.filter(
+        { agent_name: { $in: SUPER_AGENTS.map((a) => a.name) }, status: { $in: ["pending", "in_progress"] } },
+        { limit: 50 }
+      );
+      const existingNames = new Set((existing.items || []).map((t) => t.agent_name));
+      const toCreate = SUPER_AGENTS.filter((a) => !existingNames.has(a.name));
+      if (toCreate.length === 0) {
+        setInitMessage("All agents already have active tasks.");
+      } else {
+        await base44.entities.AgentTask.bulkCreate(
+          toCreate.map((a) => ({
+            agent_name: a.name,
+            task: a.task,
+            priority: a.priority,
+            assigned_to: a.id,
+            status: "pending",
+            progress: 0,
+          }))
+        );
+        setInitMessage(`Initialized ${toCreate.length} super agents with deterministic tasks.`);
+      }
+      load();
+    } catch (err) {
+      setInitMessage("Initialization failed: " + (err.message || "unknown error"));
+    } finally {
+      setInitializing(false);
+    }
+  };
+
+  const executeAllPending = async () => {
+    setExecuting(true);
+    try {
+      const pending = tasks.filter((t) => t.status === "pending");
+      if (pending.length === 0) {
+        setExecMessage("No pending tasks to execute.");
+      } else {
+        await base44.entities.AgentTask.bulkUpdate(
+          pending.map((t) => ({ id: t.id, status: "in_progress", progress: 50 }))
+        );
+        setExecMessage(`Dispatched ${pending.length} tasks for autonomous execution.`);
+        load();
+      }
+    } catch (err) {
+      setExecMessage("Execution failed: " + (err.message || "unknown error"));
+    } finally {
+      setExecuting(false);
+    }
+  };
+
   const activeCount = tasks.filter((t) => t.status === "in_progress").length;
   const pendingCount = tasks.filter((t) => t.status === "pending").length;
   const doneCount = tasks.filter((t) => t.status === "complete").length;
@@ -54,6 +119,62 @@ export default function AgentOrchestrator() {
     <div className="min-h-screen bg-background text-foreground">
       <PageHeader title="Agent Orchestrator" subtitle="Monitor autonomous agents, assign tasks, and track progress in real-time" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        {/* Super Agents initialization panel */}
+        <div className="rounded-2xl border border-border bg-card p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Zap className="w-5 h-5 text-primary" />
+              <h3 className="text-sm font-bold">Super Agent Fleet</h3>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={initializeAgents}
+                disabled={initializing}
+                className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-50"
+              >
+                {initializing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
+                Initialize Agents
+              </button>
+              <button
+                onClick={executeAllPending}
+                disabled={executing || tasks.filter((t) => t.status === "pending").length === 0}
+                className="inline-flex items-center gap-2 rounded-full border border-primary/40 text-primary px-4 py-2 text-sm font-bold hover:bg-primary/10 disabled:opacity-50"
+              >
+                {executing ? <Loader2 className="w-4 h-4 animate-spin" /> : <PlayCircle className="w-4 h-4" />}
+                Execute All Pending
+              </button>
+            </div>
+          </div>
+          {(initMessage || execMessage) && (
+            <div className="mb-3 rounded-lg bg-primary/10 px-3 py-2 text-xs text-primary">
+              {initMessage || execMessage}
+            </div>
+          )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
+            {SUPER_AGENTS.map((agent) => {
+              const Icon = agent.icon;
+              const agentTasks = tasks.filter((t) => t.agent_name === agent.name);
+              const activeTask = agentTasks.find((t) => t.status === "in_progress");
+              const pendingTask = agentTasks.find((t) => t.status === "pending");
+              const status = activeTask ? "in_progress" : pendingTask ? "pending" : "idle";
+              return (
+                <div key={agent.id} className="rounded-xl border border-border bg-background/60 p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className={`flex h-8 w-8 items-center justify-center rounded-lg ${status === "in_progress" ? "bg-primary/20" : "bg-muted"} shrink-0`}>
+                      <Icon className={`w-4 h-4 ${status === "in_progress" ? "text-primary" : "text-muted-foreground"}`} />
+                    </span>
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold truncate">{agent.name}</div>
+                      <div className="text-[10px] text-muted-foreground capitalize">{status.replace("_", " ")}</div>
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground line-clamp-2">{agent.task}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <StatCard label="Active" value={activeCount} icon={Loader2} color="text-primary" spin />
           <StatCard label="Pending" value={pendingCount} icon={Clock} color="text-muted-foreground" />
