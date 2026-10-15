@@ -9,7 +9,9 @@ import TemplateLibrary from "@/components/portal/TemplateLibrary";
 import MassLaunchConsole from "@/components/portal/MassLaunchConsole";
 import Campaigns from "@/components/portal/Campaigns";
 import SyncEngine from "@/components/portal/SyncEngine";
-import { CheckCircle2, Plus, Wand2, Library, Rocket, Cable, ExternalLink, Loader2 } from "lucide-react";
+import WebsiteLibrary from "@/components/portal/WebsiteLibrary";
+import SiteTemplates from "@/components/portal/SiteTemplates";
+import { CheckCircle2, Plus, Wand2, Library, Rocket, Cable, ExternalLink, Loader2, Globe, LayoutTemplate } from "lucide-react";
 
 export default function Portal() {
   const [tab, setTab] = useState("generator");
@@ -139,6 +141,8 @@ export default function Portal() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex gap-1 overflow-x-auto">
           <TabButton active={tab === "generator"} onClick={() => setTab("generator")} icon={Wand2} label="Website Generator" />
           <TabButton active={tab === "library"} onClick={() => setTab("library")} icon={Library} label="Template Library" />
+          <TabButton active={tab === "sites"} onClick={() => setTab("sites")} icon={Globe} label="Website Library" />
+          <TabButton active={tab === "templates"} onClick={() => setTab("templates")} icon={LayoutTemplate} label="Site Templates" />
           <TabButton active={tab === "launch"} onClick={() => setTab("launch")} icon={Rocket} label="Mass Launch" />
           <TabButton active={tab === "campaigns"} onClick={() => setTab("campaigns")} icon={Rocket} label="Campaigns" />
           <TabButton active={tab === "sync"} onClick={() => setTab("sync")} icon={Cable} label="Sync Engine" />
@@ -225,6 +229,8 @@ export default function Portal() {
       )}
 
       {tab === "library" && <TemplateLibrary />}
+      {tab === "sites" && <WebsiteLibrary />}
+      {tab === "templates" && <SiteTemplates />}
       {tab === "launch" && <MassLaunchConsole onDone={() => setTab("campaigns")} />}
       {tab === "campaigns" && <Campaigns />}
       {tab === "sync" && <SyncEngine />}

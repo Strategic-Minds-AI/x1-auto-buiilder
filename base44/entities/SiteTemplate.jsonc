@@ -1,0 +1,75 @@
+{
+  "name": "SiteTemplate",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Template name"
+    },
+    "industry": {
+      "type": "string",
+      "description": "Industry this template suits"
+    },
+    "source_project_id": {
+      "type": "string",
+      "description": "WebsiteProject this template was universalized from"
+    },
+    "template": {
+      "type": "object",
+      "description": "Universalized content blueprint with placeholder variables"
+    },
+    "variables": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Placeholder variables: [{ key, description }]"
+    }
+  },
+  "required": [
+    "name",
+    "industry",
+    "template"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
