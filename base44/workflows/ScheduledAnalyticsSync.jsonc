@@ -1,10 +1,20 @@
 {
-  "name": "Scheduled Analytics Sync",
   "description": "Daily sync of Search Console and GA4 performance data for all deployed projects",
   "trigger": {
+    "condition": null,
     "config": {
       "trigger_type": "scheduled",
-      "schedule": "0 8 * * *"
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 8 * * *",
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
     }
   },
   "definition": {
@@ -44,5 +54,6 @@
         }
       }
     ]
-  }
+  },
+  "name": "Scheduled Analytics Sync"
 }

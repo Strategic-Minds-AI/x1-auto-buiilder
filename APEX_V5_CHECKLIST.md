@@ -197,11 +197,11 @@
 ---
 
 ## IMPLEMENTABLE GAPS (code-level, this turn)
-1. ❌ PricingIntelligence entity + discovery function (Section 7)
-2. ❌ Domain availability checking function (Section 4.4)
-3. ❌ Business Name Studio function (Section 4.5)
-4. ❌ Scheduled workflows for analytics sync + social generation (Section 15.3, 20.3)
-5. ❌ GA4 connector authorization (Section 19.6)
+1. ✅ PricingIntelligence entity + discoverPricing function (Section 7) — DONE, tested with real competitor data
+2. ✅ Domain availability checking function (Section 4.4) — DONE, tested via RDAP
+3. ✅ Business Name Studio function (Section 4.5) — DONE, tested with 3 professional options
+4. ✅ Scheduled workflows: ScheduledAnalyticsSync (daily) + NewProjectSocialGeneration (on approval) (Section 15.3, 20.3) — DONE
+5. ✅ GA4 connector authorization (Section 19.6) — DONE, authorized
 
 ## NOT FEASIBLE (this turn / this platform)
 - 6,000 template implementations (months of generation)
