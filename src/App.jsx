@@ -9,6 +9,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import Home from '@/pages/Home';
 import Portal from '@/pages/Portal';
 import AutoBuilder from '@/pages/AutoBuilder';
+import ApexCommand from '@/pages/ApexCommand';
 import AgentOrchestrator from '@/pages/AgentOrchestrator';
 import BrandAssets from '@/pages/BrandAssets';
 import GPTSyncLogs from '@/pages/GPTSyncLogs';
@@ -47,6 +48,7 @@ function App() {
             <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
               <Route path="/portal" element={<Portal />} />
               <Route path="/auto-builder" element={<AutoBuilder />} />
+              <Route path="/apex-command" element={<ApexCommand />} />
               <Route path="/agent-orchestrator" element={<AgentOrchestrator />} />
               <Route path="/brand-assets" element={<BrandAssets />} />
               <Route path="/gpt-sync-logs" element={<GPTSyncLogs />} />

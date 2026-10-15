@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Wand2, Library, Globe, LayoutTemplate, Rocket, LayoutGrid, Cable,
   Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown,
-  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity
+  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -45,6 +45,7 @@ const NAV_GROUPS = [
 ];
 
 const EXTERNAL_MODULES = [
+  { to: "/apex-command", icon: Zap, label: "APEX Command" },
   { to: "/auto-builder", icon: Hammer, label: "Auto Builder" },
   { to: "/agent-orchestrator", icon: Bot, label: "Agents" },
   { to: "/research-hub", icon: Search, label: "Research Hub" },
@@ -161,6 +162,12 @@ export default function PortalShell({ activeTab, onTabChange, onNew, children })
             </span>
           </div>
           <div className="flex items-center gap-3">
+            <Link
+              to="/apex-command"
+              className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:text-[#00d4ff] hover:border-[#00d4ff]/40 transition"
+            >
+              <Zap className="w-4 h-4" /> APEX Command
+            </Link>
             <Link
               to="/auto-builder"
               className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:text-[#00d4ff] hover:border-[#00d4ff]/40 transition"
