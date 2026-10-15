@@ -39,6 +39,7 @@ import AISkillsLibrary from '@/pages/AISkillsLibrary';
 import CommLibrary from '@/pages/CommLibrary';
 import ApiKeyManager from '@/pages/ApiKeyManager';
 import ApiConnectorSettings from '@/pages/ApiConnectorSettings';
+import SheetsSetupGuide from '@/pages/SheetsSetupGuide';
 
 function App() {
   return (
@@ -83,6 +84,7 @@ function App() {
               <Route path="/comm-library" element={<CommLibrary />} />
               <Route path="/api-keys" element={<ApiKeyManager />} />
               <Route path="/api-connectors" element={<ApiConnectorSettings />} />
+              <Route path="/sheets-setup" element={<SheetsSetupGuide />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>

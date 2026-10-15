@@ -77,6 +77,7 @@ const EXTERNAL_MODULES = [
   { to: "/comm-library", icon: Radio, label: "AI Comms Library" },
   { to: "/api-keys", icon: Key, label: "API Key Manager" },
   { to: "/api-connectors", icon: Plug, label: "API Connectors" },
+  { to: "/sheets-setup", icon: Table, label: "Sheets Setup Guide" },
 ];
 
 export default function PortalShell({ activeTab, onTabChange, onNew, children }) {
