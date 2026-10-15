@@ -1,0 +1,121 @@
+{
+  "name": "ComplianceReport",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "WebsiteProject id this report evaluates"
+    },
+    "overall_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Overall Google compliance score 0-100"
+    },
+    "category_scores": {
+      "type": "object",
+      "description": "Per-category scores: { seo, aeo, geo, technical, content }"
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "requirement": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pass",
+              "fail",
+              "warning"
+            ]
+          },
+          "recommendation": {
+            "type": "string"
+          },
+          "auto_fixed": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "description": "Individual check results against Google standards"
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Top recommended changes to reach target compliance"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "checking",
+        "scored",
+        "fixing",
+        "fixed",
+        "deployed"
+      ],
+      "default": "pending"
+    },
+    "round": {
+      "type": "number",
+      "default": 1,
+      "description": "Check round (1 = initial, 2 = after auto-fix)"
+    },
+    "previous_score": {
+      "type": "number",
+      "description": "Score before auto-fix, for before/after comparison"
+    }
+  },
+  "required": [
+    "project_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

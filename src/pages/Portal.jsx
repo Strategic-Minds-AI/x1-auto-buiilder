@@ -7,6 +7,7 @@ import BlueprintReview from "@/components/portal/BlueprintReview";
 import AssetStudio from "@/components/portal/AssetStudio";
 import TemplateLibrary from "@/components/portal/TemplateLibrary";
 import MassLaunchConsole from "@/components/portal/MassLaunchConsole";
+import MassLaunchConsoleV2 from "@/components/masslaunch/MassLaunchConsoleV2";
 import Campaigns from "@/components/portal/Campaigns";
 import SyncEngine from "@/components/portal/SyncEngine";
 import GPTSyncDashboard from "@/components/portal/GPTSyncDashboard";
@@ -250,7 +251,7 @@ export default function Portal() {
       {tab === "library" && <TemplateLibrary />}
       {tab === "sites" && <WebsiteLibrary />}
       {tab === "templates" && <SiteTemplates />}
-      {tab === "launch" && <MassLaunchConsole onDone={() => setTab("campaigns")} />}
+      {tab === "launch" && <MassLaunchConsoleV2 onDeployed={() => setTab("campaigns")} />}
       {tab === "campaigns" && <Campaigns />}
       {tab === "modules" && <ModulesGrid />}
       {tab === "sync" && <GPTSyncDashboard />}

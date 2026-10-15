@@ -1,0 +1,80 @@
+{
+  "name": "GoogleStandard",
+  "type": "object",
+  "properties": {
+    "category": {
+      "type": "string",
+      "enum": [
+        "SEO",
+        "AEO",
+        "GEO",
+        "Technical",
+        "Content"
+      ],
+      "description": "Compliance category"
+    },
+    "requirement": {
+      "type": "string",
+      "description": "The Google standard or requirement text"
+    },
+    "check_description": {
+      "type": "string",
+      "description": "What to check in the site content to verify compliance"
+    },
+    "weight": {
+      "type": "number",
+      "default": 1,
+      "description": "Importance weight 1-5"
+    },
+    "fix_strategy": {
+      "type": "string",
+      "description": "How the auto-fix system should address a failure of this standard"
+    }
+  },
+  "required": [
+    "category",
+    "requirement",
+    "check_description"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
