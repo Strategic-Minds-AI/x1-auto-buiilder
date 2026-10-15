@@ -1,0 +1,161 @@
+{
+  "name": "GenerationJob",
+  "type": "object",
+  "properties": {
+    "job_type": {
+      "type": "string",
+      "enum": [
+        "RESEARCH",
+        "GENERATE_BRAND",
+        "GENERATE_LOGO",
+        "GENERATE_WEBSITE",
+        "GENERATE_APP",
+        "GENERATE_FUNNEL",
+        "GENERATE_CONTENT",
+        "GENERATE_IMAGE",
+        "GENERATE_VIDEO",
+        "GENERATE_SOCIAL_KIT",
+        "VALIDATE",
+        "BUILD_PREVIEW",
+        "PROVISION_PREVIEW",
+        "REQUEST_RELEASE",
+        "PUBLISH_APPROVED",
+        "SYNC_ANALYTICS",
+        "SYNC_SEARCH_CONSOLE",
+        "ATTRIBUTION_REPORT"
+      ],
+      "description": "Core job type"
+    },
+    "project_id": {
+      "type": "string",
+      "description": "Associated project id"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "in_progress",
+        "complete",
+        "failed",
+        "cancelled",
+        "paused"
+      ],
+      "default": "queued"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "urgent"
+      ],
+      "default": "medium"
+    },
+    "payload": {
+      "type": "object",
+      "description": "Typed job payload"
+    },
+    "result_artifact": {
+      "type": "object",
+      "description": "Result artifact reference"
+    },
+    "error": {
+      "type": "string",
+      "description": "Error message if failed"
+    },
+    "retry_count": {
+      "type": "number",
+      "default": 0
+    },
+    "max_retries": {
+      "type": "number",
+      "default": 3
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Job ids this job depends on"
+    },
+    "approval_class": {
+      "type": "string",
+      "enum": [
+        "safe",
+        "protected",
+        "production"
+      ],
+      "default": "safe"
+    },
+    "cost_estimate": {
+      "type": "number",
+      "description": "Estimated cost in credits"
+    },
+    "actual_cost": {
+      "type": "number",
+      "description": "Actual cost incurred"
+    },
+    "validation_receipt_id": {
+      "type": "string",
+      "description": "ValidationReceipt id"
+    },
+    "rollback_ref": {
+      "type": "string",
+      "description": "Rollback reference"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "job_type",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

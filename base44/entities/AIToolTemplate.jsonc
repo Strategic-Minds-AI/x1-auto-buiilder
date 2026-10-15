@@ -1,0 +1,121 @@
+{
+  "name": "AIToolTemplate",
+  "type": "object",
+  "properties": {
+    "template_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "tool_category": {
+      "type": "string",
+      "enum": [
+        "industry_research",
+        "competitive_intel",
+        "business_strategy",
+        "branding",
+        "website_content",
+        "seo_audit",
+        "estimate_generation",
+        "lead_qualification",
+        "product_recommendation",
+        "customer_support",
+        "sales_enablement",
+        "analytics",
+        "data_extraction",
+        "document_generation",
+        "scheduling",
+        "crm_operations",
+        "social_media",
+        "workflow_automation",
+        "quality_assurance"
+      ]
+    },
+    "industry": {
+      "type": "string"
+    },
+    "inputs": {
+      "type": "object",
+      "description": "Typed input schema"
+    },
+    "outputs": {
+      "type": "object",
+      "description": "Typed output schema"
+    },
+    "provider": {
+      "type": "string",
+      "description": "AI provider identity"
+    },
+    "model": {
+      "type": "string"
+    },
+    "prompt_template": {
+      "type": "string"
+    },
+    "test_cases": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "cost_estimate": {
+      "type": "number"
+    },
+    "fallback_behavior": {
+      "type": "string"
+    },
+    "scope_permissions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "template_id",
+    "name",
+    "tool_category"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

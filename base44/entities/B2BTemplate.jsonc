@@ -1,0 +1,99 @@
+{
+  "name": "B2BTemplate",
+  "type": "object",
+  "properties": {
+    "template_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "b2b_type": {
+      "type": "string",
+      "enum": [
+        "procurement",
+        "quoting",
+        "enterprise_lead_capture",
+        "abm",
+        "sales_operations",
+        "product_catalog",
+        "vendor_portal",
+        "wholesale_commerce",
+        "professional_services"
+      ]
+    },
+    "industry": {
+      "type": "string"
+    },
+    "buyer_journey": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "layout": {
+      "type": "string"
+    },
+    "tone": {
+      "type": "string"
+    },
+    "accent": {
+      "type": "string"
+    },
+    "ink": {
+      "type": "string"
+    },
+    "head": {
+      "type": "string"
+    },
+    "sub": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "template_id",
+    "name",
+    "b2b_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

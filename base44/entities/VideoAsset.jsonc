@@ -1,0 +1,121 @@
+{
+  "name": "VideoAsset",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "brand_manifest_id": {
+      "type": "string"
+    },
+    "video_type": {
+      "type": "string",
+      "enum": [
+        "business_intro",
+        "launch_announcement",
+        "service_explainer",
+        "product_demo",
+        "educational_short",
+        "promotional_offer",
+        "app_explainer",
+        "social_reel",
+        "b2b_presentation",
+        "onboarding_tutorial",
+        "brand_storytelling",
+        "seasonal_clip"
+      ]
+    },
+    "campaign_goal": {
+      "type": "string"
+    },
+    "script": {
+      "type": "string",
+      "description": "Generated script text"
+    },
+    "storyboard": {
+      "type": "object",
+      "description": "Storyboard scenes"
+    },
+    "video_url": {
+      "type": "string"
+    },
+    "thumbnail_url": {
+      "type": "string"
+    },
+    "aspect_ratio": {
+      "type": "string",
+      "enum": [
+        "16:9",
+        "9:16",
+        "1:1"
+      ]
+    },
+    "duration": {
+      "type": "number"
+    },
+    "subtitles": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "SCRIPT_READY",
+        "STORYBOARD_READY",
+        "RENDER_QUEUED",
+        "RENDERING",
+        "VIDEO_READY",
+        "QA_PASSED",
+        "APPROVED"
+      ],
+      "default": "SCRIPT_READY"
+    }
+  },
+  "required": [
+    "project_id",
+    "video_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

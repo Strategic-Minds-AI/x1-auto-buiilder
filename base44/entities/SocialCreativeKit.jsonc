@@ -1,0 +1,126 @@
+{
+  "name": "SocialCreativeKit",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "Associated WebsiteProject / BrandManifest"
+    },
+    "brand_manifest_id": {
+      "type": "string"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "facebook",
+        "instagram",
+        "tiktok",
+        "youtube",
+        "linkedin",
+        "pinterest",
+        "twitter",
+        "threads",
+        "google_business"
+      ]
+    },
+    "profile_picture_url": {
+      "type": "string"
+    },
+    "cover_banner_url": {
+      "type": "string"
+    },
+    "square_promo_url": {
+      "type": "string"
+    },
+    "vertical_story_url": {
+      "type": "string"
+    },
+    "short_form_cover_url": {
+      "type": "string"
+    },
+    "carousel_template_url": {
+      "type": "string"
+    },
+    "spotlight_url": {
+      "type": "string"
+    },
+    "before_after_url": {
+      "type": "string"
+    },
+    "educational_url": {
+      "type": "string"
+    },
+    "testimonial_url": {
+      "type": "string"
+    },
+    "offer_url": {
+      "type": "string"
+    },
+    "seasonal_url": {
+      "type": "string"
+    },
+    "video_thumbnail_url": {
+      "type": "string"
+    },
+    "cta_endcard_url": {
+      "type": "string"
+    },
+    "brand_intro_url": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "generated",
+        "approved"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "project_id",
+    "platform"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

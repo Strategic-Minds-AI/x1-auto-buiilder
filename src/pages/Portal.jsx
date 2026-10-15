@@ -11,6 +11,10 @@ import AppFactory from "@/pages/AppFactory";
 import VideoStudio from "@/pages/VideoStudio";
 import MassLaunchConsoleV2 from "@/components/masslaunch/MassLaunchConsoleV2";
 import ComplianceDashboard from "@/components/portal/ComplianceDashboard";
+import UniversalLibrary from "@/components/portal/UniversalLibrary";
+import SocialCalendar from "@/components/portal/SocialCalendar";
+import QualityDashboard from "@/components/portal/QualityDashboard";
+import GPTBridge from "@/components/portal/GPTBridge";
 import Campaigns from "@/components/portal/Campaigns";
 import GPTSyncDashboard from "@/components/portal/GPTSyncDashboard";
 import GoogleSheetsSync from "@/components/portal/GoogleSheetsSync";
@@ -240,10 +244,14 @@ export default function Portal() {
       {tab === "launch" && <MassLaunchConsoleV2 onDeployed={() => setTab("campaigns")} />}
       {tab === "monitor" && <LaunchMonitor />}
       {tab === "compliance" && <ComplianceDashboard />}
+      {tab === "social-calendar" && <SocialCalendar />}
       {tab === "campaigns" && <Campaigns />}
       {tab === "app-factory" && <AppFactory />}
       {tab === "video-studio" && <VideoStudio />}
+      {tab === "universal-library" && <UniversalLibrary />}
       {tab === "modules" && <ModulesGrid />}
+      {tab === "quality" && <QualityDashboard />}
+      {tab === "gpt-bridge" && <GPTBridge />}
       {tab === "sync" && <GPTSyncDashboard />}
       {tab === "sheets" && <GoogleSheetsSync />}
     </PortalShell>

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Wand2, Library, Globe, LayoutTemplate, Rocket, LayoutGrid, Cable,
   Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown,
-  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield
+  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -21,6 +21,7 @@ const NAV_GROUPS = [
     items: [
       { tab: "app-factory", icon: Package, label: "App Factory" },
       { tab: "video-studio", icon: Video, label: "Video Studio" },
+      { tab: "universal-library", icon: Boxes, label: "Universal Library" },
     ],
   },
   {
@@ -29,6 +30,7 @@ const NAV_GROUPS = [
       { tab: "launch", icon: Rocket, label: "Mass Launch" },
       { tab: "monitor", icon: Activity, label: "Launch Monitor" },
       { tab: "compliance", icon: Shield, label: "Compliance Engine" },
+      { tab: "social-calendar", icon: CalendarDays, label: "Social Calendar" },
       { tab: "campaigns", icon: Rocket, label: "Campaigns" },
       { tab: "sheets", icon: Table, label: "Sheets Sync" },
     ],
@@ -47,6 +49,8 @@ const NAV_GROUPS = [
     label: "System",
     items: [
       { tab: "modules", icon: LayoutGrid, label: "Modules" },
+      { tab: "quality", icon: Gauge, label: "Quality Dashboard" },
+      { tab: "gpt-bridge", icon: Radio, label: "GPT Bridge" },
       { tab: "sync", icon: Cable, label: "Sync Engine" },
     ],
   },

@@ -1,0 +1,100 @@
+{
+  "name": "ValidationReceipt",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "job_id": {
+      "type": "string"
+    },
+    "validation_type": {
+      "type": "string",
+      "enum": [
+        "functional",
+        "visual",
+        "security",
+        "accessibility",
+        "integration",
+        "queue",
+        "preview",
+        "social",
+        "analytics"
+      ]
+    },
+    "result": {
+      "type": "string",
+      "enum": [
+        "pass",
+        "fail",
+        "unknown",
+        "blocked"
+      ],
+      "default": "unknown"
+    },
+    "score": {
+      "type": "number",
+      "description": "0-100 quality score"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "details": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "project_id",
+    "validation_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

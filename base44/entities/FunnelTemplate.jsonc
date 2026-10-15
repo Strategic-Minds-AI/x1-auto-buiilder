@@ -1,0 +1,129 @@
+{
+  "name": "FunnelTemplate",
+  "type": "object",
+  "properties": {
+    "template_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "funnel_type": {
+      "type": "string",
+      "enum": [
+        "lead_gen",
+        "quote_request",
+        "consultation_booking",
+        "ecommerce_acquisition",
+        "saas_trial",
+        "webinar_registration",
+        "course_enrollment",
+        "b2b_demo",
+        "free_tool",
+        "diagnostic_assessment",
+        "membership_signup",
+        "onboarding",
+        "retention_upsell"
+      ]
+    },
+    "industry": {
+      "type": "string"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_name": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "cta": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "event_instrumentation": {
+      "type": "object",
+      "description": "Event tracking plan per step"
+    },
+    "attribution_plan": {
+      "type": "string"
+    },
+    "mobile_support": {
+      "type": "boolean",
+      "default": true
+    },
+    "layout": {
+      "type": "string",
+      "description": "Visual layout type"
+    },
+    "tone": {
+      "type": "string"
+    },
+    "accent": {
+      "type": "string"
+    },
+    "ink": {
+      "type": "string"
+    },
+    "head": {
+      "type": "string"
+    },
+    "sub": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "template_id",
+    "name",
+    "funnel_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

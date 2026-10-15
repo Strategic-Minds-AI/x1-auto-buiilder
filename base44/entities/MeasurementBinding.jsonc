@@ -1,0 +1,97 @@
+{
+  "name": "MeasurementBinding",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "site_url": {
+      "type": "string"
+    },
+    "ga4_property_id": {
+      "type": "string"
+    },
+    "ga4_stream_id": {
+      "type": "string"
+    },
+    "search_console_property": {
+      "type": "string"
+    },
+    "conversion_events": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "lead_events": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "connected",
+        "auth_required",
+        "syncing",
+        "healthy",
+        "stale",
+        "error",
+        "not_configured"
+      ],
+      "default": "not_configured"
+    },
+    "last_sync": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sync_receipt": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "project_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

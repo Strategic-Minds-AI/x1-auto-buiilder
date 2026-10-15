@@ -1,0 +1,99 @@
+{
+  "name": "MediaAsset",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string"
+    },
+    "asset_type": {
+      "type": "string",
+      "enum": [
+        "logo",
+        "hero_image",
+        "social_graphic",
+        "video_thumbnail",
+        "brand_photo",
+        "product_image",
+        "infographic",
+        "icon_set",
+        "background",
+        "illustration"
+      ]
+    },
+    "url": {
+      "type": "string"
+    },
+    "prompt": {
+      "type": "string",
+      "description": "Generation prompt used"
+    },
+    "provenance": {
+      "type": "string",
+      "description": "Source/origin of the asset"
+    },
+    "usage_rights": {
+      "type": "string"
+    },
+    "dimensions": {
+      "type": "string"
+    },
+    "file_format": {
+      "type": "string"
+    },
+    "version": {
+      "type": "number",
+      "default": 1
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "asset_type",
+    "url"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

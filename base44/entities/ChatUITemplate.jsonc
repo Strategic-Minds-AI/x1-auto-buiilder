@@ -1,0 +1,115 @@
+{
+  "name": "ChatUITemplate",
+  "type": "object",
+  "properties": {
+    "template_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "chat_type": {
+      "type": "string",
+      "enum": [
+        "support_bot",
+        "sales_assistant",
+        "knowledge_base",
+        "agent_console",
+        "customer_service",
+        "lead_qualifier",
+        "onboarding_guide"
+      ]
+    },
+    "industry": {
+      "type": "string"
+    },
+    "demo_conversation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "tool_call_states": {
+      "type": "boolean",
+      "default": false
+    },
+    "streaming": {
+      "type": "boolean",
+      "default": false
+    },
+    "voice_input": {
+      "type": "boolean",
+      "default": false
+    },
+    "attachments": {
+      "type": "boolean",
+      "default": false
+    },
+    "layout": {
+      "type": "string"
+    },
+    "tone": {
+      "type": "string"
+    },
+    "accent": {
+      "type": "string"
+    },
+    "ink": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "template_id",
+    "name",
+    "chat_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

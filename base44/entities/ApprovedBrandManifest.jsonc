@@ -1,0 +1,115 @@
+{
+  "name": "ApprovedBrandManifest",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "Associated WebsiteProject id"
+    },
+    "business_name": {
+      "type": "string"
+    },
+    "positioning": {
+      "type": "string",
+      "description": "Brand positioning statement"
+    },
+    "logo_url": {
+      "type": "string"
+    },
+    "logo_variants": {
+      "type": "object",
+      "description": "Primary, secondary, stacked, horizontal, icon variants"
+    },
+    "color_tokens": {
+      "type": "object",
+      "description": "{ primary, accent, background, text, secondary }"
+    },
+    "typography": {
+      "type": "object",
+      "description": "{ heading_font, body_font, scale }"
+    },
+    "image_direction": {
+      "type": "string",
+      "description": "Photography/imagery style direction"
+    },
+    "tone_of_voice": {
+      "type": "string"
+    },
+    "target_audience": {
+      "type": "string"
+    },
+    "service_taxonomy": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "offer_rules": {
+      "type": "string"
+    },
+    "cta_rules": {
+      "type": "string"
+    },
+    "website_url": {
+      "type": "string"
+    },
+    "version": {
+      "type": "number",
+      "default": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "approved",
+        "frozen"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "project_id",
+    "business_name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

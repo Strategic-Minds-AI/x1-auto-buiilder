@@ -1,0 +1,96 @@
+{
+  "name": "WorkflowTemplate",
+  "type": "object",
+  "properties": {
+    "template_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "workflow_type": {
+      "type": "string",
+      "enum": [
+        "automation",
+        "notification",
+        "data_sync",
+        "approval",
+        "scheduled_report",
+        "lead_routing",
+        "onboarding_sequence",
+        "retention_campaign",
+        "content_pipeline",
+        "deployment"
+      ]
+    },
+    "industry": {
+      "type": "string"
+    },
+    "trigger": {
+      "type": "string",
+      "description": "Trigger type"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "integrations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000
+    }
+  },
+  "required": [
+    "template_id",
+    "name",
+    "workflow_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

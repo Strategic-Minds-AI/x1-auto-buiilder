@@ -1,0 +1,106 @@
+{
+  "name": "PromptPack",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "prompt_type": {
+      "type": "string",
+      "enum": [
+        "website_content",
+        "seo_audit",
+        "social_content",
+        "video_script",
+        "email_campaign",
+        "ad_copy",
+        "brand_voice",
+        "competitive_analysis",
+        "lead_qualification",
+        "estimate_generation"
+      ]
+    },
+    "system_prompt": {
+      "type": "string"
+    },
+    "user_prompt_template": {
+      "type": "string"
+    },
+    "variables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "model": {
+      "type": "string",
+      "default": "automatic"
+    },
+    "response_schema": {
+      "type": "object"
+    },
+    "test_cases": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "required": [
+    "name",
+    "industry",
+    "prompt_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

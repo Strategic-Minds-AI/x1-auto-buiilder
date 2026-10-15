@@ -1,0 +1,123 @@
+{
+  "name": "SaaSTemplate",
+  "type": "object",
+  "properties": {
+    "template_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "saas_type": {
+      "type": "string",
+      "enum": [
+        "subscription",
+        "vertical_saaS",
+        "ai_saas",
+        "analytics",
+        "automation",
+        "collaboration",
+        "crm",
+        "productivity",
+        "industry_specific",
+        "multi_tenant"
+      ]
+    },
+    "industry": {
+      "type": "string"
+    },
+    "architecture": {
+      "type": "object",
+      "description": "Product architecture overview"
+    },
+    "subscription_tiers": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "entitlements": {
+      "type": "object",
+      "description": "Feature gates per tier"
+    },
+    "onboarding_flow": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "billing_integration": {
+      "type": "string"
+    },
+    "layout": {
+      "type": "string"
+    },
+    "tone": {
+      "type": "string"
+    },
+    "accent": {
+      "type": "string"
+    },
+    "ink": {
+      "type": "string"
+    },
+    "head": {
+      "type": "string"
+    },
+    "sub": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "template_id",
+    "name",
+    "saas_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
