@@ -18,12 +18,12 @@ const industries = [
   { name: "Landscaping", img: `${BASE}/771c1b32a_generated_image.png` },
   { name: "Solar", img: `${BASE}/6a2dd529e_generated_image.png` },
   { name: "Pest Control", img: `${BASE}/48c18e646_generated_image.png` },
-  { name: "Moving", img: `${BASE}/84000d10f_generated_image.png` },
-  { name: "Auto Detailing", img: `${BASE}/84000d10f_generated_image.png` },
-  { name: "Restaurants", img: `${BASE}/84000d10f_generated_image.png` },
-  { name: "Insurance", img: `${BASE}/84000d10f_generated_image.png` },
-  { name: "Mortgage", img: `${BASE}/84000d10f_generated_image.png` },
-  { name: "Cleaning Services", img: `${BASE}/84000d10f_generated_image.png` },
+  { name: "Moving", img: "https://media.base44.com/images/public/6acfedce320afe2f706c6bfd/45c755cef_generated_image.png" },
+  { name: "Auto Detailing", img: "https://media.base44.com/images/public/6acfedce320afe2f706c6bfd/7ea2bef36_generated_image.png" },
+  { name: "Restaurants", img: "https://media.base44.com/images/public/6acfedce320afe2f706c6bfd/5836c1a12_generated_image.png" },
+  { name: "Insurance", img: "https://media.base44.com/images/public/6acfedce320afe2f706c6bfd/f28e53677_generated_image.png" },
+  { name: "Mortgage", img: "https://media.base44.com/images/public/6acfedce320afe2f706c6bfd/24dd67241_generated_image.png" },
+  { name: "Cleaning Services", img: "https://media.base44.com/images/public/6acfedce320afe2f706c6bfd/358b2dd14_generated_image.png" },
 ];
 
 export default function Industries() {
