@@ -1,0 +1,13 @@
+{
+  "type": "supabase",
+  "scopes": [
+    "database:read",
+    "database:write",
+    "rest:read",
+    "rest:write",
+    "storage:read",
+    "storage:write",
+    "auth:read",
+    "auth:write"
+  ]
+}
