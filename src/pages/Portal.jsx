@@ -11,8 +11,9 @@ import Campaigns from "@/components/portal/Campaigns";
 import SyncEngine from "@/components/portal/SyncEngine";
 import WebsiteLibrary from "@/components/portal/WebsiteLibrary";
 import SiteTemplates from "@/components/portal/SiteTemplates";
+import ModulesGrid from "@/components/portal/ModulesGrid";
 import { Link } from "react-router-dom";
-import { CheckCircle2, Plus, Wand2, Library, Rocket, Cable, ExternalLink, Loader2, Globe, LayoutTemplate, Hammer } from "lucide-react";
+import { CheckCircle2, Plus, Wand2, Library, Rocket, Cable, ExternalLink, Loader2, Globe, LayoutTemplate, Hammer, LayoutGrid } from "lucide-react";
 
 export default function Portal() {
   const [tab, setTab] = useState("generator");
@@ -161,6 +162,7 @@ export default function Portal() {
           <TabButton active={tab === "templates"} onClick={() => setTab("templates")} icon={LayoutTemplate} label="Site Templates" />
           <TabButton active={tab === "launch"} onClick={() => setTab("launch")} icon={Rocket} label="Mass Launch" />
           <TabButton active={tab === "campaigns"} onClick={() => setTab("campaigns")} icon={Rocket} label="Campaigns" />
+          <TabButton active={tab === "modules"} onClick={() => setTab("modules")} icon={LayoutGrid} label="Modules" />
           <TabButton active={tab === "sync"} onClick={() => setTab("sync")} icon={Cable} label="Sync Engine" />
         </div>
       </div>
@@ -249,6 +251,7 @@ export default function Portal() {
       {tab === "templates" && <SiteTemplates />}
       {tab === "launch" && <MassLaunchConsole onDone={() => setTab("campaigns")} />}
       {tab === "campaigns" && <Campaigns />}
+      {tab === "modules" && <ModulesGrid />}
       {tab === "sync" && <SyncEngine />}
     </div>
   );

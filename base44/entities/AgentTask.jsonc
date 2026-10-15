@@ -1,0 +1,95 @@
+{
+  "name": "AgentTask",
+  "type": "object",
+  "properties": {
+    "agent_name": {
+      "type": "string",
+      "description": "Name of the autonomous agent"
+    },
+    "task": {
+      "type": "string",
+      "description": "Task description"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_progress",
+        "complete",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "progress": {
+      "type": "number",
+      "default": 0,
+      "description": "Progress 0-100"
+    },
+    "project_id": {
+      "type": "string",
+      "description": "Associated project id"
+    },
+    "assigned_to": {
+      "type": "string",
+      "description": "Who the task is assigned to"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium"
+    },
+    "result": {
+      "type": "string",
+      "description": "Task result or output"
+    }
+  },
+  "required": [
+    "agent_name",
+    "task"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
