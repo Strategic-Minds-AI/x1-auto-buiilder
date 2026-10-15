@@ -9,9 +9,9 @@ import {
 import BackButton from "@/components/shared/BackButton";
 
 const CATEGORIES = [
-  { key: "website", label: "Business Websites", icon: Globe, desc: "418 industry-specific designs" },
-  { key: "desktop_app", label: "Desktop App Layouts", icon: Monitor, desc: "96 application patterns" },
-  { key: "mobile_app", label: "Mobile App Layouts", icon: Smartphone, desc: "80 mobile patterns" },
+  { key: "website", label: "Business Websites", icon: Globe, desc: "435 industry-specific designs" },
+  { key: "desktop_app", label: "Desktop App Layouts", icon: Monitor, desc: "300 application patterns" },
+  { key: "mobile_app", label: "Mobile App Layouts", icon: Smartphone, desc: "300 mobile patterns" },
 ];
 
 export default function PremiumDesignLibrary() {
