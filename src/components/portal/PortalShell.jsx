@@ -89,6 +89,7 @@ const EXTERNAL_MODULES = [
   { to: "/builder-docs", icon: Brain, label: "Builder Docs" },
   { to: "/system-tests", icon: Shield, label: "System Tests" },
   { to: "/email-templates", icon: Mail, label: "Email Templates" },
+  { to: "/entity-library", icon: Database, label: "Entity Library" },
 ];
 
 export default function PortalShell({ activeTab, onTabChange, onNew, children }) {

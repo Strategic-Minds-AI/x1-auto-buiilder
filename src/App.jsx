@@ -51,6 +51,7 @@ import VisualBuilder from '@/pages/VisualBuilder';
 import BuilderDocs from '@/pages/BuilderDocs';
 import SystemTestDashboard from '@/pages/SystemTestDashboard';
 import EmailTemplateLibrary from '@/pages/EmailTemplateLibrary';
+import EntityLibrary from '@/pages/EntityLibrary';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
 function App() {
@@ -108,6 +109,7 @@ function App() {
               <Route path="/builder-docs" element={<BuilderDocs />} />
               <Route path="/system-tests" element={<SystemTestDashboard />} />
               <Route path="/email-templates" element={<EmailTemplateLibrary />} />
+              <Route path="/entity-library" element={<EntityLibrary />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>
