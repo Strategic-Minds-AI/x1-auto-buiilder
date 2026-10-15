@@ -52,6 +52,7 @@ import BuilderDocs from '@/pages/BuilderDocs';
 import SystemTestDashboard from '@/pages/SystemTestDashboard';
 import EmailTemplateLibrary from '@/pages/EmailTemplateLibrary';
 import EntityLibrary from '@/pages/EntityLibrary';
+import PlatformDashboard from '@/pages/PlatformDashboard';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
 function App() {
@@ -110,6 +111,7 @@ function App() {
               <Route path="/system-tests" element={<SystemTestDashboard />} />
               <Route path="/email-templates" element={<EmailTemplateLibrary />} />
               <Route path="/entity-library" element={<EntityLibrary />} />
+              <Route path="/platform-dashboard" element={<PlatformDashboard />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>
