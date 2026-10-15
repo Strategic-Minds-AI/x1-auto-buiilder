@@ -1,21 +1,25 @@
 // Auto Builder step library + proven vision catalog + addon catalog + accent palette.
-// Single source of truth for the guided journey timeline and the strategy addons.
+// 12-step guided journey: Project → Vision → Strategy → Name → Brand → Template →
+// Website → Content → Compliance → Social → Review → Launch.
 
 import {
-  FolderPlus, Eye, Compass, PenTool, Shirt, Globe, Share2, Rocket,
+  FolderPlus, Eye, Compass, PenTool, Shirt, LayoutTemplate, Globe,
+  FileText, ShieldCheck, Share2, ClipboardCheck, Rocket,
 } from "lucide-react";
 
-// The full intended journey. Steps beyond "strategy" are staged for later turns —
-// they render in the timeline as "coming soon" so the path is visible end-to-end.
 export const AUTO_STEPS = [
-  { key: "project",  label: "Project",   icon: FolderPlus, ready: true },
-  { key: "vision",   label: "Vision",    icon: Eye,        ready: true },
-  { key: "strategy", label: "Strategy",  icon: Compass,    ready: true },
-  { key: "name",     label: "Name & Domain", icon: PenTool, ready: false },
-  { key: "brand",    label: "Brand",     icon: Shirt,      ready: false },
-  { key: "website",  label: "Website",   icon: Globe,     ready: false },
-  { key: "social",   label: "Social",    icon: Share2,    ready: false },
-  { key: "launch",   label: "Launch",    icon: Rocket,    ready: false },
+  { key: "project",    label: "Project",    icon: FolderPlus,      ready: true },
+  { key: "vision",     label: "Vision",     icon: Eye,             ready: true },
+  { key: "strategy",   label: "Strategy",   icon: Compass,         ready: true },
+  { key: "name",       label: "Name",       icon: PenTool,         ready: true },
+  { key: "brand",      label: "Brand",      icon: Shirt,           ready: true },
+  { key: "template",   label: "Template",   icon: LayoutTemplate,  ready: true },
+  { key: "website",    label: "Website",    icon: Globe,           ready: true },
+  { key: "content",    label: "Content",    icon: FileText,        ready: true },
+  { key: "compliance", label: "Compliance", icon: ShieldCheck,     ready: true },
+  { key: "social",     label: "Social",     icon: Share2,          ready: true },
+  { key: "review",     label: "Review",     icon: ClipboardCheck,   ready: true },
+  { key: "launch",     label: "Launch",     icon: Rocket,          ready: true },
 ];
 
 // 10 proven, most-desired vision starting points.
@@ -32,7 +36,7 @@ export const PROVEN_VISIONS = [
   { type: "Create a Personal Brand",  icon: Rocket,  blurb: "A personal brand site, content and monetization system." },
 ];
 
-// Capability addons offered on the strategy step (the checklist you described).
+// Capability addons offered on the strategy step.
 export const ADDON_CATALOG = [
   { key: "digital_business_card",  label: "Digital Business Card" },
   { key: "digital_flyers",         label: "Digital Flyers" },

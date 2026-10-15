@@ -5,58 +5,72 @@ import AutoBuilderTimeline from "@/components/autobuilder/AutoBuilderTimeline";
 import ProjectCreator from "@/components/autobuilder/ProjectCreator";
 import VisionStep from "@/components/autobuilder/VisionStep";
 import StrategyStep from "@/components/autobuilder/StrategyStep";
+import NameStep from "@/components/autobuilder/NameStep";
+import BrandStep from "@/components/autobuilder/BrandStep";
+import TemplateStep from "@/components/autobuilder/TemplateStep";
+import WebsiteStep from "@/components/autobuilder/WebsiteStep";
+import ContentStep from "@/components/autobuilder/ContentStep";
+import ComplianceStep from "@/components/autobuilder/ComplianceStep";
+import SocialStep from "@/components/autobuilder/SocialStep";
+import ReviewStep from "@/components/autobuilder/ReviewStep";
+import LaunchStep from "@/components/autobuilder/LaunchStep";
 import { Hammer, ArrowLeft } from "lucide-react";
 
-// The guided Auto Builder — a distraction-free, step-by-step journey with a
-// horizontal timeline at the top, a project creator, and a library for every
-// stage (added in later turns). White background, dark boxes, accent flows
-// through every generation step. Each step persists into the BuildProject so
-// the chain compounds: vision → strategy → (next) name → brand → website → …
+// The guided 12-step Auto Builder — a distraction-free, step-by-step journey
+// with a horizontal timeline at the top. Each step persists into the BuildProject
+// so the chain compounds: vision → strategy → name → brand → template → website →
+// content → compliance → social → review → launch.
 export default function AutoBuilder() {
   const [step, setStep] = useState("project");
   const [accent, setAccent] = useState("#00d4ff");
   const [projectId, setProjectId] = useState(null);
-  const [vision, setVision] = useState(null);
   const [saving, setSaving] = useState(false);
+
+  // Accumulated state across steps
+  const [vision, setVision] = useState(null);
+  const [strategy, setStrategy] = useState(null);
+  const [nameData, setNameData] = useState(null);
+  const [brandData, setBrandData] = useState(null);
+  const [templateData, setTemplateData] = useState(null);
+  const [websiteData, setWebsiteData] = useState(null);
+  const [contentData, setContentData] = useState(null);
+  const [complianceData, setComplianceData] = useState(null);
+  const [socialData, setSocialData] = useState(null);
 
   const createProject = async (name) => {
     setSaving(true);
     try {
       const rec = await base44.entities.BuildProject.create({
-        name,
-        status: "draft",
-        current_step: "project",
-        accent_color: accent,
+        name, status: "draft", current_step: "project", accent_color: accent,
       });
       setProjectId(rec.id);
-      setStep("vision");
-    } catch (e) {
-      // fall back to an in-memory build if persistence fails
+    } catch {
       setProjectId("local");
-      setStep("vision");
     } finally {
       setSaving(false);
     }
+    setStep("vision");
   };
 
   const updateProject = async (patch) => {
     if (!projectId || projectId === "local") return;
     try {
-      await base44.entities.BuildProject.update(projectId, patch);
+      await base44.entities.BuildProject.update(projectId, { ...patch, current_step: step });
     } catch {}
   };
 
-  const approveVision = async (v) => {
-    setVision(v);
-    setStep("strategy");
-    updateProject({ vision: v, vision_type: v.type, status: "vision", current_step: "strategy" });
-  };
-
-  const approveStrategy = async ({ strategy, addons }) => {
-    updateProject({ strategy, addons, status: "strategy", current_step: "name" });
-    // Next steps (Name, Brand, Website…) are staged for the following turns.
-    setStep("name");
-  };
+  // Step transitions — each carries accumulated state forward
+  const approveVision = (v) => { setVision(v); setStep("strategy"); updateProject({ vision: v, vision_type: v.type, status: "vision" }); };
+  const approveStrategy = ({ strategy: s, addons }) => { setStrategy({ ...s, addons }); setStep("name"); updateProject({ strategy: s, addons, status: "strategy" }); };
+  const approveName = (n) => { setNameData(n); setStep("brand"); updateProject({ status: "building" }); };
+  const approveBrand = (b) => { setBrandData(b); setStep("template"); updateProject({ accent_color: b.palette?.accent || accent }); };
+  const approveTemplate = (t) => { setTemplateData(t); setStep("website"); };
+  const approveWebsite = (w) => { setWebsiteData(w); setStep("content"); updateProject({ status: "building" }); };
+  const approveContent = (c) => { setContentData(c); setStep("compliance"); };
+  const approveCompliance = (c) => { setComplianceData(c); setStep("social"); };
+  const approveSocial = (s) => { setSocialData(s); setStep("review"); };
+  const approveReview = () => { setStep("launch"); updateProject({ status: "complete" }); };
+  const approveLaunch = () => { /* done — stay on launch page */ };
 
   return (
     <div className="min-h-screen bg-white text-slate-900">
@@ -82,28 +96,18 @@ export default function AutoBuilder() {
       <AutoBuilderTimeline currentKey={step} accent={accent} />
 
       <main className="bg-white">
-        {step === "project" && (
-          <ProjectCreator onCreate={createProject} accent={accent} setAccent={setAccent} />
-        )}
-        {step === "vision" && (
-          <VisionStep accent={accent} setAccent={setAccent} onApprove={approveVision} />
-        )}
-        {step === "strategy" && vision && (
-          <StrategyStep vision={vision} accent={accent} onApprove={approveStrategy} />
-        )}
-        {step === "name" && (
-          <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-            <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 mb-5">
-              <Hammer className="h-6 w-6" style={{ color: accent }} />
-            </div>
-            <h2 className="text-xl font-bold">Strategy locked in.</h2>
-            <p className="text-slate-500 mt-2 max-w-md mx-auto">
-              The next steps — Name &amp; Domain, Brand Library, Website Generator, Social, and Launch —
-              are built on this same guided chain, each carrying your vision, strategy, and accent forward.
-            </p>
-            <p className="text-sm text-slate-400 mt-4">Coming up in the next turns.</p>
-          </div>
-        )}
+        {step === "project" && <ProjectCreator onCreate={createProject} accent={accent} setAccent={setAccent} />}
+        {step === "vision" && <VisionStep accent={accent} setAccent={setAccent} onApprove={approveVision} />}
+        {step === "strategy" && vision && <StrategyStep vision={vision} accent={accent} onApprove={approveStrategy} />}
+        {step === "name" && <NameStep accent={accent} vision={vision} strategy={strategy} onApprove={approveName} />}
+        {step === "brand" && <BrandStep accent={accent} setAccent={setAccent} nameData={nameData} onApprove={approveBrand} />}
+        {step === "template" && <TemplateStep accent={accent} onApprove={approveTemplate} />}
+        {step === "website" && <WebsiteStep accent={accent} vision={vision} strategy={strategy} nameData={nameData} brandData={brandData} templateData={templateData} onApprove={approveWebsite} />}
+        {step === "content" && <ContentStep accent={accent} websiteData={websiteData} onApprove={approveContent} />}
+        {step === "compliance" && <ComplianceStep accent={accent} websiteData={websiteData} onApprove={approveCompliance} />}
+        {step === "social" && <SocialStep accent={accent} nameData={nameData} brandData={brandData} onApprove={approveSocial} />}
+        {step === "review" && <ReviewStep accent={accent} vision={vision} strategy={strategy} nameData={nameData} brandData={brandData} templateData={templateData} websiteData={websiteData} contentData={contentData} complianceData={complianceData} socialData={socialData} onApprove={approveReview} />}
+        {step === "launch" && <LaunchStep accent={accent} projectId={projectId} nameData={nameData} websiteData={websiteData} onApprove={approveLaunch} />}
       </main>
 
       {saving && (
