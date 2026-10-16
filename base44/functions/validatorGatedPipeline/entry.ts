@@ -27,6 +27,7 @@ import {
   updatePipelineRunStage,
   finalizePipelineRun,
 } from '../../shared/workPacketOrchestrator.ts';
+import { getThresholds, scoreMeetsGate, releaseMeetsGate, cwvMeetsBudget } from '../../shared/pipelineThresholds.js';
 
 // Validator-Gated Pipeline with MANDATORY auto-fix.
 // Every validator gate is wrapped in a fix-loop: if the gate fails, the corresponding
@@ -54,7 +55,10 @@ export default async function(req: Request): Promise<Response> {
       generateParams,
       skipDeploy = false,
       maxRepairLoops = 3,
+      thresholds: thresholdOverrides,
     } = body;
+
+    const thresholds = getThresholds(thresholdOverrides);
 
     const pipeline: any = {
       started_at: new Date().toISOString(),
@@ -66,6 +70,7 @@ export default async function(req: Request): Promise<Response> {
       project_id: projectId || null,
       pipeline_run_id: null,
       work_packets: {},
+      thresholds,
     };
 
     let content: any = null;
@@ -165,6 +170,7 @@ export default async function(req: Request): Promise<Response> {
           return fixed.then(r => ({ content: r.research, summary: r.summary }));
         },
         onContentUpdate: (newResearch) => { research = newResearch; },
+        thresholds,
         maxRepairLoops,
       });
       pipeline.gates.push(gate1);
@@ -207,6 +213,7 @@ export default async function(req: Request): Promise<Response> {
           base44.entities.WebsiteProject.update(pipeline.project_id, { content }).catch(() => {});
         }
       },
+      thresholds,
       maxRepairLoops,
     });
     pipeline.gates.push(gate2);
@@ -237,15 +244,8 @@ export default async function(req: Request): Promise<Response> {
     const gate3 = await runGateWithFix({
       base44,
       gateName: 'google_compliance',
-      validate: () => validateGoogleCompliance(base44, content, industry, businessName),
-      fix: (v) => fixCompliance(base44, content, v.critical_issues || [], industry, businessName)
-        .then(r => ({ content: r.content, summary: r.summary })),
-      onContentUpdate: (newContent) => {
-        content = newContent;
-        if (pipeline.project_id) {
-          base44.entities.WebsiteProject.update(pipeline.project_id, { content }).catch(() => {});
-        }
-      },
+...
+      thresholds,
       maxRepairLoops,
     });
     pipeline.gates.push(gate3);
@@ -283,57 +283,8 @@ export default async function(req: Request): Promise<Response> {
       const gate4 = await runGateWithFix({
         base44,
         gateName: 'fix_verification',
-        validate: () => validateFixes(base44, content, complianceIssues, industry, businessName),
-        fix: (v) => fixUnresolved(base44, content, v.unresolved_issues || [], industry, businessName)
-          .then(r => ({ content: r.content, summary: r.summary })),
-        onContentUpdate: (newContent) => {
-          content = newContent;
-          if (pipeline.project_id) {
-            base44.entities.WebsiteProject.update(pipeline.project_id, { content }).catch(() => {});
-          }
-        },
-        maxRepairLoops,
-      });
-      pipeline.gates.push(gate4);
-      await recordGate('auto_fix', gate4);
-      if (gate4.gated) {
-        if (pipeline.work_packets.auto_fix) await failPacket(base44, pipeline.work_packets.auto_fix, gate4.gate_reason).catch(() => {});
-        pipeline.gated = true;
-        pipeline.gate_reason = gate4.gate_reason;
-        return finalizePipeline(pipeline, base44);
-      }
-    }
-
-    // ═══ STAGE 5: QA ══════════════════════════════════════════════
-    if (pipeline.work_packets.qa) await startPacket(base44, pipeline.work_packets.qa).catch(() => {});
-    try {
-      const qaRes = await base44.functions.invoke('qaAgent', { projectId: pipeline.project_id, content });
-      if (pipeline.project_id) {
-        const refreshed = await base44.entities.WebsiteProject.get(pipeline.project_id);
-        if (refreshed?.content) content = refreshed.content;
-      }
-      pipeline.stages.push({ stage: 'qa', status: 'complete', issues_fixed: qaRes.data?.issues_fixed || 0 });
-    } catch (err: any) {
-      pipeline.stages.push({ stage: 'qa', status: 'failed', error: err.message });
-    }
-    if (pipeline.work_packets.qa) {
-      await completePacket(base44, pipeline.work_packets.qa, { qa_complete: true }, ['human_quality']).catch(() => {});
-      await updatePipelineRunStage(base44, pipeline.pipeline_run_id, 'qa', 4, 'COMPLETED', 'processing').catch(() => {});
-    }
-
-    // ── GATE 5: Human Quality (with fixer) ──
-    const gate5 = await runGateWithFix({
-      base44,
-      gateName: 'human_quality',
-      validate: () => validateHumanQuality(base44, content, industry, businessName),
-      fix: (v) => fixHumanQuality(base44, content, v.critical_issues || [], industry, businessName)
-        .then(r => ({ content: r.content, summary: r.summary })),
-      onContentUpdate: (newContent) => {
-        content = newContent;
-        if (pipeline.project_id) {
-          base44.entities.WebsiteProject.update(pipeline.project_id, { content }).catch(() => {});
-        }
-      },
+...
+      thresholds,
       maxRepairLoops,
     });
     pipeline.gates.push(gate5);
@@ -548,19 +499,23 @@ export default async function(req: Request): Promise<Response> {
 // ── Gate + Fix loop helper ──────────────────────────────────────
 // Runs the validator. If it fails, runs the fixer, then re-validates.
 // Repeats up to maxRepairLoops times. Only gates if the fixer can't resolve it.
-async function runGateWithFix({ base44, gateName, validate, fix, onContentUpdate, maxRepairLoops }: any): Promise<any> {
+async function runGateWithFix({ base44, gateName, validate, fix, onContentUpdate, maxRepairLoops, thresholds }: any): Promise<any> {
   const attempts: any[] = [];
-  let currentContent: any = null;
+  const threshold = thresholds?.[gateName];
 
   for (let attempt = 0; attempt <= maxRepairLoops; attempt++) {
     const verdict = await validate();
-    attempts.push({ attempt, verdict: verdict.verdict, score: verdict.score || verdict.overall_score, summary: verdict.summary });
+    const score = verdict.score || verdict.overall_score;
+    const scoreCheck = gateName === 'final_release'
+      ? releaseMeetsGate(verdict, threshold)
+      : scoreMeetsGate(verdict, threshold);
+    attempts.push({ attempt, verdict: verdict.verdict, score, summary: verdict.summary, score_check: scoreCheck.passed ? 'pass' : scoreCheck.reason });
 
-    if (verdict.verdict === 'pass' || verdict.verdict === 'conditional_pass') {
+    if ((verdict.verdict === 'pass' || verdict.verdict === 'conditional_pass') && scoreCheck.passed) {
       return {
         gate: gateName,
         verdict: verdict.verdict,
-        score: verdict.score || verdict.overall_score,
+        score,
         summary: verdict.summary,
         attempts,
         fix_runs: attempt,
@@ -597,7 +552,7 @@ async function runGateWithFix({ base44, gateName, validate, fix, onContentUpdate
     attempts,
     fix_runs: maxRepairLoops,
     gated: true,
-    gate_reason: `${gateName} FAILED after ${maxRepairLoops} fix attempts: ${lastAttempt?.summary || 'unresolved'}`,
+    gate_reason: `${gateName} FAILED after ${maxRepairLoops} fix attempts: ${lastAttempt?.summary || 'unresolved'}${lastAttempt?.score_check && lastAttempt.score_check !== 'pass' ? ` (${lastAttempt.score_check})` : ''}`,
   };
 }
 
