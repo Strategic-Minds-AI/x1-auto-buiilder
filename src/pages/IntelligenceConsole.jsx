@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
+import AdminSidebar from "@/components/AdminSidebar";
 import {
   Brain, BookOpen, Users, HelpCircle, Shield, Gauge, Search,
   Loader2, CheckCircle2, AlertTriangle, XCircle, Zap, Database,
@@ -94,7 +95,9 @@ export default function IntelligenceConsole() {
   const totalRecords = Object.values(counts).reduce((a, b) => a + (b || 0), 0);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800">
+    <div className="min-h-screen flex bg-white">
+      <AdminSidebar title="Intelligence Console" />
+      <div className="flex-1 min-w-0 flex flex-col bg-slate-50">
       {/* Header */}
       <div className="border-b border-slate-200 bg-white">
         <div className="max-w-7xl mx-auto px-6 py-6">
@@ -152,6 +155,7 @@ export default function IntelligenceConsole() {
       </div>
 
       {/* Content */}
+      <div className="flex-1 overflow-y-auto">
       <div className="max-w-7xl mx-auto px-6 py-6">
         {loading ? (
           <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-[#00d4ff]" /></div>
@@ -445,6 +449,8 @@ export default function IntelligenceConsole() {
             )}
           </>
         )}
+      </div>
+      </div>
       </div>
     </div>
   );
