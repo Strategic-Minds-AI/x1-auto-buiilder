@@ -105,6 +105,7 @@ const EXTERNAL_MODULES = [
   { to: "/gpt-factory", icon: Factory, label: "GPT Website Factory" },
   { to: "/build-queue", icon: ListChecks, label: "Build Queue" },
   { to: "/integration-hub", icon: Boxes, label: "Integration Hub" },
+  { to: "/validator-pipeline", icon: Shield, label: "Validator Pipeline" },
 ];
 
 export default function PortalShell({ activeTab, onTabChange, onNew, children }) {

@@ -66,6 +66,7 @@ import FactoryConsole from '@/pages/FactoryConsole';
 import GPTFactory from '@/pages/GPTFactory';
 import BuildQueueConsole from '@/pages/BuildQueueConsole';
 import IntegrationHub from '@/pages/IntegrationHub';
+import ValidatorPipelineConsole from '@/pages/ValidatorPipelineConsole';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
 function App() {
@@ -138,6 +139,7 @@ function App() {
               <Route path="/gpt-factory" element={<GPTFactory />} />
               <Route path="/build-queue" element={<BuildQueueConsole />} />
               <Route path="/integration-hub" element={<IntegrationHub />} />
+              <Route path="/validator-pipeline" element={<ValidatorPipelineConsole />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>
