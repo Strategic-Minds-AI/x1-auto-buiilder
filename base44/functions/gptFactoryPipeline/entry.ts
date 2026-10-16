@@ -144,7 +144,27 @@ export default async function(req: Request): Promise<Response> {
       pipeline.phases.auto_fix = { ok: true, skipped: true };
     }
 
-    // ── PHASE 5: DEPLOY TO VERCEL ───────────────────────────────
+    // ── PHASE 5: QA AGENT (comprehensive check + fix everything) ──
+    try {
+      const qaRes = await base44.functions.invoke('qaAgent', { projectId: pipeline.project_id, content });
+      pipeline.phases.qa_agent = {
+        ok: !qaRes.data?.error,
+        issues_found: qaRes.data?.issues_found || [],
+        issues_fixed: qaRes.data?.issues_fixed || 0,
+        google_compliance_score: qaRes.data?.google_compliance_score,
+        human_quality_score: qaRes.data?.human_quality_score,
+        summary: qaRes.data?.summary,
+      };
+      // QA Agent may have updated the content — reload it
+      if (pipeline.project_id && qaRes.data?.fixed) {
+        const refreshed = await base44.entities.WebsiteProject.get(pipeline.project_id);
+        if (refreshed?.content) content = refreshed.content;
+      }
+    } catch (err: any) {
+      pipeline.phases.qa_agent = { ok: false, error: err.message };
+    }
+
+    // ── PHASE 6: DEPLOY TO VERCEL ───────────────────────────────
     if (!skipDeploy && pipeline.project_id) {
       try {
         const deployRes = await base44.functions.invoke('deploySite', { projectId: pipeline.project_id });
@@ -167,6 +187,25 @@ export default async function(req: Request): Promise<Response> {
       pipeline.phases.deploy = { ok: true, skipped: true };
     } else {
       pipeline.phases.deploy = { ok: false, error: 'No project_id to deploy' };
+    }
+
+    // ── PHASE 7: VALIDATOR AGENT (final judgment — how Google + humans judge) ──
+    try {
+      const valRes = await base44.functions.invoke('validatorAgent', { projectId: pipeline.project_id, content });
+      pipeline.phases.validator_agent = {
+        ok: !valRes.data?.error,
+        verdict: valRes.data?.verdict,
+        google_score: valRes.data?.google_score,
+        human_score: valRes.data?.human_score,
+        overall_score: valRes.data?.overall_score,
+        google_assessment: valRes.data?.google_assessment,
+        human_assessment: valRes.data?.human_assessment,
+        critical_issues: valRes.data?.critical_issues || [],
+        recommendations: valRes.data?.recommendations || [],
+        summary: valRes.data?.summary,
+      };
+    } catch (err: any) {
+      pipeline.phases.validator_agent = { ok: false, error: err.message };
     }
 
     pipeline.success = Object.values(pipeline.phases).every((p: any) => p?.ok !== false);

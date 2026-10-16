@@ -3,8 +3,10 @@ import { base44 } from "@/api/base44Client";
 import {
   Factory, Play, Loader2, CheckCircle2, XCircle, Globe, Brain,
   Shield, Rocket, RefreshCw, LogIn, LogOut, Clock, Activity, Zap,
+  Search, Gavel, AlertTriangle, TrendingUp,
 } from "lucide-react";
 import CloudBrowser from "@/components/portal/CloudBrowser";
+import ValidatorVerdict from "@/components/portal/ValidatorVerdict";
 import BackButton from "@/components/shared/BackButton";
 
 const PIPELINE_PHASES = [
@@ -12,8 +14,16 @@ const PIPELINE_PHASES = [
   { key: "validate", label: "Validate", icon: CheckCircle2, color: "green" },
   { key: "compliance", label: "Google Compliance", icon: Shield, color: "amber" },
   { key: "auto_fix", label: "Auto-Fix", icon: RefreshCw, color: "purple" },
+  { key: "qa_agent", label: "QA Agent — Check & Fix", icon: Search, color: "indigo" },
   { key: "deploy", label: "Deploy to Vercel", icon: Rocket, color: "cyan" },
+  { key: "validator_agent", label: "Validator Agent — Final Judgment", icon: Gavel, color: "rose" },
 ];
+
+const VERDICT_STYLES = {
+  pass: { bg: "bg-emerald-100", text: "text-emerald-700", label: "PASS — Ready to Deploy" },
+  conditional_pass: { bg: "bg-amber-100", text: "text-amber-700", label: "CONDITIONAL PASS — Deploy & Monitor" },
+  fail: { bg: "bg-red-100", text: "text-red-700", label: "FAIL — Do Not Deploy" },
+};
 
 export default function GPTFactory() {
   const [pipeline, setPipeline] = useState(null);
@@ -140,7 +150,7 @@ export default function GPTFactory() {
           </div>
           <div>
             <h1 className="font-black text-2xl text-slate-900">GPT Website Factory</h1>
-            <p className="text-sm text-slate-500">End-to-end pipeline: Generate → Validate → Google Compliance → Auto-Fix → Deploy</p>
+            <p className="text-sm text-slate-500">End-to-end pipeline: Generate → Validate → Google Compliance → Auto-Fix → QA Agent → Deploy → Validator Agent</p>
           </div>
         </div>
 
@@ -356,11 +366,29 @@ export default function GPTFactory() {
                         {result.fixes_applied !== undefined && result.fixes_applied > 0 && (
                           <p className="mt-1 text-xs text-emerald-600">{result.fixes_applied} fixes applied</p>
                         )}
+                        {/* QA Agent details */}
+                        {phase.key === "qa_agent" && result.issues_found?.length > 0 && (
+                          <div className="mt-2 space-y-1">
+                            <p className="text-xs text-indigo-600 font-semibold">{result.issues_fixed} issues found & fixed across {result.sections_changed || 0} sections</p>
+                            {result.google_compliance_score !== undefined && result.google_compliance_score > 0 && (
+                              <p className="text-xs text-slate-500">Google compliance after fix: <span className="font-bold text-slate-700">{result.google_compliance_score}/100</span></p>
+                            )}
+                            {result.human_quality_score !== undefined && result.human_quality_score > 0 && (
+                              <p className="text-xs text-slate-500">Human quality after fix: <span className="font-bold text-slate-700">{result.human_quality_score}/100</span></p>
+                            )}
+                            {result.summary && <p className="text-xs text-slate-400 italic mt-1">{result.summary}</p>}
+                          </div>
+                        )}
                         {result.error && <p className="mt-1 text-xs text-red-500">{result.error}</p>}
                       </div>
                     );
                   })}
                 </div>
+
+                {/* Validator Agent — Final Verdict Panel */}
+                {pipeline.phases.validator_agent && (
+                  <ValidatorVerdict data={pipeline.phases.validator_agent} />
+                )}
               </div>
             )}
           </div>
