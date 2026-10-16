@@ -80,6 +80,7 @@ import TemplateFactoryConsole from '@/pages/TemplateFactoryConsole';
 import IntelligenceConsole from '@/pages/IntelligenceConsole';
 import MockupLibrary from '@/pages/MockupLibrary';
 import IndustryLibrary from '@/pages/IndustryLibrary';
+import GPTControlCenter from '@/pages/GPTControlCenter';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
 function App() {
@@ -166,6 +167,7 @@ function App() {
                 <Route path="/intelligence-console" element={<IntelligenceConsole />} />
                 <Route path="/mockup-library" element={<MockupLibrary />} />
                 <Route path="/industry-library" element={<IndustryLibrary />} />
+                <Route path="/gpt-control" element={<GPTControlCenter />} />
               </Route>
             </Route>
             <Route path="*" element={<PageNotFound />} />

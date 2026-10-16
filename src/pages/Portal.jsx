@@ -31,6 +31,7 @@ import WebPackLibrary from "@/components/portal/WebPackLibrary";
 import AppPackLibrary from "@/components/portal/AppPackLibrary";
 import TemplateIngestion from "@/components/portal/TemplateIngestion";
 import MockupLibraryContent from "@/components/portal/MockupLibraryContent";
+import IndustryLibraryContent from "@/components/portal/IndustryLibraryContent";
 import { Link } from "react-router-dom";
 import { CheckCircle2, Plus, Loader2, Rocket, ExternalLink, Library } from "lucide-react";
 
@@ -247,6 +248,7 @@ export default function Portal() {
       {tab === "web-packs" && <WebPackLibrary />}
       {tab === "app-packs" && <AppPackLibrary />}
       {tab === "mockups" && <MockupLibraryContent />}
+      {tab === "industry-library" && <IndustryLibraryContent />}
       {tab === "launch" && <MassLaunchConsoleV2 onDeployed={() => setTab("campaigns")} />}
       {tab === "monitor" && <LaunchMonitor />}
       {tab === "compliance" && <ComplianceDashboard />}

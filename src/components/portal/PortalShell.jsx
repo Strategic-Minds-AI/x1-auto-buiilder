@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Wand2, Library, Globe, LayoutTemplate, Rocket, LayoutGrid, Cable,
   Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown, Mail, Workflow, Code,
-  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2, Key, Plug, Brain, Scan, AlertTriangle, Megaphone, Download, Copy, Crown, UploadCloud, BookOpen, Factory, ListChecks, ClipboardList, Layers, FileText
+  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2, Key, Plug, Brain, Scan, AlertTriangle, Megaphone, Download, Copy, Crown, UploadCloud, BookOpen, Factory, ListChecks, ClipboardList, Layers, FileText, Cpu
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -15,6 +15,7 @@ const NAV_GROUPS = [
       { tab: "library", icon: Library, label: "Template Library" },
       { tab: "sites", icon: Globe, label: "Website Library" },
       { tab: "templates", icon: LayoutTemplate, label: "Site Templates" },
+      { tab: "industry-library", icon: Layers, label: "Industry Library" },
     ],
   },
   {
@@ -118,6 +119,7 @@ export const EXTERNAL_MODULES = [
   { to: "/template-factory", icon: Factory, label: "Template Factory" },
   { to: "/intelligence-console", icon: Brain, label: "Intelligence Console" },
   { to: "/industry-library", icon: Layers, label: "Industry Library" },
+  { to: "/gpt-control", icon: Cpu, label: "GPT Control Center" },
 ];
 
 export default function PortalShell({ activeTab, onTabChange, onNew, title, children }) {
