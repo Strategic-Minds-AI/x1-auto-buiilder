@@ -261,45 +261,49 @@ export default async function(req: Request): Promise<Response> {
       return finalizePipeline(pipeline);
     }
 
-    // ── GATE 5.5: Prompt Validation (LLM-as-judge, mandatory before deploy) ──
+    // ── GATE 5.5: Cross-Model Jury Validation (Claude + Gemini, mandatory before deploy) ──
     let promptValidationPassed = false;
     try {
-      const pvRes = await base44.functions.invoke('promptValidationAgent', {
-        action: 'validate',
+      const juryRes = await base44.functions.invoke('crossModelJuryValidator', {
         industry,
         generatedContent: content,
         qualityBar: 85,
       });
-      const pvResult = pvRes.data?.result || {};
-      promptValidationPassed = pvResult.verdict === 'PASS' || (pvResult.totalScore || 0) >= 85;
+      const jury = juryRes.data || {};
+      promptValidationPassed = jury.can_ship === true;
+      const needsReview = jury.needs_review === true;
       pipeline.gates.push({
-        gate: 'prompt_validation',
-        verdict: promptValidationPassed ? 'pass' : 'fail',
-        score: pvResult.totalScore || 0,
-        summary: `LLM-as-judge score: ${pvResult.totalScore || 0}/100 — ${promptValidationPassed ? 'PASS' : 'FAIL'}`,
-        failure_modes: pvResult.failureModes || [],
-        improvements: pvResult.improvements || [],
+        gate: 'cross_model_jury',
+        verdict: promptValidationPassed ? 'pass' : (needsReview ? 'disagreement' : 'fail'),
+        score: jury.avg_score || 0,
+        summary: jury.summary || `Jury score: ${jury.avg_score || 0}/100`,
+        judges: jury.judges,
+        score_delta: jury.score_delta,
         gated: !promptValidationPassed,
         gate_reason: !promptValidationPassed
-          ? `prompt_validation FAILED: score ${pvResult.totalScore || 0}/100 below 85 threshold. ${((pvResult.failureModes || []).slice(0, 3)).join('; ')}`
+          ? needsReview
+            ? `cross_model_jury DISAGREEMENT — Claude ${jury.judges?.claude?.score || 0} vs Gemini ${jury.judges?.gemini?.score || 0} (Δ${jury.score_delta}) — needs human review before deploy`
+            : `cross_model_jury FAILED — both judges agree content is below bar (${jury.avg_score || 0}/100 avg)`
           : null,
       });
       if (!promptValidationPassed) {
         pipeline.gated = true;
-        pipeline.gate_reason = `prompt_validation FAILED: score ${pvResult.totalScore || 0}/100 below 85 threshold`;
+        pipeline.gate_reason = needsReview
+          ? `cross_model_jury DISAGREEMENT — needs human review (Claude ${jury.judges?.claude?.score || 0} vs Gemini ${jury.judges?.gemini?.score || 0})`
+          : `cross_model_jury FAILED — both judges agree content is below bar (${jury.avg_score || 0}/100)`;
         return finalizePipeline(pipeline);
       }
     } catch (err: any) {
       pipeline.gates.push({
-        gate: 'prompt_validation',
+        gate: 'cross_model_jury',
         verdict: 'fail',
         score: 0,
-        summary: `Prompt validation error: ${err.message}`,
+        summary: `Jury validation error: ${err.message}`,
         gated: true,
-        gate_reason: `prompt_validation error: ${err.message}`,
+        gate_reason: `cross_model_jury error: ${err.message}`,
       });
       pipeline.gated = true;
-      pipeline.gate_reason = `prompt_validation error: ${err.message}`;
+      pipeline.gate_reason = `cross_model_jury error: ${err.message}`;
       return finalizePipeline(pipeline);
     }
 
