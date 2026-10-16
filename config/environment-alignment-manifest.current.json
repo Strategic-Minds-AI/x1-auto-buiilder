@@ -3,13 +3,14 @@
   "phase": "PHASE_0_ENVIRONMENT_ALIGNMENT_GATE",
   "project_id": "UNLIMITED_WEBSITES",
   "project_slug": "gpt-builder-factory-prime",
-  "observed_at": "2026-10-16T16:28:00-04:00",
+  "observed_at": "2026-10-16T21:00:01Z",
   "source_truth": {
     "repository": "Strategic-Minds-AI/x1-auto-buiilder",
     "branch": "feature/gptbf-phase0-environment-alignment",
-    "github_sha": "0e4cb7090623fdace249459b001e2be81d157400",
-    "local_sha": "0e4cb7090623fdace249459b001e2be81d157400",
-    "status": "VERIFIED"
+    "canary_source_sha": "edc9069820e8fcf8e1f5a6442eba302d9ee0352c",
+    "canary_evidence_commit": "fea801cb11d61c495888548e1218c6dc4d290780",
+    "status": "VERIFIED",
+    "note": "Canary source SHA is immutable deployment identity; evidence commits intentionally advance branch HEAD after deployment."
   },
   "systems": [
     {
@@ -21,78 +22,95 @@
     {
       "system": "GOOGLE_DRIVE",
       "status": "VERIFIED",
-      "evidence": "18_ULTIMATE_AUTO_BUILDER exists and canonical 00-17 folders created",
-      "id": "1zazPL7umsp0ccFoPbtC6mHLnqpx-zjO8"
+      "evidence": "18_ULTIMATE_AUTO_BUILDER canonical folders exist; Phase 0.1 evidence Google Doc saved in 16_ARTIFACT_VAULT and read back.",
+      "id": "1zazPL7umsp0ccFoPbtC6mHLnqpx-zjO8",
+      "artifact_id": "1zbLMKzGV5HivgEnk1QY2_C5RegyY84-EZN-5pputv7o"
     },
     {
       "system": "GITHUB",
       "status": "VERIFIED",
-      "evidence": "repo resolved with admin/push permissions; alignment branch created",
-      "id": "1420119041"
+      "evidence": "Canary source and immutable evidence are committed on nonproduction alignment branch.",
+      "id": "1420119041",
+      "canary_source_sha": "edc9069820e8fcf8e1f5a6442eba302d9ee0352c",
+      "evidence_commit": "fea801cb11d61c495888548e1218c6dc4d290780"
     },
     {
       "system": "LOCAL_FOLDER",
       "status": "VERIFIED",
-      "evidence": "C:\\_Strategic_Minds_AI_OS\\66_GPT BUILDER FACTORY with 00-17 folders and repo clone",
+      "evidence": "Canonical local GPT Builder Factory folder, repo clone, QA evidence, and local Artifact Vault copy exist.",
       "id": "C:\\_Strategic_Minds_AI_OS\\66_GPT BUILDER FACTORY"
     },
     {
       "system": "DOCKER",
       "status": "VERIFIED",
-      "evidence": "Docker client/server 29.8.1, Compose v5.5.1, Strategic Minds containers running"
+      "evidence": "Docker client/server 29.8.1 and Compose v5.5.1; canary image built and served HTTP 200.",
+      "image": "gptbf-alignment-canary:20261016",
+      "image_manifest_sha256": "42967a7c52c28c9850ddd9db476d78396f4b97e10b26ccfca9944191d4806b14"
     },
     {
       "system": "RAILWAY",
       "status": "VERIFIED",
-      "evidence": "Strategic Sandbox System with sandbox-code/orchestrator/swarm/etc.",
-      "id": "15f90272-e2f6-4739-8286-91447f545d71"
+      "evidence": "Existing X1 preview worker consumed the synthetic X1 queue job. No duplicate worker fleet created.",
+      "project_id": "f442cf0a-7275-4c2b-bf73-2dda4254e002",
+      "service_id": "b9c79ead-1edc-44b9-9823-98d37b20399e"
     },
     {
       "system": "SUPABASE",
       "status": "VERIFIED",
-      "evidence": "X1 AI Hub Staging and X1 AI Hub are ACTIVE_HEALTHY",
+      "evidence": "X1 AI Hub Staging ACTIVE_HEALTHY and authoritative x1_work_queue canary job completed.",
       "id": "uvdkzsbjackpjvpoxtyk"
     },
     {
       "system": "VERCEL",
-      "status": "VERIFIED_PROVIDER",
-      "evidence": "website-launch-engine project resolved",
-      "id": "prj_JbkX4yKWygqBFRhkHL6nbeQXM46f"
+      "status": "VERIFIED",
+      "evidence": "Preview deployment READY, HTTP 200, exact canary source SHA, noindex header/meta/robots.",
+      "project_id": "prj_uWtP4yNbLx2InyrG1p0O4MXFxSZp",
+      "deployment_id": "dpl_HemXTYWqwHBa7WATwUhaYdfL9SfB",
+      "source_sha": "edc9069820e8fcf8e1f5a6442eba302d9ee0352c"
     },
     {
       "system": "X1_QUEUE",
-      "status": "UNKNOWN",
-      "evidence": "runtime exists but exact authoritative queue binding for GPT Builder Factory not yet read back"
+      "status": "VERIFIED",
+      "evidence": "Existing staging x1_work_queue accepted idempotent READ_ONLY canary and existing worker completed it in one attempt.",
+      "work_id": "f1628cf2-7745-4879-8de3-5419295c0530",
+      "worker_receipt_id": "worker:f1628cf2-7745-4879-8de3-5419295c0530:1"
     },
     {
       "system": "SUPER_AGENTS",
       "status": "VERIFIED",
-      "evidence": "Railway bnm-super-agent and worker services plus local sm-swarm/sm-validator containers observed"
+      "evidence": "Existing Railway/local swarm and agent workers observed; canary reused existing X1 preview worker."
     },
     {
       "system": "ARTIFACT_VAULT",
-      "status": "PARTIAL",
-      "evidence": "repo/local references present; end-to-end save/readback receipt not yet validated"
+      "status": "VERIFIED",
+      "evidence": "Evidence persisted in GitHub, local 16_ARTIFACT_VAULT, Drive with read-back, and durable EvidenceReceipt.",
+      "receipt_id": "rcpt_gptbf_phase0_1_alignment_20261016",
+      "record_id": "6ad2905178ad9a9f623db806"
     },
     {
       "system": "QA_AGENT",
-      "status": "PARTIAL",
-      "evidence": "qa_agent code and local validator container present; current canary not executed"
+      "status": "VERIFIED_WITH_WARNING",
+      "evidence": "Local Playwright desktop 1440x900 and mobile 390x844 executed; HTTP 200/noindex verified. Independent QA report recorded one low Cloud Browser routing warning.",
+      "qa_report_id": "6ad290368b782ffa08cfc069",
+      "score": 98
     },
     {
       "system": "INDEPENDENT_VALIDATOR",
-      "status": "PARTIAL",
-      "evidence": "validator_agent code and sm-validator container present; current alignment canary not executed"
+      "status": "VERIFIED",
+      "evidence": "Fault Line independent validation PASS bound to exact source/deployment/evidence identities.",
+      "validation_result_id": "6ad29043e440d5ed8d697972",
+      "score": 99
     }
   ],
   "gates": {
-    "all_required_aligned": false,
-    "build_ready": false,
-    "blocker_summary": [
-      "Resolve exact X1 authoritative queue binding",
-      "Prove Artifact Vault save/readback receipt",
-      "Run QA and Independent Validator on one alignment canary",
-      "Bind a project-specific Vercel preview and compare deployed SHA"
+    "all_required_aligned": true,
+    "alignment_canary_passed": true,
+    "build_ready": true,
+    "plugin_finalization_ready": true,
+    "production_release_authorized": false,
+    "overall_verdict": "PASS_WITH_WARNINGS",
+    "warning_summary": [
+      "Xtreme Cloud Browser secondary session routing returned 405/session-not-found after one successful navigation. Local Playwright independently satisfied desktop/mobile browser QA for this canary."
     ]
   }
 }
