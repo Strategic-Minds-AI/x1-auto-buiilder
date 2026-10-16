@@ -5,12 +5,20 @@
     "name": {
       "type": "string"
     },
+    "description": {
+      "type": "string",
+      "description": "What this prompt does and when to use it"
+    },
     "industry": {
       "type": "string"
     },
-    "prompt_type": {
+    "category": {
       "type": "string",
       "enum": [
+        "image_enhancement",
+        "template_enhancement",
+        "validation",
+        "quality_check",
         "website_content",
         "seo_audit",
         "social_content",
@@ -21,7 +29,29 @@
         "competitive_analysis",
         "lead_qualification",
         "estimate_generation"
-      ]
+      ],
+      "default": "website_content",
+      "description": "Broad category for grouping and filtering"
+    },
+    "prompt_type": {
+      "type": "string",
+      "enum": [
+        "image_enhancement",
+        "template_enhancement",
+        "validation",
+        "quality_check",
+        "website_content",
+        "seo_audit",
+        "social_content",
+        "video_script",
+        "email_campaign",
+        "ad_copy",
+        "brand_voice",
+        "competitive_analysis",
+        "lead_qualification",
+        "estimate_generation"
+      ],
+      "default": "website_content"
     },
     "system_prompt": {
       "type": "string"
@@ -39,9 +69,20 @@
           },
           "description": {
             "type": "string"
+          },
+          "required": {
+            "type": "boolean",
+            "default": false
           }
         }
       }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Searchable tags for filtering"
     },
     "model": {
       "type": "string",
@@ -55,11 +96,25 @@
       "items": {
         "type": "object"
       }
+    },
+    "usage_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many times this prompt has been used"
+    },
+    "rating": {
+      "type": "number",
+      "description": "0-5 user rating"
+    },
+    "is_builtin": {
+      "type": "boolean",
+      "default": false,
+      "description": "True for system-provided prompts"
     }
   },
   "required": [
     "name",
-    "industry",
+    "category",
     "prompt_type"
   ],
   "rls": {
@@ -72,6 +127,9 @@
           "user_condition": {
             "role": "admin"
           }
+        },
+        {
+          "data.is_builtin": true
         }
       ]
     },
