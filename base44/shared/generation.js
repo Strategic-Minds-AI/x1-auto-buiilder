@@ -1,6 +1,8 @@
 // Shared generation orchestration used by the user-facing functions AND gptSyncEngine.
 // `scope` = 'user' (user-scoped entity writes) or 'service' (service-role writes for the sync engine).
 import { skipTraceBusiness, benchmarkIndustry, contentSchema } from './websiteResearch.js';
+import { ultraCoreSchema, ultraSupportSchema, buildUltraPrompt } from './ultraContentSchema.js';
+import { getIndustryIntelligence } from './industryIntelligence.js';
 
 const CONTENT_PROMPT = (industry, businessResearch, benchmark) =>
   'You are an elite website copywriter and content strategist. Generate ORIGINAL, high-converting website content for a "' + industry + '" business.\n\n' +
@@ -83,7 +85,7 @@ const RESEARCH_SCHEMA = {
 };
 
 export async function buildWebsiteBlueprint(base44, params) {
-  const { businessWebsiteUrl, industry, businessName } = params;
+  const { businessWebsiteUrl, industry, businessName, ultra } = params;
   let businessResearch;
   if (businessWebsiteUrl && businessWebsiteUrl.trim()) {
     businessResearch = await skipTraceBusiness(base44, businessWebsiteUrl, industry, businessName);
@@ -101,6 +103,29 @@ export async function buildWebsiteBlueprint(base44, params) {
     };
   }
   const benchmark = await benchmarkIndustry(base44, industry);
+
+  // Ultra-premium path: use industry intelligence + 14-section schema + enhanced prompt
+  if (ultra !== false) {
+    const intelligence = getIndustryIntelligence(industry);
+    const ultraPrompt = buildUltraPrompt(industry, businessResearch, benchmark, intelligence);
+    // Split into two LLM calls to stay within grammar compiler limits
+    const [coreRes, supportRes] = await Promise.all([
+      base44.asServiceRole.integrations.Core.InvokeLLM({
+        model: 'claude-sonnet-5',
+        prompt: ultraPrompt + '\n\nGenerate the CORE sections: hero, trustBadges, services, whyChooseUs, process, stats, testimonials, faqs, and ctaBand.',
+        response_json_schema: ultraCoreSchema
+      }),
+      base44.asServiceRole.integrations.Core.InvokeLLM({
+        model: 'claude-sonnet-5',
+        prompt: ultraPrompt + '\n\nGenerate the SUPPORTING sections: pricing, serviceAreas, contactForm, footer, logoPrompt, heroImagePrompt, metaDescription, and colorTokens.',
+        response_json_schema: ultraSupportSchema
+      }),
+    ]);
+    const content = { ...coreRes, ...supportRes };
+    return { businessResearch, benchmark, content, ultra: true, intelligence: intelligence ? { hasIntelligence: true, industry: intelligence.designDirection?.tone || '' } : { hasIntelligence: false } };
+  }
+
+  // Legacy path (basic content schema)
   const content = await base44.asServiceRole.integrations.Core.InvokeLLM({
     model: 'claude-sonnet-5',
     prompt: CONTENT_PROMPT(industry, businessResearch, benchmark),
