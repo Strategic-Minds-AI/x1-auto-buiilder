@@ -261,6 +261,48 @@ export default async function(req: Request): Promise<Response> {
       return finalizePipeline(pipeline);
     }
 
+    // ── GATE 5.5: Prompt Validation (LLM-as-judge, mandatory before deploy) ──
+    let promptValidationPassed = false;
+    try {
+      const pvRes = await base44.functions.invoke('promptValidationAgent', {
+        action: 'validate',
+        industry,
+        generatedContent: content,
+        qualityBar: 85,
+      });
+      const pvResult = pvRes.data?.result || {};
+      promptValidationPassed = pvResult.verdict === 'PASS' || (pvResult.totalScore || 0) >= 85;
+      pipeline.gates.push({
+        gate: 'prompt_validation',
+        verdict: promptValidationPassed ? 'pass' : 'fail',
+        score: pvResult.totalScore || 0,
+        summary: `LLM-as-judge score: ${pvResult.totalScore || 0}/100 — ${promptValidationPassed ? 'PASS' : 'FAIL'}`,
+        failure_modes: pvResult.failureModes || [],
+        improvements: pvResult.improvements || [],
+        gated: !promptValidationPassed,
+        gate_reason: !promptValidationPassed
+          ? `prompt_validation FAILED: score ${pvResult.totalScore || 0}/100 below 85 threshold. ${((pvResult.failureModes || []).slice(0, 3)).join('; ')}`
+          : null,
+      });
+      if (!promptValidationPassed) {
+        pipeline.gated = true;
+        pipeline.gate_reason = `prompt_validation FAILED: score ${pvResult.totalScore || 0}/100 below 85 threshold`;
+        return finalizePipeline(pipeline);
+      }
+    } catch (err: any) {
+      pipeline.gates.push({
+        gate: 'prompt_validation',
+        verdict: 'fail',
+        score: 0,
+        summary: `Prompt validation error: ${err.message}`,
+        gated: true,
+        gate_reason: `prompt_validation error: ${err.message}`,
+      });
+      pipeline.gated = true;
+      pipeline.gate_reason = `prompt_validation error: ${err.message}`;
+      return finalizePipeline(pipeline);
+    }
+
     // ═══ STAGE 6: DEPLOY ═══════════════════════════════════════════
     let deployUrl = '';
     if (!skipDeploy && pipeline.project_id) {

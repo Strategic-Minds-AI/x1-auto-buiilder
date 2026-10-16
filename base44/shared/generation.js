@@ -4,6 +4,7 @@ import { skipTraceBusiness, benchmarkIndustry, contentSchema } from './websiteRe
 import { ultraCoreSchema, ultraSupportSchema, buildUltraPrompt } from './ultraContentSchema.js';
 import { getIndustryIntelligence } from './industryIntelligence.js';
 import { GOOGLE_COMPLIANCE_PROMPT, GOOGLE_RULES, DIFFERENTIATION_LAYERS, TECHNICAL_SEO_QA } from './digitalDominationIntelligence.js';
+import { buildRegistryContext, refineContentDraft, generateVisualPack } from './generationEnhancements.js';
 
 const CONTENT_PROMPT = (industry, businessResearch, benchmark) =>
   'You are an elite website copywriter and content strategist. Generate ORIGINAL, high-converting website content for a "' + industry + '" business.\n\n' +
@@ -108,8 +109,9 @@ export async function buildWebsiteBlueprint(base44, params) {
   // Ultra-premium path: use industry intelligence + 14-section schema + enhanced prompt
   if (ultra !== false) {
     const intelligence = getIndustryIntelligence(industry);
-    const ultraPrompt = buildUltraPrompt(industry, businessResearch, benchmark, intelligence) + GOOGLE_COMPLIANCE_PROMPT;
-    // Split into two LLM calls to stay within grammar compiler limits
+    const registryContext = buildRegistryContext(industry);
+    const ultraPrompt = buildUltraPrompt(industry, businessResearch, benchmark, intelligence) + registryContext + GOOGLE_COMPLIANCE_PROMPT;
+    // Pass 1: Generate core + support sections in parallel
     const [coreRes, supportRes] = await Promise.all([
       base44.asServiceRole.integrations.Core.InvokeLLM({
         model: 'claude-sonnet-5',
@@ -122,8 +124,30 @@ export async function buildWebsiteBlueprint(base44, params) {
         response_json_schema: ultraSupportSchema
       }),
     ]);
-    const content = { ...coreRes, ...supportRes };
-    return { businessResearch, benchmark, content, ultra: true, intelligence: intelligence ? { hasIntelligence: true, industry: intelligence.designDirection?.tone || '' } : { hasIntelligence: false } };
+    const draftContent = { ...coreRes, ...supportRes };
+
+    // Pass 2: Refinement — polish specificity, remove generic copy, enforce SEO compliance
+    let content = draftContent;
+    try {
+      content = await refineContentDraft(base44, draftContent, industry, businessResearch, benchmark);
+    } catch { /* fall back to draft if refinement fails */ }
+
+    // Pass 3: Generate a machine-testable VisualPack design token contract
+    let visualPack = null;
+    try {
+      visualPack = await generateVisualPack(base44, content, industry);
+    } catch { /* visual pack is optional enhancement */ }
+
+    return {
+      businessResearch,
+      benchmark,
+      content,
+      visualPack,
+      ultra: true,
+      passes: ['core+support', 'refinement', 'visualpack'],
+      intelligence: intelligence ? { hasIntelligence: true, industry: intelligence.designDirection?.tone || '' } : { hasIntelligence: false },
+      registryMatched: !!registryContext,
+    };
   }
 
   // Legacy path (basic content schema)
