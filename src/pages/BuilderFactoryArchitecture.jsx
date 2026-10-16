@@ -1,43 +1,42 @@
 import { useState } from "react";
+import PortalShell from "@/components/portal/PortalShell";
 import {
   ARCHITECTURE_LAYERS, REPO_RANKINGS, EMPTY_REPO_DISCOVERY,
   FACTORY_PIPELINE, EXPANSION_FOLDERS, EXPANSION_SCHEMAS,
 } from "@/data/builderFactoryArchitecture";
-import { Layers, GitBranch, AlertTriangle, ArrowDown, CheckCircle2, XCircle, FolderTree, Database, Rocket, Lightbulb } from "lucide-react";
+import { Layers, GitBranch, AlertTriangle, ArrowDown, CheckCircle2, FolderTree, Database, Rocket, Lightbulb } from "lucide-react";
 
 export default function BuilderFactoryArchitecture() {
   const [activeTab, setActiveTab] = useState("architecture");
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-[#0a0e14] to-[#0d1b2a] text-white">
-        <div className="max-w-6xl mx-auto px-6 py-10">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#00d4ff] to-[#0066ff] flex items-center justify-center">
-              <Layers className="w-7 h-7 text-[#0a0e14]" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-black">GPT Builder Factory — Repository Architecture</h1>
-              <p className="text-sm text-white/60">Separation of concerns, not spaghetti wearing a hard hat.</p>
-            </div>
+    <PortalShell title="Builder Factory Architecture" activeTab="" onTabChange={() => {}} onNew={() => {}}>
+      <div className="px-6 py-8 max-w-6xl mx-auto">
+        {/* Page header */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00d4ff] to-[#0066ff] flex items-center justify-center">
+            <Layers className="w-5 h-5 text-[#0a0e14]" />
           </div>
-          <div className="flex gap-2 mt-4 flex-wrap">
-            <TabButton active={activeTab === "architecture"} onClick={() => setActiveTab("architecture")}>Architecture</TabButton>
-            <TabButton active={activeTab === "ranking"} onClick={() => setActiveTab("ranking")}>Repo Ranking</TabButton>
-            <TabButton active={activeTab === "discovery"} onClick={() => setActiveTab("discovery")}>Empty Shell Discovery</TabButton>
-            <TabButton active={activeTab === "expansion"} onClick={() => setActiveTab("expansion")}>Expansion Plan</TabButton>
+          <div>
+            <h1 className="text-xl font-black text-slate-900">GPT Builder Factory — Repository Architecture</h1>
+            <p className="text-sm text-slate-500">Separation of concerns, not spaghetti wearing a hard hat.</p>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
+        {/* Tab buttons */}
+        <div className="flex gap-2 mb-6 flex-wrap">
+          <TabButton active={activeTab === "architecture"} onClick={() => setActiveTab("architecture")}>Architecture</TabButton>
+          <TabButton active={activeTab === "ranking"} onClick={() => setActiveTab("ranking")}>Repo Ranking</TabButton>
+          <TabButton active={activeTab === "discovery"} onClick={() => setActiveTab("discovery")}>Empty Shell Discovery</TabButton>
+          <TabButton active={activeTab === "expansion"} onClick={() => setActiveTab("expansion")}>Expansion Plan</TabButton>
+        </div>
+
         {activeTab === "architecture" && <ArchitectureView />}
         {activeTab === "ranking" && <RankingView />}
         {activeTab === "discovery" && <DiscoveryView />}
         {activeTab === "expansion" && <ExpansionView />}
       </div>
-    </div>
+    </PortalShell>
   );
 }
 
@@ -45,7 +44,7 @@ function TabButton({ active, onClick, children }) {
   return (
     <button
       onClick={onClick}
-      className={`px-4 py-2 rounded-full text-sm font-semibold transition ${active ? "bg-[#00d4ff] text-[#0a0e14]" : "bg-white/10 text-white/70 hover:bg-white/20"}`}
+      className={`px-4 py-2 rounded-full text-sm font-semibold transition ${active ? "bg-[#00d4ff] text-[#0a0e14]" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
     >
       {children}
     </button>
@@ -63,7 +62,7 @@ function ArchitectureView() {
         <div className="space-y-3">
           {ARCHITECTURE_LAYERS.map((layer, i) => (
             <div key={layer.name}>
-              <div className={`rounded-2xl border border-slate-200 overflow-hidden`}>
+              <div className="rounded-2xl border border-slate-200 overflow-hidden">
                 <div className={`bg-gradient-to-r ${layer.color} p-5`}>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
@@ -187,7 +186,6 @@ function DiscoveryView() {
 function ExpansionView() {
   return (
     <div className="space-y-6">
-      {/* Current pipeline */}
       <div className="bg-white rounded-2xl border border-slate-200 p-6">
         <div className="flex items-center gap-2 mb-4">
           <Rocket className="w-5 h-5 text-[#00d4ff]" />
@@ -206,7 +204,6 @@ function ExpansionView() {
         </div>
       </div>
 
-      {/* Folders to add */}
       <div className="bg-white rounded-2xl border border-slate-200 p-6">
         <div className="flex items-center gap-2 mb-4">
           <FolderTree className="w-5 h-5 text-[#00d4ff]" />
@@ -221,7 +218,6 @@ function ExpansionView() {
         </div>
       </div>
 
-      {/* Schemas to add */}
       <div className="bg-white rounded-2xl border border-slate-200 p-6">
         <div className="flex items-center gap-2 mb-4">
           <Database className="w-5 h-5 text-[#00d4ff]" />

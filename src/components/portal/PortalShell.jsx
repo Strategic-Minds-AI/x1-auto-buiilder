@@ -112,7 +112,7 @@ const EXTERNAL_MODULES = [
   { to: "/builder-factory-architecture", icon: Layers, label: "Builder Factory Architecture" },
 ];
 
-export default function PortalShell({ activeTab, onTabChange, onNew, children }) {
+export default function PortalShell({ activeTab, onTabChange, onNew, title, children }) {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -214,7 +214,7 @@ export default function PortalShell({ activeTab, onTabChange, onNew, children })
             </Link>
             <div className="h-4 w-px bg-slate-200" />
             <span className="text-sm font-semibold text-slate-800">
-              {NAV_GROUPS.flatMap(g => g.items).find(i => i.tab === activeTab)?.label || "Portal"}
+              {title || NAV_GROUPS.flatMap(g => g.items).find(i => i.tab === activeTab)?.label || "Portal"}
             </span>
           </div>
           <div className="flex items-center gap-3">
