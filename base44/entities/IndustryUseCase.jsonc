@@ -1,0 +1,146 @@
+{
+  "name": "IndustryUseCase",
+  "type": "object",
+  "properties": {
+    "use_case_id": {
+      "type": "string",
+      "description": "X1 use case ID (e.g. X1-01-01-01)"
+    },
+    "industry": {
+      "type": "string",
+      "description": "Industry name"
+    },
+    "subindustry": {
+      "type": "string",
+      "description": "Subindustry/niche"
+    },
+    "system_archetype": {
+      "type": "string",
+      "enum": [
+        "Domain Copilot & Knowledge Workspace",
+        "Autonomous Intake & Qualification Engine",
+        "Data Ingestion & Normalization Hub",
+        "Workflow Automation Control Tower",
+        "Client/Customer Self-Service Portal",
+        "AI Agent Team/Swarm Workspace",
+        "Monitoring, Audit & Incident Center",
+        "Document/Artifact Factory",
+        "Marketplace/Matching/Recommendation Engine",
+        "Multi-Tenant Vertical SaaS OS"
+      ],
+      "description": "System archetype"
+    },
+    "system_idea": {
+      "type": "string",
+      "description": "Concrete system idea"
+    },
+    "core_outcome": {
+      "type": "string",
+      "description": "Core outcome description"
+    },
+    "frontend_surfaces": {
+      "type": "string",
+      "description": "Frontend surfaces needed"
+    },
+    "backend_components": {
+      "type": "string",
+      "description": "Backend components needed"
+    },
+    "agents_ai": {
+      "type": "string",
+      "description": "Agents/AI components"
+    },
+    "key_connectors": {
+      "type": "string",
+      "description": "Key connectors needed"
+    },
+    "autonomy_score": {
+      "type": "number",
+      "description": "1-5 autonomy level"
+    },
+    "monetization_score": {
+      "type": "number",
+      "description": "1-5 monetization potential"
+    },
+    "complexity_score": {
+      "type": "number",
+      "description": "1-5 complexity"
+    },
+    "repeatability_score": {
+      "type": "number",
+      "description": "1-5 repeatability"
+    },
+    "monetization_model": {
+      "type": "string",
+      "description": "How this system makes money"
+    },
+    "setup_price": {
+      "type": "number",
+      "description": "Illustrative setup price in USD"
+    },
+    "monthly_price": {
+      "type": "number",
+      "description": "Illustrative monthly price in USD"
+    },
+    "risk_class": {
+      "type": "string",
+      "enum": [
+        "LOW",
+        "MEDIUM",
+        "HIGH"
+      ],
+      "description": "Risk classification"
+    },
+    "protected_gates": {
+      "type": "string",
+      "description": "Protected gates that apply"
+    },
+    "recommended_stack": {
+      "type": "string",
+      "description": "Recommended technology stack"
+    },
+    "opportunity_score": {
+      "type": "number",
+      "description": "Calculated opportunity score (autonomy * monetization * repeatability / complexity)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "available",
+        "queued",
+        "building",
+        "live"
+      ],
+      "default": "available"
+    }
+  },
+  "required": [
+    "use_case_id",
+    "industry",
+    "subindustry",
+    "system_archetype",
+    "system_idea"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

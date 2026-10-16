@@ -2,99 +2,112 @@
   "name": "ValidationReceipt",
   "type": "object",
   "properties": {
-    "project_id": {
-      "type": "string"
+    "receipt_id": {
+      "type": "string",
+      "description": "Unique receipt identifier (e.g. VR-001)"
     },
-    "job_id": {
-      "type": "string"
+    "pipeline_run_id": {
+      "type": "string",
+      "description": "Linked PipelineRun ID"
     },
-    "validation_type": {
+    "work_packet_id": {
+      "type": "string",
+      "description": "Linked WorkPacket ID being validated"
+    },
+    "gate": {
       "type": "string",
       "enum": [
+        "static",
         "functional",
-        "visual",
         "security",
-        "accessibility",
-        "integration",
-        "queue",
-        "preview",
-        "social",
-        "analytics"
-      ]
+        "visual",
+        "operational"
+      ],
+      "description": "Validation gate type"
     },
-    "result": {
+    "verdict": {
       "type": "string",
       "enum": [
-        "pass",
-        "fail",
-        "unknown",
-        "blocked"
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "MISSING_EVIDENCE"
       ],
-      "default": "unknown"
+      "default": "MISSING_EVIDENCE",
+      "description": "Validation verdict \u2014 PASS requires evidence, never inferred"
+    },
+    "validator": {
+      "type": "string",
+      "description": "Independent validator name/agent that performed validation"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Evidence references: URLs, screenshots, test results, benchmark scores"
     },
     "score": {
       "type": "number",
-      "description": "0-100 quality score"
+      "description": "0-100 validation score"
     },
-    "findings": {
+    "detail": {
+      "type": "string",
+      "description": "Detailed validation findings"
+    },
+    "issues": {
       "type": "array",
       "items": {
-        "type": "string"
-      }
+        "type": "object",
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": [
+              "critical",
+              "warning",
+              "info"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "recommendation": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Issues found during validation"
     },
-    "recommendations": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "details": {
-      "type": "object"
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
     }
   },
   "required": [
-    "project_id",
-    "validation_type"
+    "receipt_id",
+    "gate",
+    "verdict"
   ],
   "rls": {
     "read": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
+      "user_condition": {
+        "role": "admin"
+      }
     },
     "create": {
-      "created_by_id": "{{user.id}}"
+      "user_condition": {
+        "role": "admin"
+      }
     },
     "update": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
+      "user_condition": {
+        "role": "admin"
+      }
     },
     "delete": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
+      "user_condition": {
+        "role": "admin"
+      }
     }
   }
 }

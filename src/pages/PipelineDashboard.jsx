@@ -1,12 +1,17 @@
 import { useState, useEffect } from "react";
 import PortalShell from "@/components/portal/PortalShell";
 import VisualPipelineTimeline from "@/components/pipeline/VisualPipelineTimeline";
+import ReconcilerPanel from "@/components/pipeline/ReconcilerPanel";
+import WorkPacketView from "@/components/pipeline/WorkPacketView";
+import ApprovalQueue from "@/components/pipeline/ApprovalQueue";
+import IndustryLibraryBrowser from "@/components/pipeline/IndustryLibraryBrowser";
 import { base44 } from "@/api/base44Client";
 import { AGENT_ASSIGNMENTS, AGENT_MAP } from "@/data/agentAssignments";
 import { PIPELINE_STAGES } from "@/data/pipelineStages";
 import {
   Rocket, Loader2, Upload, Plus, ChevronRight, Bot, Shield, Wrench,
   CheckCircle2, XCircle, AlertTriangle, FileText, Table, Globe, Activity,
+  Layers, Library, Package, ShieldCheck,
 } from "lucide-react";
 
 export default function PipelineDashboard() {
@@ -20,6 +25,7 @@ export default function PipelineDashboard() {
   const [mockupUrl, setMockupUrl] = useState("");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
+  const [activeView, setActiveView] = useState("pipeline");
 
   const loadRuns = async () => {
     try {
@@ -125,12 +131,20 @@ export default function PipelineDashboard() {
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00d4ff] to-[#0066ff] flex items-center justify-center">
             <Rocket className="w-5 h-5 text-[#0a0e14]" />
           </div>
-          <div>
+          <div className="flex-1">
             <h1 className="text-xl font-black text-slate-900">Autonomous Pipeline Dashboard</h1>
-            <p className="text-sm text-slate-500">Mockup to live system — every stage tracked, validated, and auto-fixed.</p>
+            <p className="text-sm text-slate-500">X1 Control Plane — risk-gated packets, evidence-based validation, approval gates, and 4,000 pre-scored build targets.</p>
+          </div>
+          {/* View tabs */}
+          <div className="flex gap-1.5">
+            <ViewTab active={activeView === "pipeline"} onClick={() => setActiveView("pipeline")} icon={Rocket}>Pipeline</ViewTab>
+            <ViewTab active={activeView === "x1"} onClick={() => setActiveView("x1")} icon={Layers}>X1 Control Plane</ViewTab>
+            <ViewTab active={activeView === "library"} onClick={() => setActiveView("library")} icon={Library}>Industry Library</ViewTab>
           </div>
         </div>
 
+        {activeView === "pipeline" && (
+        <>
         {/* Create new pipeline */}
         <div className="bg-white rounded-2xl border border-slate-200 p-5 mb-6">
           <div className="flex items-center gap-2 mb-3">
@@ -328,8 +342,65 @@ export default function PipelineDashboard() {
               </>
             )}
           </>
-        )}
-      </div>
-    </PortalShell>
-  );
-}
+          )}
+          </>
+          )}
+
+          {/* X1 Control Plane View */}
+          {activeView === "x1" && (
+          <div className="space-y-6">
+           {/* X1 Architecture banner */}
+           <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-5 text-white">
+             <div className="flex items-center gap-3 mb-2">
+               <ShieldCheck className="w-5 h-5 text-[#00d4ff]" />
+               <h2 className="text-sm font-bold">X1 Control Plane — 10 Required Invariants</h2>
+             </div>
+             <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mt-3">
+               {["No secrets in prompts", "No unverified assets to builders", "No ambiguous build requests", "No builder self-approval", "No concurrent writers", "No UNKNOWN as PASS", "No production without approval", "No success without evidence", "No unprotected destructive ops", "No silent failures"].map((inv, i) => (
+                 <div key={i} className="rounded-lg bg-white/5 border border-white/10 px-2.5 py-1.5 text-[10px] font-semibold text-white/70">
+                   {inv}
+                 </div>
+               ))}
+             </div>
+           </div>
+
+           {/* Reconciler + Approval Queue */}
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+             <ReconcilerPanel />
+             <ApprovalQueue />
+           </div>
+
+           {/* Work Packets for selected run */}
+           {selectedRun ? (
+             <WorkPacketView pipelineRunId={selectedRun.id} />
+           ) : (
+             <div className="bg-white rounded-2xl border border-slate-200 p-5 text-center">
+               <Package className="w-8 h-8 text-slate-200 mx-auto mb-2" />
+               <p className="text-xs text-slate-400">Select a pipeline run from the Pipeline tab to view its work packets.</p>
+             </div>
+           )}
+          </div>
+          )}
+
+          {/* Industry Library View */}
+          {activeView === "library" && (
+          <IndustryLibraryBrowser />
+          )}
+          </div>
+          </PortalShell>
+          );
+          }
+
+          function ViewTab({ active, onClick, icon: Icon, children }) {
+          return (
+          <button
+          onClick={onClick}
+          className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition ${
+          active ? "bg-[#00d4ff] text-[#0a0e14]" : "bg-white border border-slate-200 text-slate-600 hover:border-[#00d4ff]/40"
+          }`}
+          >
+          <Icon className="w-4 h-4" />
+          {children}
+          </button>
+          );
+          }

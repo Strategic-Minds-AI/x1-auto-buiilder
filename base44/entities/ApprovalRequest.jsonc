@@ -2,98 +2,107 @@
   "name": "ApprovalRequest",
   "type": "object",
   "properties": {
-    "project_id": {
-      "type": "string"
+    "request_id": {
+      "type": "string",
+      "description": "Unique approval request identifier (e.g. AR-001)"
     },
-    "job_id": {
-      "type": "string"
+    "pipeline_run_id": {
+      "type": "string",
+      "description": "Linked PipelineRun ID"
     },
-    "approval_type": {
+    "work_packet_id": {
+      "type": "string",
+      "description": "Linked WorkPacket ID requiring approval"
+    },
+    "action_class": {
       "type": "string",
       "enum": [
-        "design_choice",
-        "strategy_choice",
-        "release",
-        "publishing",
-        "provisioning",
-        "domain",
-        "spending"
-      ]
+        "PRODUCTION_RELEASE",
+        "BRANCH_MERGE",
+        "DB_CHANGE",
+        "SECRET_ROTATION",
+        "DNS_CHANGE",
+        "PAYMENT_SPEND",
+        "LIVE_COMMUNICATION",
+        "DESTRUCTIVE_ACTION",
+        "PERMISSION_ESCALATION"
+      ],
+      "description": "What class of protected action requires approval"
+    },
+    "scope": {
+      "type": "string",
+      "description": "Specific scope of the approval (e.g. 'Deploy to production', 'Merge to main')"
     },
     "description": {
       "type": "string",
-      "maxLength": 1000
-    },
-    "options": {
-      "type": "array",
-      "items": {
-        "type": "object"
-      }
-    },
-    "selected_option": {
-      "type": "string"
+      "description": "Detailed description of what is being approved"
     },
     "status": {
       "type": "string",
       "enum": [
-        "pending",
-        "approved",
-        "rejected",
-        "expired"
+        "PENDING",
+        "APPROVED",
+        "REJECTED",
+        "EXPIRED"
       ],
-      "default": "pending"
+      "default": "PENDING"
+    },
+    "requested_by": {
+      "type": "string",
+      "description": "Agent/system that requested the approval"
     },
     "approved_by": {
-      "type": "string"
+      "type": "string",
+      "description": "User who approved/rejected"
     },
-    "approved_at": {
+    "approval_reason": {
+      "type": "string",
+      "description": "Reason for approval or rejection"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this approval request expires if not acted on"
+    },
+    "rollback_ref": {
+      "type": "string",
+      "description": "Reference to rollback plan if approved action fails"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resolved_at": {
       "type": "string",
       "format": "date-time"
     }
   },
   "required": [
-    "project_id",
-    "approval_type"
+    "request_id",
+    "action_class",
+    "scope",
+    "status"
   ],
   "rls": {
     "read": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
+      "user_condition": {
+        "role": "admin"
+      }
     },
     "create": {
-      "created_by_id": "{{user.id}}"
+      "user_condition": {
+        "role": "admin"
+      }
     },
     "update": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
+      "user_condition": {
+        "role": "admin"
+      }
     },
     "delete": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
+      "user_condition": {
+        "role": "admin"
+      }
     }
   }
 }
