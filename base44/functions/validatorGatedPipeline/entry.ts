@@ -7,21 +7,27 @@ import {
   validateHumanQuality,
   validateRelease,
 } from '../../shared/pipelineValidators.js';
+import {
+  fixResearch,
+  fixContent,
+  fixCompliance,
+  fixUnresolved,
+  fixHumanQuality,
+  fixRelease,
+} from '../../shared/pipelineFixers.js';
 
-// Validator-Gated Pipeline — the full build with INDEPENDENT validators between every stage.
-// Each validator is a fresh LLM call that judges the content cold, without sharing state
-// with the stage that produced it. If any validator fails, the pipeline GATES (stops) and
-// reports the blocker — no stage runs on top of unvalidated work.
+// Validator-Gated Pipeline with MANDATORY auto-fix.
+// Every validator gate is wrapped in a fix-loop: if the gate fails, the corresponding
+// fixer runs IMMEDIATELY, then the validator re-checks. The pipeline only stops if the
+// fixer cannot resolve the block after maxRepairLoops attempts.
 //
-// Stages:
-//   1. RESEARCH        → Validator 1: Research Quality Gate
-//   2. GENERATE        → Validator 2: Content Completeness Gate
-//   3. COMPLIANCE      → Validator 3: Google Compliance Gate
-//   4. AUTO_FIX        → Validator 4: Fix Verification Gate
-//   5. QA              → Validator 5: Human Quality Gate
-//   6. DEPLOY          → Validator 6: Final Release Gate
-//
-// Can run with generateParams (new project) or projectId (existing project).
+// Stages + Gates + Fixers:
+//   1. RESEARCH    → Gate: Research Quality    → Fixer: Research Repair
+//   2. GENERATE    → Gate: Content Completeness → Fixer: Content Repair
+//   3. COMPLIANCE  → Gate: Google Compliance    → Fixer: Compliance Repair
+//   4. AUTO_FIX    → Gate: Fix Verification     → Fixer: Unresolved Repair
+//   5. QA          → Gate: Human Quality        → Fixer: Human Quality Repair
+//   6. DEPLOY      → Gate: Final Release        → Fixer: Release Repair
 
 export default async function(req: Request): Promise<Response> {
   try {
@@ -41,7 +47,7 @@ export default async function(req: Request): Promise<Response> {
     const pipeline: any = {
       started_at: new Date().toISOString(),
       stages: [],
-      validators: [],
+      gates: [],
       gated: false,
       gate_reason: null,
       success: false,
@@ -72,7 +78,6 @@ export default async function(req: Request): Promise<Response> {
         const genRes = await base44.functions.invoke('generateWebsite', generateParams);
         content = genRes.data?.content;
         research = genRes.data?.businessResearch;
-        industry = genRes.data?.businessResearch?.businessName || industry;
         pipeline.stages.push({ stage: 'research', status: 'fresh_generation', ok: !!research });
 
         if (content) {
@@ -95,14 +100,28 @@ export default async function(req: Request): Promise<Response> {
       pipeline.stages.push({ stage: 'research', status: 'failed', error: err.message });
     }
 
-    // ── VALIDATOR 1: Research Quality Gate ──
+    // ── GATE 1: Research Quality (with fixer) ──
     if (research) {
-      const v1 = await validateResearch(base44, research, industry, businessName);
-      pipeline.validators.push({ gate: 'research_quality', ...v1 });
-      if (v1.verdict === 'fail') {
+      const gate1 = await runGateWithFix({
+        base44,
+        gateName: 'research_quality',
+        validate: () => validateResearch(base44, research, industry, businessName),
+        fix: (v) => {
+          const fixed = fixResearch(base44, research, v.gaps, industry, businessName, businessWebsite);
+          return fixed.then(r => ({ content: r.research, summary: r.summary }));
+        },
+        onContentUpdate: (newResearch) => { research = newResearch; },
+        maxRepairLoops,
+      });
+      pipeline.gates.push(gate1);
+      if (gate1.gated) {
         pipeline.gated = true;
-        pipeline.gate_reason = `Research Quality Gate FAILED: ${v1.summary}`;
+        pipeline.gate_reason = gate1.gate_reason;
         return finalizePipeline(pipeline);
+      }
+      // Persist enriched research
+      if (pipeline.project_id && research) {
+        await base44.entities.WebsiteProject.update(pipeline.project_id, { business_research: research });
       }
     }
 
@@ -111,36 +130,29 @@ export default async function(req: Request): Promise<Response> {
       return finalizePipeline(pipeline);
     }
 
-    // ═══ STAGE 2: GENERATE (content already produced in stage 1) ═══
+    // ═══ STAGE 2: GENERATE ════════════════════════════════════════
     pipeline.stages.push({ stage: 'generate', status: 'complete', ok: !!content });
 
-    // ── VALIDATOR 2: Content Completeness Gate ──
-    const v2 = await validateContentCompleteness(base44, content, industry, businessName);
-    pipeline.validators.push({ gate: 'content_completeness', ...v2 });
-    if (v2.verdict === 'fail') {
-      // Try one repair loop: regenerate the missing sections
-      let repairAttempts = 0;
-      while (v2.verdict === 'fail' && repairAttempts < maxRepairLoops) {
-        repairAttempts++;
-        try {
-          const fixRes = await base44.functions.invoke('qaAgent', { projectId: pipeline.project_id, content });
-          if (pipeline.project_id) {
-            const refreshed = await base44.entities.WebsiteProject.get(pipeline.project_id);
-            if (refreshed?.content) content = refreshed.content;
-          }
-          const recheck = await validateContentCompleteness(base44, content, industry, businessName);
-          pipeline.validators.push({ gate: `content_completeness_recheck_${repairAttempts}`, ...recheck });
-          if (recheck.verdict === 'pass') break;
-        } catch { break; }
-      }
-      if (v2.verdict === 'fail') {
-        const lastCheck = pipeline.validators.filter(v => v.gate?.startsWith('content_completeness')).pop();
-        if (lastCheck && lastCheck.verdict === 'fail') {
-          pipeline.gated = true;
-          pipeline.gate_reason = `Content Completeness Gate FAILED after ${maxRepairLoops} repair loops: ${lastCheck.summary}`;
-          return finalizePipeline(pipeline);
+    // ── GATE 2: Content Completeness (with fixer) ──
+    const gate2 = await runGateWithFix({
+      base44,
+      gateName: 'content_completeness',
+      validate: () => validateContentCompleteness(base44, content, industry, businessName),
+      fix: (v) => fixContent(base44, content, v.issues || v.missing_sections || [], industry, businessName)
+        .then(r => ({ content: r.content, summary: r.summary })),
+      onContentUpdate: (newContent) => {
+        content = newContent;
+        if (pipeline.project_id) {
+          base44.entities.WebsiteProject.update(pipeline.project_id, { content }).catch(() => {});
         }
-      }
+      },
+      maxRepairLoops,
+    });
+    pipeline.gates.push(gate2);
+    if (gate2.gated) {
+      pipeline.gated = true;
+      pipeline.gate_reason = gate2.gate_reason;
+      return finalizePipeline(pipeline);
     }
 
     // ═══ STAGE 3: COMPLIANCE CHECK ═════════════════════════════════
@@ -153,12 +165,25 @@ export default async function(req: Request): Promise<Response> {
       pipeline.stages.push({ stage: 'compliance', status: 'failed', error: err.message });
     }
 
-    // ── VALIDATOR 3: Google Compliance Gate ──
-    const v3 = await validateGoogleCompliance(base44, content, industry, businessName);
-    pipeline.validators.push({ gate: 'google_compliance', ...v3 });
-    if (v3.verdict === 'fail') {
+    // ── GATE 3: Google Compliance (with fixer) ──
+    const gate3 = await runGateWithFix({
+      base44,
+      gateName: 'google_compliance',
+      validate: () => validateGoogleCompliance(base44, content, industry, businessName),
+      fix: (v) => fixCompliance(base44, content, v.critical_issues || [], industry, businessName)
+        .then(r => ({ content: r.content, summary: r.summary })),
+      onContentUpdate: (newContent) => {
+        content = newContent;
+        if (pipeline.project_id) {
+          base44.entities.WebsiteProject.update(pipeline.project_id, { content }).catch(() => {});
+        }
+      },
+      maxRepairLoops,
+    });
+    pipeline.gates.push(gate3);
+    if (gate3.gated) {
       pipeline.gated = true;
-      pipeline.gate_reason = `Google Compliance Gate FAILED: ${v3.summary}`;
+      pipeline.gate_reason = gate3.gate_reason;
       return finalizePipeline(pipeline);
     }
 
@@ -178,18 +203,31 @@ export default async function(req: Request): Promise<Response> {
       pipeline.stages.push({ stage: 'auto_fix', status: 'skipped', reason: 'no compliance issues' });
     }
 
-    // ── VALIDATOR 4: Fix Verification Gate ──
+    // ── GATE 4: Fix Verification (with fixer) ──
     if (complianceIssues.length > 0) {
-      const v4 = await validateFixes(base44, content, complianceIssues, industry, businessName);
-      pipeline.validators.push({ gate: 'fix_verification', ...v4 });
-      if (v4.verdict === 'fail') {
+      const gate4 = await runGateWithFix({
+        base44,
+        gateName: 'fix_verification',
+        validate: () => validateFixes(base44, content, complianceIssues, industry, businessName),
+        fix: (v) => fixUnresolved(base44, content, v.unresolved_issues || [], industry, businessName)
+          .then(r => ({ content: r.content, summary: r.summary })),
+        onContentUpdate: (newContent) => {
+          content = newContent;
+          if (pipeline.project_id) {
+            base44.entities.WebsiteProject.update(pipeline.project_id, { content }).catch(() => {});
+          }
+        },
+        maxRepairLoops,
+      });
+      pipeline.gates.push(gate4);
+      if (gate4.gated) {
         pipeline.gated = true;
-        pipeline.gate_reason = `Fix Verification Gate FAILED: ${v4.summary}`;
+        pipeline.gate_reason = gate4.gate_reason;
         return finalizePipeline(pipeline);
       }
     }
 
-    // ═══ STAGE 5: QA (final polish) ════════════════════════════════
+    // ═══ STAGE 5: QA ══════════════════════════════════════════════
     try {
       const qaRes = await base44.functions.invoke('qaAgent', { projectId: pipeline.project_id, content });
       if (pipeline.project_id) {
@@ -201,12 +239,25 @@ export default async function(req: Request): Promise<Response> {
       pipeline.stages.push({ stage: 'qa', status: 'failed', error: err.message });
     }
 
-    // ── VALIDATOR 5: Human Quality Gate ──
-    const v5 = await validateHumanQuality(base44, content, industry, businessName);
-    pipeline.validators.push({ gate: 'human_quality', ...v5 });
-    if (v5.verdict === 'fail') {
+    // ── GATE 5: Human Quality (with fixer) ──
+    const gate5 = await runGateWithFix({
+      base44,
+      gateName: 'human_quality',
+      validate: () => validateHumanQuality(base44, content, industry, businessName),
+      fix: (v) => fixHumanQuality(base44, content, v.critical_issues || [], industry, businessName)
+        .then(r => ({ content: r.content, summary: r.summary })),
+      onContentUpdate: (newContent) => {
+        content = newContent;
+        if (pipeline.project_id) {
+          base44.entities.WebsiteProject.update(pipeline.project_id, { content }).catch(() => {});
+        }
+      },
+      maxRepairLoops,
+    });
+    pipeline.gates.push(gate5);
+    if (gate5.gated) {
       pipeline.gated = true;
-      pipeline.gate_reason = `Human Quality Gate FAILED: ${v5.summary}`;
+      pipeline.gate_reason = gate5.gate_reason;
       return finalizePipeline(pipeline);
     }
 
@@ -231,28 +282,98 @@ export default async function(req: Request): Promise<Response> {
       pipeline.stages.push({ stage: 'deploy', status: 'skipped' });
     }
 
-    // ── VALIDATOR 6: Final Release Gate ──
-    const v6 = await validateRelease(base44, content, deployUrl, industry, businessName);
-    pipeline.validators.push({ gate: 'final_release', ...v6 });
-    if (v6.verdict === 'fail') {
+    // ── GATE 6: Final Release (with fixer) ──
+    const gate6 = await runGateWithFix({
+      base44,
+      gateName: 'final_release',
+      validate: () => validateRelease(base44, content, deployUrl, industry, businessName),
+      fix: (v) => fixRelease(base44, content, v.critical_issues || [], industry, businessName)
+        .then(r => ({ content: r.content, summary: r.summary })),
+      onContentUpdate: (newContent) => {
+        content = newContent;
+        if (pipeline.project_id) {
+          base44.entities.WebsiteProject.update(pipeline.project_id, { content }).catch(() => {});
+        }
+      },
+      maxRepairLoops,
+    });
+    pipeline.gates.push(gate6);
+    if (gate6.gated) {
       pipeline.gated = true;
-      pipeline.gate_reason = `Final Release Gate FAILED: ${v6.summary}`;
+      pipeline.gate_reason = gate6.gate_reason;
       return finalizePipeline(pipeline);
     }
 
     pipeline.success = true;
-    pipeline.final_verdict = v6.verdict;
+    pipeline.final_verdict = gate6.verdict;
     return finalizePipeline(pipeline);
   } catch (error: any) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 }
 
+// ── Gate + Fix loop helper ──────────────────────────────────────
+// Runs the validator. If it fails, runs the fixer, then re-validates.
+// Repeats up to maxRepairLoops times. Only gates if the fixer can't resolve it.
+async function runGateWithFix({ base44, gateName, validate, fix, onContentUpdate, maxRepairLoops }: any): Promise<any> {
+  const attempts: any[] = [];
+  let currentContent: any = null;
+
+  for (let attempt = 0; attempt <= maxRepairLoops; attempt++) {
+    const verdict = await validate();
+    attempts.push({ attempt, verdict: verdict.verdict, score: verdict.score || verdict.overall_score, summary: verdict.summary });
+
+    if (verdict.verdict === 'pass' || verdict.verdict === 'conditional_pass') {
+      return {
+        gate: gateName,
+        verdict: verdict.verdict,
+        score: verdict.score || verdict.overall_score,
+        summary: verdict.summary,
+        attempts,
+        fix_runs: attempt,
+        gated: false,
+      };
+    }
+
+    // Gate failed — run the fixer IMMEDIATELY (unless this was the last allowed attempt)
+    if (attempt < maxRepairLoops) {
+      try {
+        const fixResult = await fix(verdict);
+        if (fixResult?.content) {
+          currentContent = fixResult.content;
+          onContentUpdate(fixResult.content);
+          attempts[attempt].fix_applied = fixResult.summary;
+        } else {
+          attempts[attempt].fix_failed = 'fixer returned no content';
+          break;
+        }
+      } catch (err: any) {
+        attempts[attempt].fix_failed = err.message;
+        break;
+      }
+    }
+  }
+
+  // All repair loops exhausted — gate
+  const lastAttempt = attempts[attempts.length - 1];
+  return {
+    gate: gateName,
+    verdict: 'fail',
+    score: lastAttempt?.score || 0,
+    summary: lastAttempt?.summary || 'Gate failed after all repair attempts',
+    attempts,
+    fix_runs: maxRepairLoops,
+    gated: true,
+    gate_reason: `${gateName} FAILED after ${maxRepairLoops} fix attempts: ${lastAttempt?.summary || 'unresolved'}`,
+  };
+}
+
 function finalizePipeline(pipeline: any): Response {
   pipeline.completed_at = new Date().toISOString();
   pipeline.duration_ms = Date.parse(pipeline.completed_at) - Date.parse(pipeline.started_at);
   pipeline.stages_completed = pipeline.stages.filter((s: any) => s.status === 'complete' || s.status === 'skipped').length;
-  pipeline.validators_passed = pipeline.validators.filter((v: any) => v.verdict === 'pass' || v.verdict === 'conditional_pass').length;
-  pipeline.validators_total = pipeline.validators.length;
+  pipeline.gates_passed = pipeline.gates.filter((g: any) => !g.gated).length;
+  pipeline.gates_total = pipeline.gates.length;
+  pipeline.total_fix_runs = pipeline.gates.reduce((sum: number, g: any) => sum + (g.fix_runs || 0), 0);
   return Response.json(pipeline);
 }

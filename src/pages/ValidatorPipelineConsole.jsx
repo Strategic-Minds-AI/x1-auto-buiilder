@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { Shield, CheckCircle2, XCircle, AlertTriangle, Loader2, ArrowRight, Play } from "lucide-react";
+import { Shield, CheckCircle2, XCircle, AlertTriangle, Loader2, ArrowRight, Play, Wrench } from "lucide-react";
 
 const GATE_STYLES = {
   pass: { icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", label: "PASS" },
@@ -39,7 +39,7 @@ export default function ValidatorPipelineConsole() {
   };
 
   const stages = result?.stages || [];
-  const validators = result?.validators || [];
+  const gates = result?.gates || [];
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">
@@ -115,7 +115,7 @@ export default function ValidatorPipelineConsole() {
             <div>
               <div className="font-bold text-emerald-900 text-sm">Pipeline Complete — {result.final_verdict?.toUpperCase()}</div>
               <div className="text-emerald-700 text-sm">
-                {result.validators_passed}/{result.validators_total} validators passed · {result.stages_completed} stages completed · {(result.duration_ms / 1000).toFixed(1)}s
+                {result.gates_passed}/{result.gates_total} gates passed · {result.total_fix_runs} fix runs · {result.stages_completed} stages · {(result.duration_ms / 1000).toFixed(1)}s
               </div>
             </div>
           </div>
@@ -128,7 +128,7 @@ export default function ValidatorPipelineConsole() {
             <div className="space-y-1">
               {STAGE_LABELS.map((s, i) => {
                 const stageData = stages.find(st => st.stage === s.stage);
-                const validatorData = validators.find(v => v.gate === s.gate);
+                const validatorData = gates.find(v => v.gate === s.gate);
                 const stageStatus = stageData?.status;
                 const gateVerdict = validatorData?.verdict;
 
@@ -180,17 +180,35 @@ export default function ValidatorPipelineConsole() {
         )}
 
         {/* Validator details */}
-        {validators.length > 0 && (
+        {gates.length > 0 && (
           <div className="bg-white rounded-2xl border border-slate-200 p-6">
             <h2 className="text-sm font-bold text-slate-700 mb-4 uppercase tracking-wide">Independent Validator Reports</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {validators.map((v, i) => (
-                <div key={i} className="border border-slate-200 rounded-xl p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-xs font-bold text-slate-600 uppercase">{v.gate?.replace(/_/g, " ")}</div>
-                    <GateBadge verdict={v.verdict} score={v.score || v.overall_score} />
+            {gates.map((v, i) => (
+              <div key={i} className="border border-slate-200 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-xs font-bold text-slate-600 uppercase">{v.gate?.replace(/_/g, " ")}</div>
+                  <GateBadge verdict={v.verdict} score={v.score || v.overall_score} />
+                </div>
+                <div className="text-sm text-slate-700 mb-2">{v.summary}</div>
+                {v.fix_runs > 0 && (
+                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-[#00d4ff]/10 text-[#0066ff] mb-2">
+                    <Wrench className="w-3 h-3" />
+                    {v.fix_runs} fix {v.fix_runs === 1 ? "run" : "runs"} {v.gated ? "(unresolved)" : "(resolved)"}
                   </div>
-                  <div className="text-sm text-slate-700 mb-2">{v.summary}</div>
+                )}
+                {v.attempts?.length > 1 && (
+                  <div className="mt-2 space-y-1">
+                    {v.attempts.map((a, j) => (
+                      <div key={j} className="text-xs text-slate-500 flex items-center gap-2">
+                        <span className="font-mono text-slate-400">#{a.attempt}</span>
+                        <span className={a.verdict === "pass" || a.verdict === "conditional_pass" ? "text-emerald-600" : "text-red-600"}>{a.verdict}</span>
+                        {a.score != null && <span>· {Math.round(a.score)}</span>}
+                        {a.fix_applied && <span className="text-[#0066ff] truncate">→ fixed</span>}
+                      </div>
+                    ))}
+                  </div>
+                )}
                   {v.critical_issues?.length > 0 && (
                     <div className="mt-2">
                       <div className="text-xs font-semibold text-red-600 mb-1">Critical Issues:</div>
