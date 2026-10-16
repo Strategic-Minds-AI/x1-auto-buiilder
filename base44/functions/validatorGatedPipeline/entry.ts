@@ -15,6 +15,14 @@ import {
   fixHumanQuality,
   fixRelease,
 } from '../../shared/pipelineFixers.js';
+import {
+  isConfigured as cloudBrowserConfigured,
+  createSession,
+  navigateTo,
+  takeScreenshot,
+  runQaScript,
+  closeSession,
+} from '../../shared/cloudBrowserEngine.ts';
 
 // Validator-Gated Pipeline with MANDATORY auto-fix.
 // Every validator gate is wrapped in a fix-loop: if the gate fails, the corresponding
@@ -326,6 +334,96 @@ export default async function(req: Request): Promise<Response> {
       }
     } else {
       pipeline.stages.push({ stage: 'deploy', status: 'skipped' });
+    }
+
+    // ═══ STAGE 6.5: CLOUD BROWSER TEST ═════════════════════════════
+    // Renders the deployed site in a real browser, captures a screenshot,
+    // and runs QA checks before the final release gate. Only runs when a
+    // deploy URL exists and the cloud browser engine is configured.
+    let browserGatePassed = true;
+    let browserTestResult: any = null;
+    if (deployUrl && cloudBrowserConfigured()) {
+      let sessionId: string | null = null;
+      try {
+        const session = await createSession({ persistState: false });
+        sessionId = session.sessionId;
+
+        await navigateTo(sessionId, deployUrl, { waitUntil: 'networkidle' });
+        const screenshot = await takeScreenshot(sessionId, { fullPage: true });
+
+        const qaResult = await runQaScript(sessionId, {
+          steps: [
+            { action: 'navigate', url: deployUrl, expect: 'page loads without error' },
+            { action: 'check', selector: 'h1', expect: 'hero heading is visible' },
+            { action: 'check', selector: 'a[href*="contact"], a[href*="tel:"], button', expect: 'at least one CTA is present' },
+            { action: 'check', selector: 'body', expect: 'page body is not blank' },
+            { action: 'screenshot', expect: 'full page screenshot captured' },
+          ],
+        });
+
+        browserTestResult = {
+          screenshot_url: screenshot?.url || null,
+          qa_passed: qaResult.passed,
+          qa_results: qaResult.results,
+          qa_errors: qaResult.errors,
+          qa_screenshots: qaResult.screenshots,
+        };
+
+        const criticalErrors = (qaResult.errors || []).filter((e: string) =>
+          e.toLowerCase().includes('not found') || e.toLowerCase().includes('failed') || e.toLowerCase().includes('error')
+        );
+
+        browserGatePassed = qaResult.passed && criticalErrors.length === 0;
+
+        pipeline.stages.push({
+          stage: 'cloud_browser_test',
+          status: browserGatePassed ? 'complete' : 'failed',
+          screenshot_url: screenshot?.url || null,
+          qa_passed: qaResult.passed,
+          error_count: criticalErrors.length,
+        });
+
+        // Persist screenshot to the project
+        if (pipeline.project_id && screenshot?.url) {
+          await base44.entities.WebsiteProject.update(pipeline.project_id, {
+            deploy_url: deployUrl,
+          }).catch(() => {});
+        }
+      } catch (err: any) {
+        browserTestResult = { error: err.message };
+        browserGatePassed = false;
+        pipeline.stages.push({ stage: 'cloud_browser_test', status: 'failed', error: err.message });
+      } finally {
+        if (sessionId) {
+          await closeSession(sessionId).catch(() => {});
+        }
+      }
+    } else if (deployUrl && !cloudBrowserConfigured()) {
+      pipeline.stages.push({ stage: 'cloud_browser_test', status: 'skipped', reason: 'cloud browser engine not configured' });
+    } else {
+      pipeline.stages.push({ stage: 'cloud_browser_test', status: 'skipped', reason: 'no deploy URL' });
+    }
+
+    // ── GATE 5.7: Cloud Browser Render ──
+    if (deployUrl && cloudBrowserConfigured()) {
+      pipeline.gates.push({
+        gate: 'cloud_browser_render',
+        verdict: browserGatePassed ? 'pass' : 'fail',
+        score: browserGatePassed ? 100 : 0,
+        summary: browserGatePassed
+          ? 'Site rendered successfully in live browser — all QA checks passed'
+          : `Browser render test failed: ${(browserTestResult?.qa_errors || [browserTestResult?.error || 'unknown']).join('; ')}`,
+        screenshot_url: browserTestResult?.screenshot_url || null,
+        gated: !browserGatePassed,
+        gate_reason: !browserGatePassed
+          ? `cloud_browser_render FAILED — site did not render correctly in live browser`
+          : null,
+      });
+      if (!browserGatePassed) {
+        pipeline.gated = true;
+        pipeline.gate_reason = `cloud_browser_render FAILED — site did not render correctly in live browser`;
+        return finalizePipeline(pipeline);
+      }
     }
 
     // ── GATE 6: Final Release (with fixer) ──
