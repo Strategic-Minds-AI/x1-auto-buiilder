@@ -1,0 +1,110 @@
+{
+  "name": "PlatformPack",
+  "type": "object",
+  "properties": {
+    "platform_id": {
+      "type": "string",
+      "description": "Stable ID from platformRegistry (e.g. premium-marketing-site)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display label"
+    },
+    "category": {
+      "type": "string",
+      "description": "Grouping category (Marketing, Funnels, Applications, etc.)"
+    },
+    "description": {
+      "type": "string",
+      "description": "What this platform produces"
+    },
+    "surfaces": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Frontend surfaces required"
+    },
+    "backend_components": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Server-side capabilities needed"
+    },
+    "agents": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Agent types typically involved"
+    },
+    "integrations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Connectors commonly needed"
+    },
+    "complexity": {
+      "type": "number",
+      "description": "1-5 implementation complexity"
+    },
+    "autonomy_potential": {
+      "type": "number",
+      "description": "1-5 how autonomously this can be generated"
+    },
+    "monetization_model": {
+      "type": "string",
+      "description": "How this platform typically makes money"
+    },
+    "recommended_industries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Industry family stable_ids that commonly use this platform"
+    },
+    "template_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many templates exist for this platform"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "archived"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "platform_id",
+    "name",
+    "category",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

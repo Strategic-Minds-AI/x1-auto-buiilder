@@ -117,6 +117,7 @@ export const EXTERNAL_MODULES = [
   { to: "/system-docs", icon: FileText, label: "System Document Generator" },
   { to: "/template-factory", icon: Factory, label: "Template Factory" },
   { to: "/intelligence-console", icon: Brain, label: "Intelligence Console" },
+  { to: "/industry-library", icon: Layers, label: "Industry Library" },
 ];
 
 export default function PortalShell({ activeTab, onTabChange, onNew, title, children }) {

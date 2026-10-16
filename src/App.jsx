@@ -79,6 +79,7 @@ import SystemDocumentGenerator from '@/pages/SystemDocumentGenerator';
 import TemplateFactoryConsole from '@/pages/TemplateFactoryConsole';
 import IntelligenceConsole from '@/pages/IntelligenceConsole';
 import MockupLibrary from '@/pages/MockupLibrary';
+import IndustryLibrary from '@/pages/IndustryLibrary';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
 function App() {
@@ -164,6 +165,7 @@ function App() {
                 <Route path="/template-factory" element={<TemplateFactoryConsole />} />
                 <Route path="/intelligence-console" element={<IntelligenceConsole />} />
                 <Route path="/mockup-library" element={<MockupLibrary />} />
+                <Route path="/industry-library" element={<IndustryLibrary />} />
               </Route>
             </Route>
             <Route path="*" element={<PageNotFound />} />

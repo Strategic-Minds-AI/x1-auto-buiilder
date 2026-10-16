@@ -1,0 +1,106 @@
+{
+  "name": "IndustryFamily",
+  "type": "object",
+  "properties": {
+    "family_id": {
+      "type": "string",
+      "description": "Stable ID from industryRegistry (e.g. home-services)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display label"
+    },
+    "sub_industries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "All sub-industries/niches in this family"
+    },
+    "urgency_score": {
+      "type": "number",
+      "description": "1-5 how time-sensitive leads typically are"
+    },
+    "lead_value": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "premium"
+      ],
+      "description": "Average lead value range"
+    },
+    "buyer_density": {
+      "type": "number",
+      "description": "1-5 how concentrated the buyer pool is"
+    },
+    "digital_maturity": {
+      "type": "number",
+      "description": "1-5 how sophisticated the typical web presence is"
+    },
+    "recommended_platforms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Platform pack stable_ids from platformRegistry"
+    },
+    "visual_dna_hints": {
+      "type": "object",
+      "description": "Art direction guidance for the TemplateGenome engine"
+    },
+    "template_genome_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many TemplateGenomes exist for this family"
+    },
+    "canary_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "pending",
+        "validated",
+        "scaling",
+        "deployed"
+      ],
+      "default": "none",
+      "description": "Canary deployment status for this family"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "archived"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "family_id",
+    "name",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
