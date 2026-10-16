@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "GPT_BUILDER_FACTORY_PRIME_PLUGIN_RELEASE",
+  "project_id": "gpt-builder-factory-prime",
+  "released_at": "2026-10-16T21:00:00Z",
+  "plugin": {
+    "plugin_id": "Plugin_66426e9e71848191b8f0bd50a97f2c52",
+    "name": "gpt-builder-factory",
+    "display_name": "GPT Builder Factory PRIME",
+    "version": "2.0.0",
+    "release_id": "pluginrel_6ad292fc429c8191bedc12a55679867a",
+    "workspace_id": "bf53eeea-fb92-4f5b-890f-29bc840abeec",
+    "discoverability": "LISTED",
+    "scope": "WORKSPACE"
+  },
+  "phase0_canary": {
+    "verdict": "PASS_WITH_WARNINGS",
+    "source_sha": "edc9069820e8fcf8e1f5a6442eba302d9ee0352c",
+    "evidence_receipt_id": "rcpt_gptbf_phase0_1_alignment_20261016",
+    "qa_report_id": "6ad290368b782ffa08cfc069",
+    "validation_result_id": "6ad29043e440d5ed8d697972"
+  },
+  "packages": {
+    "skill_zip": {
+      "sha256": "2f42b3d98b22d1c75a74e03e4ddb38e75cba2c55d12ef1152f23dc3eb9f9cd1b",
+      "size_bytes": 32394,
+      "drive_id": "1j8dyl2hVE-nw-GDJQJYdQ8am7CPYGaag",
+      "drive_url": "https://drive.google.com/file/d/1j8dyl2hVE-nw-GDJQJYdQ8am7CPYGaag/view?usp=drivesdk"
+    },
+    "plugin_zip": {
+      "sha256": "7e07a0351a5935aebdeee6d014665009da04dcb513f9474f69ec6e7fe0cf1bf6",
+      "size_bytes": 38711,
+      "drive_id": "1GmxWQImCc95ZEneRPd3yNDrynT1CdX3Z",
+      "drive_url": "https://drive.google.com/file/d/1GmxWQImCc95ZEneRPd3yNDrynT1CdX3Z/view?usp=drivesdk"
+    }
+  },
+  "validation": {
+    "skill_validator": "PASS",
+    "alignment_manifest_positive_test": "PASS",
+    "alignment_manifest_negative_test": "EXPECTED_FAIL",
+    "project_packet_validator": "PASS",
+    "plugin_readback": "PASS",
+    "required_reference_files_present": true
+  },
+  "protected_actions": {
+    "production_release": false,
+    "protected_branch_merge": false,
+    "production_db_or_rls": false,
+    "secrets_or_oauth": false,
+    "dns_or_domains": false,
+    "permissions": false,
+    "spend": false,
+    "customer_outbound": false
+  },
+  "rollback": {
+    "plugin_release": "pluginrel_6ad1aa55552081918e315b1cc2bcf9cb",
+    "git_branch": "feature/gptbf-phase0-environment-alignment",
+    "note": "Restore previous plugin release if required; no production website or protected branch was changed."
+  }
+}
