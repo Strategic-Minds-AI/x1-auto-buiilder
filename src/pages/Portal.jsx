@@ -51,6 +51,7 @@ export default function Portal() {
   const [deploying, setDeploying] = useState(false);
   const [deployUrl, setDeployUrl] = useState(null);
   const [deployError, setDeployError] = useState(null);
+  const [pipelineResult, setPipelineResult] = useState(null);
   const [error, setError] = useState(null);
 
   const generate = async (formData) => {
@@ -139,6 +140,7 @@ export default function Portal() {
     setDeploying(false);
     setDeployUrl(null);
     setDeployError(null);
+    setPipelineResult(null);
     setError(null);
   };
 
@@ -147,11 +149,23 @@ export default function Portal() {
     setDeploying(true);
     setDeployError(null);
     setDeployUrl(null);
+    setPipelineResult(null);
     try {
-      const res = await base44.functions.invoke("deploySite", { projectId: savedId });
-      setDeployUrl(res.data.url);
+      const res = await base44.functions.invoke("validatorGatedPipeline", {
+        projectId: savedId,
+        skipDeploy: false,
+        maxRepairLoops: 3,
+      });
+      const pipeline = res.data || {};
+      setPipelineResult(pipeline);
+      if (pipeline.gated) {
+        setDeployError(pipeline.gate_reason || "Quality gates failed — site not deployed");
+      } else if (pipeline.success) {
+        const deployStage = pipeline.stages?.find((s) => s.stage === "deploy");
+        setDeployUrl(deployStage?.url || "");
+      }
     } catch (err) {
-      setDeployError(err.response?.data?.error || err.message || "Deploy failed");
+      setDeployError(err.response?.data?.error || err.message || "Pipeline failed");
     } finally {
       setDeploying(false);
     }
@@ -218,14 +232,44 @@ export default function Portal() {
                     disabled={deploying}
                     className="inline-flex items-center gap-2 rounded-full bg-[#00d4ff] px-6 py-3 text-sm font-bold text-[#0a0e14] hover:brightness-110 hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] transition disabled:opacity-60"
                   >
-                    {deploying ? <Loader2 className="w-4 h-4 animate-spin" /> : <Rocket className="w-4 h-4" />} Deploy to Vercel
+                    {deploying ? <Loader2 className="w-4 h-4 animate-spin" /> : <Rocket className="w-4 h-4" />} Run Quality Gates & Deploy
                   </button>
                   {deployError && (
-                    <p className="mt-3 text-left text-sm text-red-500">{deployError}</p>
+                    <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-left">
+                      <p className="text-sm font-semibold text-red-600 mb-1">Deployment Blocked</p>
+                      <p className="text-xs text-red-500">{deployError}</p>
+                    </div>
+                  )}
+                  {pipelineResult && (
+                    <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-left w-full">
+                      <p className="text-xs font-bold text-slate-700 mb-2">Quality Gate Results</p>
+                      <div className="space-y-1">
+                        {pipelineResult.gates?.map((g, i) => (
+                          <div key={i} className="flex items-center gap-2 text-xs">
+                            {g.gated ? (
+                              <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+                            ) : (
+                              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                            )}
+                            <span className="font-mono text-slate-500 shrink-0">{g.gate}</span>
+                            <span className="text-slate-400">→</span>
+                            <span className={`font-semibold ${g.gated ? "text-red-600" : "text-emerald-600"}`}>
+                              {g.gated ? "BLOCKED" : "PASS"}
+                              {g.score ? ` (${g.score})` : ""}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                      {pipelineResult.total_fix_runs > 0 && (
+                        <p className="text-[10px] text-slate-400 mt-2">
+                          {pipelineResult.total_fix_runs} auto-fix runs executed across gates
+                        </p>
+                      )}
+                    </div>
                   )}
                   {deployUrl && (
-                    <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-left">
-                      <p className="text-xs text-slate-400 mb-1">Live site deployed:</p>
+                    <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-left">
+                      <p className="text-xs text-emerald-600 mb-1 font-semibold">All gates passed — live site deployed:</p>
                       <a href={deployUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00d4ff] break-all hover:underline">
                         {deployUrl} <ExternalLink className="w-3.5 h-3.5 shrink-0" />
                       </a>
