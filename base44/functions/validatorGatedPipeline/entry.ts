@@ -447,11 +447,15 @@ export default async function(req: Request): Promise<Response> {
         pipeline.stages.push({ stage: 'cloud_browser_test', status: 'skipped', reason: browserTestResult.skip_reason });
       } else {
         browserGatePassed = browserTestResult.passed;
+        const m = browserTestResult.performance_metrics;
         pipeline.stages.push({
           stage: 'cloud_browser_test',
           status: browserTestResult.passed ? 'complete' : 'failed',
           screenshot_url: browserTestResult.screenshot_url,
           error_count: browserTestResult.qa_errors.length,
+          performance_metrics: m,
+          cwv_summary: m ? `LCP=${m.lcp_ms != null ? Math.round(m.lcp_ms) + 'ms' : 'n/a'} CLS=${m.cls ?? 'n/a'} INP=${m.inp_ms != null ? Math.round(m.inp_ms) + 'ms' : 'n/a'} DOM=${m.dom_node_count ?? 'n/a'} resources=${m.resource_count ?? 'n/a'}` : null,
+          test_log: browserTestResult.log || [],
         });
       }
     } else {
@@ -469,19 +473,30 @@ export default async function(req: Request): Promise<Response> {
       }
     }
 
-    // ── GATE 5.7: Cloud Browser Render ──
+    // ── GATE 5.7: Cloud Browser Render + Core Web Vitals ──
     if (deployUrl && !browserTestResult?.skipped) {
+      const m = browserTestResult?.performance_metrics;
+      const cwvBreaches: string[] = [];
+      if (m) {
+        if (m.lcp_ms != null && m.lcp_ms > 2500) cwvBreaches.push(`LCP ${Math.round(m.lcp_ms)}ms exceeds 2500ms budget`);
+        if (m.inp_ms != null && m.inp_ms > 200) cwvBreaches.push(`INP ${Math.round(m.inp_ms)}ms exceeds 200ms budget`);
+        if (m.cls != null && m.cls > 0.1) cwvBreaches.push(`CLS ${m.cls} exceeds 0.1 budget`);
+      }
+      const qaFailures = (browserTestResult?.qa_errors || [browserTestResult?.error || 'unknown']).filter(Boolean);
+      const failReasons = [...qaFailures, ...cwvBreaches];
       const browserGate = {
         gate: 'cloud_browser_render',
         verdict: browserGatePassed ? 'pass' : 'fail',
         score: browserGatePassed ? 100 : 0,
         summary: browserGatePassed
-          ? 'Site rendered successfully in live browser — all QA checks passed'
-          : `Browser render test failed: ${(browserTestResult?.qa_errors || [browserTestResult?.error || 'unknown']).join('; ')}`,
+          ? `Site rendered successfully — QA passed, Core Web Vitals within budget${m ? ` (LCP=${m.lcp_ms != null ? Math.round(m.lcp_ms) + 'ms' : 'n/a'}, CLS=${m.cls ?? 'n/a'}, INP=${m.inp_ms != null ? Math.round(m.inp_ms) + 'ms' : 'n/a'})` : ''}`
+          : `Browser test failed: ${failReasons.join('; ')}`,
         screenshot_url: browserTestResult?.screenshot_url || null,
+        performance_metrics: m || null,
+        test_log: browserTestResult?.log || [],
         gated: !browserGatePassed,
         gate_reason: !browserGatePassed
-          ? `cloud_browser_render FAILED — site did not render correctly in live browser`
+          ? `cloud_browser_render FAILED — ${failReasons.join('; ')}`
           : null,
       };
       pipeline.gates.push(browserGate);

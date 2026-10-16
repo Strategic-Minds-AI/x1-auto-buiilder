@@ -139,6 +139,67 @@ export async function runQaScript(sessionId: string, script: {
   }, 120000);
 }
 
+export async function evaluateScript(sessionId: string, expression: string): Promise<any> {
+  const result = await engineFetch(`/sessions/${sessionId}/evaluate`, {
+    method: "POST",
+    body: JSON.stringify({ expression }),
+  }, 30000);
+  return result?.value ?? result?.result ?? result;
+}
+
+export async function getPerformanceMetrics(sessionId: string): Promise<{
+  lcp_ms: number | null;
+  cls: number | null;
+  inp_ms: number | null;
+  ttfb_ms: number | null;
+  dom_load_ms: number | null;
+  page_load_ms: number | null;
+  dom_node_count: number | null;
+  resource_count: number | null;
+  transfer_size_kb: number | null;
+  raw: any;
+}> {
+  const expression = `(function(){
+    var nav = (performance.getEntriesByType && performance.getEntriesByType('navigation')[0]) || {};
+    var lcpEntries = (performance.getEntriesByType && performance.getEntriesByType('largestContentfulPaint')) || [];
+    var lcp = lcpEntries.length ? lcpEntries[lcpEntries.length - 1].startTime : null;
+    var clsEntries = (performance.getEntriesByType && performance.getEntriesByType('layoutShift')) || [];
+    var cls = clsEntries.reduce(function(s, e){ return s + (e.value || 0); }, 0);
+    var eventEntries = (performance.getEntriesByType && performance.getEntriesByType('event')) || [];
+    var inp = eventEntries.length ? Math.max.apply(null, eventEntries.map(function(e){ return e.duration; })) : null;
+    var resources = (performance.getEntriesByType && performance.getEntriesByType('resource')) || [];
+    var transfer = resources.reduce(function(s, r){ return s + (r.transferSize || 0); }, 0);
+    return {
+      lcp_ms: lcp,
+      cls: Math.round(cls * 10000) / 10000,
+      inp_ms: inp,
+      ttfb_ms: nav.responseStart || null,
+      dom_load_ms: nav.domContentLoadedEventEnd || null,
+      page_load_ms: nav.loadEventEnd || null,
+      dom_node_count: document.querySelectorAll('*').length,
+      resource_count: resources.length,
+      transfer_size_kb: Math.round(transfer / 1024)
+    };
+  })()`;
+  try {
+    const metrics = await evaluateScript(sessionId, expression);
+    return {
+      lcp_ms: metrics?.lcp_ms ?? null,
+      cls: metrics?.cls ?? null,
+      inp_ms: metrics?.inp_ms ?? null,
+      ttfb_ms: metrics?.ttfb_ms ?? null,
+      dom_load_ms: metrics?.dom_load_ms ?? null,
+      page_load_ms: metrics?.page_load_ms ?? null,
+      dom_node_count: metrics?.dom_node_count ?? null,
+      resource_count: metrics?.resource_count ?? null,
+      transfer_size_kb: metrics?.transfer_size_kb ?? null,
+      raw: metrics,
+    };
+  } catch (err) {
+    return { lcp_ms: null, cls: null, inp_ms: null, ttfb_ms: null, dom_load_ms: null, page_load_ms: null, dom_node_count: null, resource_count: null, transfer_size_kb: null, raw: { error: (err as Error).message } };
+  }
+}
+
 export async function closeSession(sessionId: string): Promise<any> {
   return engineFetch(`/sessions/${sessionId}`, { method: "DELETE" });
 }
