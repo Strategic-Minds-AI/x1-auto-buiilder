@@ -114,6 +114,7 @@ const EXTERNAL_MODULES = [
   { to: "/pipeline-dashboard", icon: Rocket, label: "Autonomous Pipeline" },
   { to: "/playwright-qa", icon: Monitor, label: "Playwright QA" },
   { to: "/system-docs", icon: FileText, label: "System Document Generator" },
+  { to: "/template-factory", icon: Factory, label: "Template Factory" },
 ];
 
 export default function PortalShell({ activeTab, onTabChange, onNew, title, children }) {

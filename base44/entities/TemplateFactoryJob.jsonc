@@ -1,0 +1,219 @@
+{
+  "name": "TemplateFactoryJob",
+  "type": "object",
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "description": "Unique job identifier (e.g. TF-001)"
+    },
+    "industry": {
+      "type": "string",
+      "description": "Target industry"
+    },
+    "subindustry": {
+      "type": "string",
+      "description": "Target subindustry or niche"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "single_industry",
+        "all_industries",
+        "custom"
+      ],
+      "default": "single_industry",
+      "description": "Scope of the factory run"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "discovering",
+        "benchmarking",
+        "capturing",
+        "reverse_engineering",
+        "architecting",
+        "engineering",
+        "storing",
+        "completed",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "current_phase": {
+      "type": "string",
+      "description": "Human-readable current phase label"
+    },
+    "progress_pct": {
+      "type": "number",
+      "default": 0,
+      "description": "0-100 completion percentage"
+    },
+    "discovered_sites": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "rank": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Sites discovered by the search phase"
+    },
+    "benchmark_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "overall_score": {
+            "type": "number"
+          },
+          "design_score": {
+            "type": "number"
+          },
+          "ux_score": {
+            "type": "number"
+          },
+          "conversion_score": {
+            "type": "number"
+          },
+          "content_score": {
+            "type": "number"
+          },
+          "strengths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "weaknesses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "screenshot_url": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Benchmarked sites with scores and analysis"
+    },
+    "reverse_engineered": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "design_system": {
+            "type": "object"
+          },
+          "component_patterns": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "layout_structure": {
+            "type": "object"
+          },
+          "content_patterns": {
+            "type": "object"
+          },
+          "color_palette": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "typography": {
+            "type": "object"
+          }
+        }
+      },
+      "description": "Reverse-engineered patterns from top sites"
+    },
+    "architecture": {
+      "type": "object",
+      "description": "Universal template architecture: {template_name, description, component_tree, layout_system, design_tokens, content_structure, variants}"
+    },
+    "template_output": {
+      "type": "object",
+      "description": "Generated template: {code, files, preview_data, documentation, blueprint}"
+    },
+    "template_id": {
+      "type": "string",
+      "description": "Linked SiteTemplate ID after storage"
+    },
+    "for_sale": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this template is listed for sale"
+    },
+    "price": {
+      "type": "number",
+      "description": "Sale price in USD if listed"
+    },
+    "quality_score": {
+      "type": "number",
+      "description": "0-100 overall quality score of the generated template"
+    },
+    "error": {
+      "type": "string",
+      "description": "Error message if failed"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "job_id",
+    "industry",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
