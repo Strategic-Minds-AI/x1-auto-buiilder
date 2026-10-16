@@ -4,7 +4,7 @@ import { skipTraceBusiness, benchmarkIndustry, contentSchema } from './websiteRe
 import { ultraCoreSchema, ultraSupportSchema, buildUltraPrompt } from './ultraContentSchema.js';
 import { getIndustryIntelligence } from './industryIntelligence.js';
 import { GOOGLE_COMPLIANCE_PROMPT, GOOGLE_RULES, DIFFERENTIATION_LAYERS, TECHNICAL_SEO_QA } from './digitalDominationIntelligence.js';
-import { buildRegistryContext, refineContentDraft, generateVisualPack } from './generationEnhancements.js';
+import { buildRegistryContext, auditContentDraft, refineContentDraft, generateVisualPack } from './generationEnhancements.js';
 
 const CONTENT_PROMPT = (industry, businessResearch, benchmark) =>
   'You are an elite website copywriter and content strategist. Generate ORIGINAL, high-converting website content for a "' + industry + '" business.\n\n' +
@@ -126,13 +126,19 @@ export async function buildWebsiteBlueprint(base44, params) {
     ]);
     const draftContent = { ...coreRes, ...supportRes };
 
-    // Pass 2: Refinement — polish specificity, remove generic copy, enforce SEO compliance
+    // Pass 2: Audit — check the draft for specific quality errors before refining
+    let auditIssues = [];
+    try {
+      auditIssues = await auditContentDraft(base44, draftContent, industry, businessResearch);
+    } catch { /* if audit fails, refinement still runs without targeted issues */ }
+
+    // Pass 3: Refinement — fix the audited issues + polish specificity, enforce SEO compliance
     let content = draftContent;
     try {
-      content = await refineContentDraft(base44, draftContent, industry, businessResearch, benchmark);
+      content = await refineContentDraft(base44, draftContent, industry, businessResearch, benchmark, auditIssues);
     } catch { /* fall back to draft if refinement fails */ }
 
-    // Pass 3: Generate a machine-testable VisualPack design token contract
+    // Pass 4: Generate a machine-testable VisualPack design token contract
     let visualPack = null;
     try {
       visualPack = await generateVisualPack(base44, content, industry);
@@ -144,7 +150,9 @@ export async function buildWebsiteBlueprint(base44, params) {
       content,
       visualPack,
       ultra: true,
-      passes: ['core+support', 'refinement', 'visualpack'],
+      passes: ['core+support', 'audit', 'refinement', 'visualpack'],
+      auditIssues,
+      auditIssueCount: auditIssues.length,
       intelligence: intelligence ? { hasIntelligence: true, industry: intelligence.designDirection?.tone || '' } : { hasIntelligence: false },
       registryMatched: !!registryContext,
     };

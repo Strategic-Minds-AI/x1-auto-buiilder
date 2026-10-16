@@ -61,11 +61,12 @@ ${heroArchetype ? `- Hero Archetype: ${heroArchetype.name} — ${heroArchetype.c
 Use this registry context to choose the right hero composition, trust architecture, and conversion pattern. Match the visual energy and palette tendency to the industry family.`;
 }
 
-// ── 2. MULTI-PASS REFINEMENT ───────────────────────────────────────
-// Takes the combined core + support content and runs a refinement pass
-// that polishes specificity, removes generic copy, and enforces SEO compliance.
-export async function refineContentDraft(base44, content, industry, businessResearch, benchmark) {
-  const refinementPrompt = `You are an elite content editor at a top-tier digital agency. You are reviewing a DRAFT website content blueprint for a "${industry}" business. Your job is to REFINE and ELEVATE it to ultra-premium quality.
+// ── 2a. QUALITY AUDIT ─────────────────────────────────────────────
+// Checks the initial draft for specific quality errors and returns a
+// structured issue list. This runs BEFORE refinement so the refinement
+// pass can target the exact problems instead of guessing.
+export async function auditContentDraft(base44, content, industry, businessResearch) {
+  const auditPrompt = `You are a strict QA auditor at a top-tier digital agency. Audit this DRAFT website content blueprint for a "${industry}" business and identify every quality defect.
 
 DRAFT CONTENT:
 ${JSON.stringify(content, null, 2)}
@@ -73,6 +74,72 @@ ${JSON.stringify(content, null, 2)}
 BUSINESS RESEARCH:
 ${JSON.stringify(businessResearch)}
 
+AUDIT CHECKLIST — flag each as an issue if it fails:
+1. GENERIC COPY: Any headline, subhead, or body text that is vague or could apply to any business (e.g. "Quality service you can trust").
+2. MISSING BENEFIT STATEMENTS: Any service that describes what you do without stating the customer benefit.
+3. WEAK TESTIMONIALS: Testimonials with no specific outcome, no real-sounding name, or that feel fabricated/generic.
+4. THIN FAQs: FAQs that are not questions customers actually ask, or answers shorter than 2 sentences.
+5. VAGUE STATS: Stats using "many", "lots", "numerous" instead of specific numbers.
+6. WEAK HERO: Hero headline that is not benefit-driven or emotionally compelling.
+7. PUSHY OR WEAK CTA: CTA band that is either too aggressive or lacks urgency/value.
+8. SEO DEFECTS: metaDescription outside 150-160 chars, missing primary keyword, or no clear H1 strategy.
+9. DUPLICATE/REDUNDANT CONTENT: Any repeated sections, copy, or overlapping services.
+10. MISSING SECTIONS: Any required section that is empty or absent (hero, services, whyChooseUs, process, stats, testimonials, faqs, ctaBand, pricing, footer, metaDescription, colorTokens).
+11. ORIGINALITY RISK: Any copy that sounds like it was lifted from a template or competitor.
+
+Return a JSON object with an "issues" array. Each issue must have:
+- "check": the checklist item number (1-11)
+- "severity": "critical" | "warning"
+- "field": the content field path with the problem (e.g. "hero.headline", "services[2].description")
+- "problem": one sentence describing the specific defect
+- "fix": one sentence with the exact correction to apply
+
+If a check passes, do NOT include it. Only include actual defects. Return at most 15 issues, prioritized by severity.`;
+
+  const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
+    model: 'claude-sonnet-5',
+    prompt: auditPrompt,
+    response_json_schema: {
+      type: 'object',
+      properties: {
+        issues: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              check: { type: 'number' },
+              severity: { type: 'string', enum: ['critical', 'warning'] },
+              field: { type: 'string' },
+              problem: { type: 'string' },
+              fix: { type: 'string' },
+            },
+            required: ['severity', 'problem', 'fix'],
+          },
+        },
+      },
+    },
+  });
+
+  return result.issues || [];
+}
+
+// ── 2b. MULTI-PASS REFINEMENT ──────────────────────────────────────
+// Takes the combined core + support content, plus an optional audit issue
+// list, and runs a refinement pass that fixes the identified problems and
+// polishes the rest to ultra-premium quality.
+export async function refineContentDraft(base44, content, industry, businessResearch, benchmark, issues) {
+  const issueBlock = (issues && issues.length > 0)
+    ? `\n\nAUDIT ISSUES FOUND — you MUST fix every one of these:\n${issues.map((iss, i) => `${i + 1}. [${iss.severity.toUpperCase()}] ${iss.field || 'global'}: ${iss.problem}\n   FIX: ${iss.fix}`).join('\n')}\n`
+    : '';
+
+  const refinementPrompt = `You are an elite content editor at a top-tier digital agency. You are reviewing a DRAFT website content blueprint for a "${industry}" business. Your job is to REFINE and ELEVATE it to ultra-premium quality.
+
+DRAFT CONTENT:
+${JSON.stringify(content, null, 2)}
+
+BUSINESS RESEARCH:
+${JSON.stringify(businessResearch)}
+${issueBlock}
 REFINEMENT RULES:
 1. Replace any generic copy with industry-specific, specific copy. "Great service" → "Same-day AC repair with upfront flat-rate pricing."
 2. Ensure every service has a benefit statement (what the customer gets), not just a description (what you do).
