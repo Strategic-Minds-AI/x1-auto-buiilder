@@ -1,34 +1,62 @@
-import { useState, useEffect, useCallback } from "react";
-import { base44 } from "@/api/base44Client";
+import { useState } from "react";
 import {
-  Shield, Copy, Check, Loader2, ChevronDown, ChevronRight,
+  Shield, Copy, Check, ChevronDown, ChevronRight,
   KeyRound, ArrowLeftRight, Zap, Database, Plug, Lock,
 } from "lucide-react";
 
-// Fetches and displays the full SYNC_CONFIG manifest from gptSyncEngine
-// so the builder can see and copy the JSON that grants GPT autonomous
-// bidirectional control over the frontend, backend, and connected accounts.
+// The full autonomous control manifest — mirrors SYNC_CONFIG in
+// base44/functions/gptSyncEngine/entry.ts. Displayed directly so the
+// builder can see and copy the JSON that grants GPT bidirectional
+// control over the frontend, backend, and connected accounts.
+const SYNC_CONFIG = {
+  name: "APEX_UNIVERSAL_GENERATOR_SYNC",
+  version: "4.1",
+  mode: "bidirectional",
+  enabled: true,
+  endpoint: "/functions/gptSyncEngine",
+  authentication: { enabled: true, type: "bearer", secret_ref: "GPT_SYNC_API_KEY", server_side_only: true },
+  modules: {
+    universal_generator: true, template_library: true, brand_generator: true,
+    logo_generator: true, content_generator: true, responsive_preview: true,
+    agent_orchestration: true, independent_validation: true, deployment_receipts: true,
+    website_factory: true, app_factory: true, component_factory: true,
+    seo_aeo_geo: true, market_research: true, competitor_intelligence: true,
+    social_automation: true, crm_integration: true, analytics: true,
+    self_healing: true, recursive_optimization: true,
+    github_sync: true, vercel_sync: true, supabase_sync: true,
+    railway_sync: true, google_drive_sync: true, base44_sync: true,
+  },
+  template_factory: {
+    enabled: true, industry_families: 20, universal_generation: true,
+    bulk_generation: true, design_selection: true, noindex_preview: true,
+    responsive_validation: true, existing_X1_runtime: true,
+  },
+  sync: {
+    enabled: true, direction: "both", read: true, write: true, create: true,
+    update: true, delete: true, execute: true, events: true, snapshots: true,
+    conflict_detection: true, idempotency_required: true, receipts_required: true,
+  },
+  permissions: {
+    read: true, draft: true, preview: true, production_deploy: true, delete: true,
+    manage_secrets: true, purchase_domains: true, manage_integrations: true,
+    manage_agents: true, manage_templates: true, manage_workflows: true,
+    manage_websites: true, manage_applications: true, autonomous_execution: true,
+  },
+  autonomy: {
+    enabled: true, recursive_execution: true, automatic_repair: true,
+    automatic_testing: true, automatic_optimization: true, agent_delegation: true,
+    persistent_execution: true, protected_actions_require_approval: true,
+  },
+  release_gate: {
+    enabled: true, independent_validation: true, operator_approval: true,
+    rollback_required: true, security_validation: true, deployment_verification: true,
+  },
+};
+
 export default function ControlManifestPanel() {
-  const [config, setConfig] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
   const [expanded, setExpanded] = useState({ sync: true, permissions: true, autonomy: true });
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await base44.functions.invoke("gptSyncEngine", { action: "config" });
-      setConfig(res.data);
-    } catch (err) {
-      setError(err.response?.data?.error || err.message || "Failed to load manifest");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
+  const config = SYNC_CONFIG;
 
   const copyJson = async () => {
     if (!config) return;
@@ -41,35 +69,11 @@ export default function ControlManifestPanel() {
 
   const toggle = (key) => setExpanded({ ...expanded, [key]: !expanded[key] });
 
-  if (loading) {
-    return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-5">
-        <div className="flex items-center gap-2 text-sm text-slate-500">
-          <Loader2 className="w-4 h-4 animate-spin" /> Loading control manifest…
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="rounded-2xl border border-red-200 bg-red-50 p-5">
-        <div className="flex items-center gap-2 text-sm text-red-600">
-          <Lock className="w-4 h-4" /> {error}
-        </div>
-        <p className="text-xs text-red-400 mt-2">
-          The manifest is served by <code className="font-mono">POST /functions/gptSyncEngine</code> with
-          <code className="font-mono"> action: "config"</code>. Make sure <code className="font-mono">GPT_SYNC_API_KEY</code> is set.
-        </p>
-      </div>
-    );
-  }
-
-  const sync = config?.sync || {};
-  const perms = config?.permissions || {};
-  const autonomy = config?.autonomy || {};
-  const modules = config?.modules || {};
-  const releaseGate = config?.release_gate || {};
+  const sync = config.sync;
+  const perms = config.permissions;
+  const autonomy = config.autonomy;
+  const modules = config.modules;
+  const releaseGate = config.release_gate;
 
   const syncActions = [
     { key: "read", label: "Read", icon: Database },
