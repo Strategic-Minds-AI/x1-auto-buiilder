@@ -64,6 +64,7 @@ import FreeLibrary from '@/pages/FreeLibrary';
 import PromptLibrary from '@/pages/PromptLibrary';
 import FactoryConsole from '@/pages/FactoryConsole';
 import GPTFactory from '@/pages/GPTFactory';
+import BuildQueueConsole from '@/pages/BuildQueueConsole';
 import IntegrationHub from '@/pages/IntegrationHub';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
@@ -135,6 +136,7 @@ function App() {
               <Route path="/prompt-library" element={<PromptLibrary />} />
               <Route path="/factory-console" element={<FactoryConsole />} />
               <Route path="/gpt-factory" element={<GPTFactory />} />
+              <Route path="/build-queue" element={<BuildQueueConsole />} />
               <Route path="/integration-hub" element={<IntegrationHub />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />

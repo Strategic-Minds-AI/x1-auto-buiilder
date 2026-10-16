@@ -1,0 +1,48 @@
+{
+  "name": "Build Queue Processor",
+  "description": "Processes the Build Queue every 5 minutes: assigns pending items to the GPT engine when it's online, or to the autonomous coder as a fallback. Also checks assigned items for GPT completion.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "interval",
+      "cron_expression": null,
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": 5,
+      "interval_unit": "minutes",
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "build_queue_processor",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "process_queue": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "processBuildQueue",
+            "args": {
+              "action": "process",
+              "limit": 5
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Process Build Queue",
+            "description": "Assign pending items to GPT or autonomous coder, check assigned items for completion"
+          }
+        }
+      }
+    ]
+  }
+}

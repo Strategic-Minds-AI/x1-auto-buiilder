@@ -1,0 +1,117 @@
+{
+  "name": "BuildQueue",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "What to build (e.g. 'Epoxy flooring site for Dallas TX')"
+    },
+    "description": {
+      "type": "string",
+      "description": "Additional details or requirements"
+    },
+    "build_type": {
+      "type": "string",
+      "enum": [
+        "website",
+        "landing_page",
+        "funnel",
+        "app",
+        "content",
+        "custom"
+      ],
+      "default": "website",
+      "description": "What type of build this is"
+    },
+    "industry": {
+      "type": "string",
+      "description": "Target industry"
+    },
+    "location": {
+      "type": "string",
+      "description": "Target location if applicable"
+    },
+    "business_name": {
+      "type": "string",
+      "description": "Business name if known"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "assigned",
+        "processing",
+        "completed",
+        "failed",
+        "cancelled"
+      ],
+      "default": "pending",
+      "description": "Queue item status"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "p0",
+        "p1",
+        "p2",
+        "p3"
+      ],
+      "default": "p2",
+      "description": "Priority level (p0 = highest)"
+    },
+    "assigned_to": {
+      "type": "string",
+      "description": "Who is processing this: gpt_engine, autonomous_coder, or null"
+    },
+    "mission_id": {
+      "type": "string",
+      "description": "Linked GPTMission id (when assigned to GPT engine)"
+    },
+    "project_id": {
+      "type": "string",
+      "description": "Created WebsiteProject id"
+    },
+    "result": {
+      "type": "object",
+      "description": "Generated output / build result"
+    },
+    "error": {
+      "type": "string",
+      "description": "Error message if failed"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "title",
+    "build_type"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

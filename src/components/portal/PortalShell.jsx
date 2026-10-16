@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Wand2, Library, Globe, LayoutTemplate, Rocket, LayoutGrid, Cable,
   Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown, Mail, Workflow, Code,
-  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2, Key, Plug, Brain, Scan, AlertTriangle, Megaphone, Download, Copy, Crown, UploadCloud, BookOpen, Factory
+  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2, Key, Plug, Brain, Scan, AlertTriangle, Megaphone, Download, Copy, Crown, UploadCloud, BookOpen, Factory, ListChecks
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -103,6 +103,7 @@ const EXTERNAL_MODULES = [
   { to: "/prompt-library", icon: BookOpen, label: "Prompt Library" },
   { to: "/factory-console", icon: Factory, label: "Factory Console" },
   { to: "/gpt-factory", icon: Factory, label: "GPT Website Factory" },
+  { to: "/build-queue", icon: ListChecks, label: "Build Queue" },
   { to: "/integration-hub", icon: Boxes, label: "Integration Hub" },
 ];
 
