@@ -85,140 +85,55 @@ export default function PremiumDesignLibrary() {
   const previewW = category === "mobile_app" ? 260 : 440;
 
   return (
-    <div className="flex min-h-full">
-      {/* Sidebar — categories + industry dropdown */}
-      <aside className={`${sidebarOpen ? "fixed inset-0 z-50 bg-black/60" : "hidden"} lg:relative lg:block lg:bg-transparent lg:z-auto`} onClick={() => setSidebarOpen(false)}>
-        <div
-          className={`${sidebarOpen ? "absolute left-0 top-0 bottom-0 w-80" : ""} lg:relative lg:w-72 lg:shrink-0 bg-[#0d1117] lg:bg-[#0d1117]/60 border-r border-white/8 lg:min-h-full overflow-y-auto`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="p-5 sticky top-0 bg-[#0d1117] z-10 border-b border-white/8">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-black text-white tracking-wide">CATEGORIES</h2>
-              <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-white/50 hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="space-y-1.5">
-              {CATEGORIES.map((c) => {
-                const Icon = c.icon;
-                const active = category === c.key;
-                return (
-                  <button
-                    key={c.key}
-                    onClick={() => { setCategory(c.key); setIndustryFilter("All"); setLayoutFilter("All"); setSidebarOpen(false); }}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-150 group ${
-                      active
-                        ? "bg-[#00d4ff]/10 shadow-[inset_2px_0_0_#00d4ff]"
-                        : "hover:bg-white/5"
-                    }`}
-                  >
-                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition ${
-                      active ? "bg-[#00d4ff] text-[#0a0e14]" : "bg-white/5 text-white/50 group-hover:text-[#00d4ff]"
-                    }`}>
-                      <Icon className="w-4.5 h-4.5" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className={`text-[13px] font-bold truncate ${active ? "text-[#00d4ff]" : "text-white/80"}`}>{c.label}</div>
-                      <div className="text-[10px] text-white/40 truncate">{c.desc}</div>
-                    </div>
-                    <span className={`text-xs font-mono shrink-0 ${active ? "text-[#00d4ff]" : "text-white/30"}`}>{counts[c.key]}</span>
-                  </button>
-                );
-              })}
-            </div>
+    <div className="p-6 lg:p-8">
+      {/* Header */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <div>
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">{activeCat?.label}</h1>
+            <p className="text-sm text-slate-500 mt-0.5">
+              {filtered.length} of {inCategory.length} templates
+              {industryFilter !== "All" && ` · ${industryFilter}`}
+              {layoutFilter !== "All" && ` · ${layoutFilter} layout`}
+            </p>
           </div>
-
-          {/* Industry dropdown */}
-          <div className="p-5 border-b border-white/8">
-            <div className="flex items-center gap-2 mb-2.5">
-              <Filter className="w-3.5 h-3.5 text-white/40" />
-              <span className="text-[10px] font-bold tracking-[0.15em] text-white/40 uppercase">Industry</span>
-            </div>
-            <div className="space-y-1 max-h-64 overflow-y-auto pr-1">
-              {industries.map((ind) => (
-                <button
-                  key={ind}
-                  onClick={() => setIndustryFilter(ind)}
-                  className={`w-full flex items-center justify-between px-3 py-1.5 rounded-lg text-[12px] font-medium transition ${
-                    industryFilter === ind
-                      ? "bg-[#00d4ff]/10 text-[#00d4ff]"
-                      : "text-white/55 hover:text-white hover:bg-white/5"
-                  }`}
-                >
-                  <span className="truncate text-left">{ind === "All" ? "All Industries" : ind}</span>
-                  {industryFilter === ind && <Check className="w-3.5 h-3.5 shrink-0" />}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Layout filter (website only) */}
-          {category === "website" && layouts.length > 1 && (
-            <div className="p-5">
-              <div className="flex items-center gap-2 mb-2.5">
-                <Layout className="w-3.5 h-3.5 text-white/40" />
-                <span className="text-[10px] font-bold tracking-[0.15em] text-white/40 uppercase">Layout</span>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {layouts.map((lay) => (
-                  <button
-                    key={lay}
-                    onClick={() => setLayoutFilter(lay)}
-                    className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition ${
-                      layoutFilter === lay
-                        ? "bg-[#00d4ff] text-[#0a0e14]"
-                        : "bg-white/5 text-white/50 hover:text-white hover:bg-white/10"
-                    }`}
-                  >
-                    {lay === "All" ? "All" : lay}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Generate button */}
-          <div className="p-5 sticky bottom-0 bg-[#0d1117] border-t border-white/8">
-            <button
-              onClick={() => generate(category)}
-              disabled={generating !== null}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#00d4ff] to-[#0066ff] px-4 py-2.5 text-[13px] font-bold text-[#0a0e14] hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] transition disabled:opacity-50"
-            >
-              {generating === category ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Generating…</>
-              ) : (
-                <><Wand2 className="w-4 h-4" /> {counts[category] > 0 ? "Regenerate" : "Generate"} {activeCat?.label}</>
-              )}
-            </button>
-          </div>
+          <button
+            onClick={() => generate(category)}
+            disabled={generating !== null}
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#00d4ff] to-[#0066ff] px-4 py-2.5 text-[13px] font-bold text-[#0a0e14] hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] transition disabled:opacity-50"
+          >
+            {generating === category ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Generating…</>
+            ) : (
+              <><Wand2 className="w-4 h-4" /> {counts[category] > 0 ? "Regenerate" : "Generate"} {activeCat?.label}</>
+            )}
+          </button>
         </div>
-      </aside>
 
-      {/* Main content — templates beside the sidebar */}
-      <div className="flex-1 min-w-0 p-6 lg:p-8">
-        <BackButton />
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between gap-4 mb-4">
-            <div>
-              <h1 className="text-2xl font-black text-slate-900 tracking-tight">{activeCat?.label}</h1>
-              <p className="text-sm text-slate-500 mt-0.5">
-                {filtered.length} of {inCategory.length} templates
-                {industryFilter !== "All" && ` · ${industryFilter}`}
-                {layoutFilter !== "All" && ` · ${layoutFilter} layout`}
-              </p>
-            </div>
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden inline-flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-600"
-            >
-              <Filter className="w-4 h-4" /> Filters
-            </button>
-          </div>
+        {/* Category tabs */}
+        <div className="flex items-center gap-2 mb-4 flex-wrap">
+          {CATEGORIES.map((c) => {
+            const Icon = c.icon;
+            const active = category === c.key;
+            return (
+              <button
+                key={c.key}
+                onClick={() => { setCategory(c.key); setIndustryFilter("All"); setLayoutFilter("All"); }}
+                className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
+                  active ? "bg-[#00d4ff] text-[#0a0e14]" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {c.label}
+                <span className={`text-xs font-mono ${active ? "text-[#0a0e14]/60" : "text-slate-400"}`}>{counts[c.key]}</span>
+              </button>
+            );
+          })}
+        </div>
 
-          {/* Search bar */}
-          <div className="relative max-w-md">
+        {/* Search + filters row */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               className="w-full rounded-xl bg-slate-50 border border-slate-200 pl-11 pr-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#00d4ff]/50 focus:ring-1 focus:ring-[#00d4ff]/30 transition"
@@ -227,7 +142,28 @@ export default function PremiumDesignLibrary() {
               onChange={(e) => setQuery(e.target.value)}
             />
           </div>
+          <select
+            value={industryFilter}
+            onChange={(e) => setIndustryFilter(e.target.value)}
+            className="rounded-xl bg-slate-50 border border-slate-200 px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-[#00d4ff]/50 transition"
+          >
+            {industries.map((ind) => (
+              <option key={ind} value={ind}>{ind === "All" ? "All Industries" : ind}</option>
+            ))}
+          </select>
+          {category === "website" && layouts.length > 1 && (
+            <select
+              value={layoutFilter}
+              onChange={(e) => setLayoutFilter(e.target.value)}
+              className="rounded-xl bg-slate-50 border border-slate-200 px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-[#00d4ff]/50 transition"
+            >
+              {layouts.map((lay) => (
+                <option key={lay} value={lay}>{lay === "All" ? "All Layouts" : lay}</option>
+              ))}
+            </select>
+          )}
         </div>
+      </div>
 
         {/* Template grid */}
         {loading ? (
@@ -249,8 +185,6 @@ export default function PremiumDesignLibrary() {
             ))}
           </div>
         )}
-      </div>
-
       {viewerTemplate && (
         <TemplateViewer template={viewerTemplate} onClose={() => setViewerTemplate(null)} onSelect={() => setViewerTemplate(null)} />
       )}
