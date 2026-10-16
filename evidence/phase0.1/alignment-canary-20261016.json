@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "GPTBF_PHASE_0_1_ALIGNMENT_CANARY_EVIDENCE",
+  "project_id": "gptbf-alignment-canary-20261016",
+  "status": "PASS_WITH_WARNINGS",
+  "created_at": "2026-10-16T20:54:00Z",
+  "source": {
+    "repository": "Strategic-Minds-AI/x1-auto-buiilder",
+    "branch": "feature/gptbf-phase0-environment-alignment",
+    "sha": "edc9069820e8fcf8e1f5a6442eba302d9ee0352c"
+  },
+  "gpt_project": {
+    "status": "VERIFIED",
+    "project_id": "g-p-6acb9b86ea4481918d0d2a06bb6be852",
+    "name": "UNLIMITED WEBSITES"
+  },
+  "drive": {
+    "status": "VERIFIED",
+    "root_folder_id": "1zazPL7umsp0ccFoPbtC6mHLnqpx-zjO8",
+    "root_name": "18_ULTIMATE_AUTO_BUILDER",
+    "artifact_vault_folder_id": "1uoGBWcaI8xd1MQMEeJpF5X_jJivorsSm"
+  },
+  "local": {
+    "status": "VERIFIED",
+    "device": "JARVIS-COMMAND",
+    "root": "C:\\_Strategic_Minds_AI_OS\\66_GPT BUILDER FACTORY",
+    "repo": "C:\\_Strategic_Minds_AI_OS\\66_GPT BUILDER FACTORY\\repo",
+    "docker_client": "29.8.1",
+    "docker_server": "29.8.1",
+    "docker_compose": "v5.5.1",
+    "docker_image": "gptbf-alignment-canary:20261016",
+    "docker_image_manifest_sha256": "42967a7c52c28c9850ddd9db476d78396f4b97e10b26ccfca9944191d4806b14",
+    "local_http_status": 200
+  },
+  "x1_queue": {
+    "status": "VERIFIED",
+    "supabase_project_ref": "uvdkzsbjackpjvpoxtyk",
+    "work_id": "f1628cf2-7745-4879-8de3-5419295c0530",
+    "work_packet_id": "WP-GPTBF-ALIGNMENT-CANARY-20261016-001",
+    "lease_id": "d6340bd2-bb6b-4e81-9610-e46398d08957",
+    "worker_agent_id": "x1-swarm-preview-1",
+    "worker_receipt_id": "worker:f1628cf2-7745-4879-8de3-5419295c0530:1",
+    "attempts": 1,
+    "final_status": "COMPLETED",
+    "idempotency_key": "efc796d8c4a8da84bf203da39e2981a71bd3d4d0c982164c27372de904718b9d"
+  },
+  "railway": {
+    "status": "VERIFIED",
+    "strategic_sandbox_project_id": "15f90272-e2f6-4739-8286-91447f545d71",
+    "x1_preview_project_id": "f442cf0a-7275-4c2b-bf73-2dda4254e002",
+    "x1_preview_service_id": "b9c79ead-1edc-44b9-9823-98d37b20399e",
+    "worker_fleet_reused": true,
+    "duplicate_worker_created": false
+  },
+  "supabase": {
+    "status": "VERIFIED",
+    "staging_ref": "uvdkzsbjackpjvpoxtyk",
+    "staging_health": "ACTIVE_HEALTHY"
+  },
+  "vercel": {
+    "status": "VERIFIED",
+    "project_id": "prj_uWtP4yNbLx2InyrG1p0O4MXFxSZp",
+    "deployment_id": "dpl_HemXTYWqwHBa7WATwUhaYdfL9SfB",
+    "url": "https://website-factory-canary-9gt2k4z94-strategic-minds-advisory.vercel.app/",
+    "state": "READY",
+    "target": "preview",
+    "source_sha": "edc9069820e8fcf8e1f5a6442eba302d9ee0352c",
+    "http_status": 200,
+    "x_robots_tag": "noindex",
+    "meta_robots": "noindex,nofollow,noarchive",
+    "robots_txt": "User-agent: *\\nDisallow: /"
+  },
+  "qa": {
+    "status": "PASS_WITH_WARNINGS",
+    "playwright": {
+      "status": "PASS",
+      "desktop_viewport": "1440x900",
+      "mobile_viewport": "390x844",
+      "desktop_screenshot": "C:\\_Strategic_Minds_AI_OS\\66_GPT BUILDER FACTORY\\12_QA_VALIDATION\\desktop-1440x900.png",
+      "mobile_screenshot": "C:\\_Strategic_Minds_AI_OS\\66_GPT BUILDER FACTORY\\12_QA_VALIDATION\\mobile-390x844.png",
+      "desktop_har": "C:\\_Strategic_Minds_AI_OS\\66_GPT BUILDER FACTORY\\12_QA_VALIDATION\\desktop.har",
+      "mobile_har": "C:\\_Strategic_Minds_AI_OS\\66_GPT BUILDER FACTORY\\12_QA_VALIDATION\\mobile.har",
+      "http_status": 200,
+      "noindex": true
+    },
+    "cloud_browser": {
+      "status": "WARN",
+      "browser_health_ok": true,
+      "first_navigation_status": 200,
+      "first_navigation_title": "GPT Builder Factory Alignment Canary",
+      "first_navigation_receipt": "rcpt_1792183813396_t7f7zl",
+      "defect": "Subsequent CloudBrowser session routing returned engine 405/session-not-found; local Playwright independently completed desktop/mobile browser evidence."
+    }
+  },
+  "protected_actions": {
+    "production_release": false,
+    "protected_branch_merge": false,
+    "production_db_change": false,
+    "secrets_or_oauth_change": false,
+    "dns_change": false,
+    "spend": false,
+    "customer_outbound_communications": false
+  },
+  "rollback": {
+    "git": "discard feature/gptbf-phase0-environment-alignment",
+    "vercel": "delete/expire preview deployment dpl_HemXTYWqwHBa7WATwUhaYdfL9SfB; production aliases were not changed",
+    "local": "stop/remove gptbf-alignment-canary container and remove local canary artifacts",
+    "x1": "synthetic READ_ONLY canary completed; preserve queue/ledger receipts as audit evidence"
+  }
+}
