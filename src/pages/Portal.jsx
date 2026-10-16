@@ -33,7 +33,7 @@ import TemplateIngestion from "@/components/portal/TemplateIngestion";
 import MockupLibraryContent from "@/components/portal/MockupLibraryContent";
 import IndustryLibraryContent from "@/components/portal/IndustryLibraryContent";
 import { Link } from "react-router-dom";
-import { CheckCircle2, Plus, Loader2, Rocket, ExternalLink, Library } from "lucide-react";
+import { CheckCircle2, Plus, Loader2, Rocket, ExternalLink, Library, ShieldCheck, RotateCcw } from "lucide-react";
 
 export default function Portal() {
   const location = useLocation();
@@ -52,6 +52,10 @@ export default function Portal() {
   const [deployUrl, setDeployUrl] = useState(null);
   const [deployError, setDeployError] = useState(null);
   const [pipelineResult, setPipelineResult] = useState(null);
+  const [validating, setValidating] = useState(false);
+  const [validationResult, setValidationResult] = useState(null);
+  const [validationError, setValidationError] = useState(null);
+  const [validated, setValidated] = useState(false);
   const [error, setError] = useState(null);
 
   const generate = async (formData) => {
@@ -114,7 +118,7 @@ export default function Portal() {
         business_name: result.businessResearch?.businessName || form?.businessName || "",
         business_website: form?.businessWebsiteUrl || "",
         industry: form?.industry || "",
-        status: "preview_ready",
+        status: "validating",
         business_research: result.businessResearch,
         benchmark: result.benchmark,
         content: result.content,
@@ -123,10 +127,41 @@ export default function Portal() {
       });
       setSavedId(rec.id);
       setStep("saved");
+      runValidation(rec.id);
     } catch (err) {
       setError(err.message || "Save failed");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const runValidation = async (projectId) => {
+    setValidating(true);
+    setValidationError(null);
+    setValidationResult(null);
+    setValidated(false);
+    try {
+      const res = await base44.functions.invoke("validatorGatedPipeline", {
+        projectId: projectId || savedId,
+        skipDeploy: true,
+        maxRepairLoops: 3,
+      });
+      const pipeline = res.data || {};
+      setValidationResult(pipeline);
+      if (pipeline.gated) {
+        setValidationError(pipeline.gate_reason || "Quality gates failed");
+        await base44.entities.WebsiteProject.update(projectId || savedId, { status: "needs_fixes" });
+      } else {
+        setValidated(true);
+        await base44.entities.WebsiteProject.update(projectId || savedId, { status: "validated" });
+      }
+    } catch (err) {
+      setValidationError(err.response?.data?.error || err.message || "Validation failed");
+      try {
+        await base44.entities.WebsiteProject.update(projectId || savedId, { status: "needs_fixes" });
+      } catch { /* ignore status update failure */ }
+    } finally {
+      setValidating(false);
     }
   };
 
@@ -141,6 +176,10 @@ export default function Portal() {
     setDeployUrl(null);
     setDeployError(null);
     setPipelineResult(null);
+    setValidating(false);
+    setValidationResult(null);
+    setValidationError(null);
+    setValidated(false);
     setError(null);
   };
 
@@ -149,23 +188,11 @@ export default function Portal() {
     setDeploying(true);
     setDeployError(null);
     setDeployUrl(null);
-    setPipelineResult(null);
     try {
-      const res = await base44.functions.invoke("validatorGatedPipeline", {
-        projectId: savedId,
-        skipDeploy: false,
-        maxRepairLoops: 3,
-      });
-      const pipeline = res.data || {};
-      setPipelineResult(pipeline);
-      if (pipeline.gated) {
-        setDeployError(pipeline.gate_reason || "Quality gates failed — site not deployed");
-      } else if (pipeline.success) {
-        const deployStage = pipeline.stages?.find((s) => s.stage === "deploy");
-        setDeployUrl(deployStage?.url || "");
-      }
+      const res = await base44.functions.invoke("deploySite", { projectId: savedId });
+      setDeployUrl(res.data.url);
     } catch (err) {
-      setDeployError(err.response?.data?.error || err.message || "Pipeline failed");
+      setDeployError(err.response?.data?.error || err.message || "Deploy failed");
     } finally {
       setDeploying(false);
     }
@@ -203,15 +230,65 @@ export default function Portal() {
             />
           )}
           {step === "saved" && (
-            <div className="max-w-xl mx-auto px-4 py-20 text-center">
+            <div className="max-w-xl mx-auto px-4 py-16 text-center">
               <div className="inline-flex w-16 h-16 rounded-2xl bg-[#00d4ff]/15 items-center justify-center mb-6">
-                <CheckCircle2 className="w-8 h-8 text-[#00d4ff]" />
+                {validating ? (
+                  <Loader2 className="w-8 h-8 text-[#00d4ff] animate-spin" />
+                ) : validated ? (
+                  <CheckCircle2 className="w-8 h-8 text-[#00d4ff]" />
+                ) : (
+                  <ShieldCheck className="w-8 h-8 text-amber-500" />
+                )}
               </div>
-              <h2 className="font-black text-2xl mb-2 text-slate-900">Project Saved</h2>
+              <h2 className="font-black text-2xl mb-2 text-slate-900">
+                {validating ? "Running Quality Gates" : validated ? "Validated & Ready" : "Quality Gates Failed"}
+              </h2>
               <p className="text-slate-500 mb-4">
-                Your website blueprint and assets are saved, and {templates.length} industry templates were added to your library.
+                {validating
+                  ? "Every generated site must pass all quality gates before it can be deployed. This takes about a minute."
+                  : validated
+                    ? "Your website passed all quality gates and is ready for deployment."
+                    : "Some quality gates did not pass. Review the results below and re-run validation after fixes."}
               </p>
-              <div className="flex flex-col items-center gap-3 w-full">
+
+              {/* Validation gate results */}
+              {validationResult && (
+                <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 text-left w-full">
+                  <p className="text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#00d4ff]" /> Quality Gate Results
+                  </p>
+                  <div className="space-y-1">
+                    {validationResult.gates?.map((g, i) => (
+                      <div key={i} className="flex items-center gap-2 text-xs">
+                        {g.gated ? (
+                          <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+                        ) : (
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                        )}
+                        <span className="font-mono text-slate-500 shrink-0">{g.gate}</span>
+                        <span className="text-slate-400">→</span>
+                        <span className={`font-semibold ${g.gated ? "text-red-600" : "text-emerald-600"}`}>
+                          {g.gated ? "BLOCKED" : "PASS"}
+                          {g.score ? ` (${g.score})` : ""}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  {validationResult.total_fix_runs > 0 && (
+                    <p className="text-[10px] text-slate-400 mt-2">
+                      {validationResult.total_fix_runs} auto-fix runs executed across gates
+                    </p>
+                  )}
+                </div>
+              )}
+              {validationError && !validating && (
+                <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-left">
+                  <p className="text-sm font-semibold text-red-600 mb-1">Validation Blocked</p>
+                  <p className="text-xs text-red-500">{validationError}</p>
+                </div>
+              )}
+
+              <div className="flex flex-col items-center gap-3 w-full mt-6">
                 <div className="flex items-center justify-center gap-3">
                   <button
                     onClick={reset}
@@ -225,57 +302,40 @@ export default function Portal() {
                   >
                     <Library className="w-4 h-4" /> View Templates
                   </button>
-                </div>
-                <div className="w-full mt-2">
-                  <button
-                    onClick={deployToVercel}
-                    disabled={deploying}
-                    className="inline-flex items-center gap-2 rounded-full bg-[#00d4ff] px-6 py-3 text-sm font-bold text-[#0a0e14] hover:brightness-110 hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] transition disabled:opacity-60"
-                  >
-                    {deploying ? <Loader2 className="w-4 h-4 animate-spin" /> : <Rocket className="w-4 h-4" />} Run Quality Gates & Deploy
-                  </button>
-                  {deployError && (
-                    <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-left">
-                      <p className="text-sm font-semibold text-red-600 mb-1">Deployment Blocked</p>
-                      <p className="text-xs text-red-500">{deployError}</p>
-                    </div>
+                  {!validating && !validated && (
+                    <button
+                      onClick={() => runValidation()}
+                      className="inline-flex items-center gap-2 rounded-full border border-amber-300 px-6 py-3 text-sm font-semibold text-amber-600 hover:bg-amber-50 transition"
+                    >
+                      <RotateCcw className="w-4 h-4" /> Re-run Validation
+                    </button>
                   )}
-                  {pipelineResult && (
-                    <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-left w-full">
-                      <p className="text-xs font-bold text-slate-700 mb-2">Quality Gate Results</p>
-                      <div className="space-y-1">
-                        {pipelineResult.gates?.map((g, i) => (
-                          <div key={i} className="flex items-center gap-2 text-xs">
-                            {g.gated ? (
-                              <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
-                            ) : (
-                              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-                            )}
-                            <span className="font-mono text-slate-500 shrink-0">{g.gate}</span>
-                            <span className="text-slate-400">→</span>
-                            <span className={`font-semibold ${g.gated ? "text-red-600" : "text-emerald-600"}`}>
-                              {g.gated ? "BLOCKED" : "PASS"}
-                              {g.score ? ` (${g.score})` : ""}
-                            </span>
-                          </div>
-                        ))}
+                </div>
+                {validated && (
+                  <div className="w-full mt-2">
+                    <button
+                      onClick={deployToVercel}
+                      disabled={deploying}
+                      className="inline-flex items-center gap-2 rounded-full bg-[#00d4ff] px-6 py-3 text-sm font-bold text-[#0a0e14] hover:brightness-110 hover:shadow-[0_0_20px_rgba(0,212,255,0.3)] transition disabled:opacity-60"
+                    >
+                      {deploying ? <Loader2 className="w-4 h-4 animate-spin" /> : <Rocket className="w-4 h-4" />} Deploy to Production
+                    </button>
+                    {deployError && (
+                      <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-left">
+                        <p className="text-sm font-semibold text-red-600 mb-1">Deploy Failed</p>
+                        <p className="text-xs text-red-500">{deployError}</p>
                       </div>
-                      {pipelineResult.total_fix_runs > 0 && (
-                        <p className="text-[10px] text-slate-400 mt-2">
-                          {pipelineResult.total_fix_runs} auto-fix runs executed across gates
-                        </p>
-                      )}
-                    </div>
-                  )}
-                  {deployUrl && (
-                    <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-left">
-                      <p className="text-xs text-emerald-600 mb-1 font-semibold">All gates passed — live site deployed:</p>
-                      <a href={deployUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00d4ff] break-all hover:underline">
-                        {deployUrl} <ExternalLink className="w-3.5 h-3.5 shrink-0" />
-                      </a>
-                    </div>
-                  )}
-                </div>
+                    )}
+                    {deployUrl && (
+                      <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-left">
+                        <p className="text-xs text-emerald-600 mb-1 font-semibold">Live site deployed:</p>
+                        <a href={deployUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00d4ff] break-all hover:underline">
+                          {deployUrl} <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
