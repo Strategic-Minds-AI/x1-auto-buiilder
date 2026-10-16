@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 import { researchTemplates, instantiateFromTemplate } from '../../shared/generation.js';
+import { runBrowserTestOnUrl } from '../../shared/cloudBrowserTestRunner.ts';
 
 export default async function(req) {
   try {
@@ -52,6 +53,20 @@ export default async function(req) {
       deployment = deployRes.data || deployRes || deployment;
     } catch (deployErr) {
       deployment = { url: '', error: deployErr.message || 'Deploy failed' };
+    }
+
+    // Step 3.5: Cloud browser render test — verify the deployed site renders before notifying
+    let browserPassed = false;
+    if (deployment.url) {
+      try {
+        const browserResult = await runBrowserTestOnUrl(deployment.url);
+        browserPassed = browserResult.passed;
+        if (!browserResult.skipped && !browserResult.passed) {
+          await base44.asServiceRole.entities.WebsiteProject.update(wpId, {
+            status: 'needs_fixes',
+          }).catch(() => {});
+        }
+      } catch { /* browser test failure is non-fatal for this pipeline */ }
     }
 
     // Step 4: Notify master_orchestrator

@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 import { researchTemplates, instantiateFromTemplate } from '../../shared/generation.js';
+import { runBrowserTestOnUrl } from '../../shared/cloudBrowserTestRunner.ts';
 
 // Full pipeline: research → template selection → content generation → deploy → notify
 // Triggered automatically when a new WebsiteProject is created
@@ -107,6 +108,31 @@ export default async function(req) {
       pipeline.steps.push({ step: 'deploy', status: deployment.url ? 'complete' : 'partial', url: deployment.url });
     } catch (err) {
       pipeline.steps.push({ step: 'deploy', status: 'failed', error: err.message });
+    }
+
+    // Step 6.5: Cloud browser render test — block approval if the live site doesn't render
+    let browserPassed = false;
+    if (deployment.url) {
+      try {
+        const browserResult = await runBrowserTestOnUrl(deployment.url);
+        browserPassed = browserResult.passed;
+        pipeline.steps.push({
+          step: 'cloud_browser_test',
+          status: browserResult.skipped ? 'skipped' : (browserResult.passed ? 'complete' : 'failed'),
+          reason: browserResult.skip_reason || undefined,
+          screenshot_url: browserResult.screenshot_url,
+          error_count: browserResult.qa_errors?.length || 0,
+        });
+        if (!browserResult.skipped && !browserResult.passed) {
+          await base44.asServiceRole.entities.WebsiteProject.update(projectId, {
+            status: 'needs_fixes',
+          }).catch(() => {});
+        }
+      } catch (err) {
+        pipeline.steps.push({ step: 'cloud_browser_test', status: 'failed', error: err.message });
+      }
+    } else {
+      pipeline.steps.push({ step: 'cloud_browser_test', status: 'skipped', reason: 'no deploy URL' });
     }
 
     // Step 7: Generate social calendar

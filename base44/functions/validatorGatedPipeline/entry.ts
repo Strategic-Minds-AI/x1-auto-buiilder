@@ -15,14 +15,7 @@ import {
   fixHumanQuality,
   fixRelease,
 } from '../../shared/pipelineFixers.js';
-import {
-  isConfigured as cloudBrowserConfigured,
-  createSession,
-  navigateTo,
-  takeScreenshot,
-  runQaScript,
-  closeSession,
-} from '../../shared/cloudBrowserEngine.ts';
+import { runBrowserTestOnUrl, isCloudBrowserAvailable } from '../../shared/cloudBrowserTestRunner.ts';
 
 // Validator-Gated Pipeline with MANDATORY auto-fix.
 // Every validator gate is wrapped in a fix-loop: if the gate fails, the corresponding
@@ -342,70 +335,25 @@ export default async function(req: Request): Promise<Response> {
     // deploy URL exists and the cloud browser engine is configured.
     let browserGatePassed = true;
     let browserTestResult: any = null;
-    if (deployUrl && cloudBrowserConfigured()) {
-      let sessionId: string | null = null;
-      try {
-        const session = await createSession({ persistState: false });
-        sessionId = session.sessionId;
-
-        await navigateTo(sessionId, deployUrl, { waitUntil: 'networkidle' });
-        const screenshot = await takeScreenshot(sessionId, { fullPage: true });
-
-        const qaResult = await runQaScript(sessionId, {
-          steps: [
-            { action: 'navigate', url: deployUrl, expect: 'page loads without error' },
-            { action: 'check', selector: 'h1', expect: 'hero heading is visible' },
-            { action: 'check', selector: 'a[href*="contact"], a[href*="tel:"], button', expect: 'at least one CTA is present' },
-            { action: 'check', selector: 'body', expect: 'page body is not blank' },
-            { action: 'screenshot', expect: 'full page screenshot captured' },
-          ],
-        });
-
-        browserTestResult = {
-          screenshot_url: screenshot?.url || null,
-          qa_passed: qaResult.passed,
-          qa_results: qaResult.results,
-          qa_errors: qaResult.errors,
-          qa_screenshots: qaResult.screenshots,
-        };
-
-        const criticalErrors = (qaResult.errors || []).filter((e: string) =>
-          e.toLowerCase().includes('not found') || e.toLowerCase().includes('failed') || e.toLowerCase().includes('error')
-        );
-
-        browserGatePassed = qaResult.passed && criticalErrors.length === 0;
-
+    if (deployUrl) {
+      browserTestResult = await runBrowserTestOnUrl(deployUrl);
+      if (browserTestResult.skipped) {
+        pipeline.stages.push({ stage: 'cloud_browser_test', status: 'skipped', reason: browserTestResult.skip_reason });
+      } else {
+        browserGatePassed = browserTestResult.passed;
         pipeline.stages.push({
           stage: 'cloud_browser_test',
-          status: browserGatePassed ? 'complete' : 'failed',
-          screenshot_url: screenshot?.url || null,
-          qa_passed: qaResult.passed,
-          error_count: criticalErrors.length,
+          status: browserTestResult.passed ? 'complete' : 'failed',
+          screenshot_url: browserTestResult.screenshot_url,
+          error_count: browserTestResult.qa_errors.length,
         });
-
-        // Persist screenshot to the project
-        if (pipeline.project_id && screenshot?.url) {
-          await base44.entities.WebsiteProject.update(pipeline.project_id, {
-            deploy_url: deployUrl,
-          }).catch(() => {});
-        }
-      } catch (err: any) {
-        browserTestResult = { error: err.message };
-        browserGatePassed = false;
-        pipeline.stages.push({ stage: 'cloud_browser_test', status: 'failed', error: err.message });
-      } finally {
-        if (sessionId) {
-          await closeSession(sessionId).catch(() => {});
-        }
       }
-    } else if (deployUrl && !cloudBrowserConfigured()) {
-      pipeline.stages.push({ stage: 'cloud_browser_test', status: 'skipped', reason: 'cloud browser engine not configured' });
     } else {
       pipeline.stages.push({ stage: 'cloud_browser_test', status: 'skipped', reason: 'no deploy URL' });
     }
 
     // ── GATE 5.7: Cloud Browser Render ──
-    if (deployUrl && cloudBrowserConfigured()) {
+    if (deployUrl && !browserTestResult?.skipped) {
       pipeline.gates.push({
         gate: 'cloud_browser_render',
         verdict: browserGatePassed ? 'pass' : 'fail',
