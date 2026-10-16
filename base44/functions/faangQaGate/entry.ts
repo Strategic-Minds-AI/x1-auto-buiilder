@@ -1,4 +1,5 @@
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.52";
+import { invokeOllama } from "../../shared/ollamaClient.ts";
 
 // ─── FAANG QA Gate — 4-Pass Scoring with Auto-Heal ──────────────────
 // Adapted from UACS (Universal Autonomous Coding System) governance.
@@ -14,11 +15,13 @@ const HEAL_THRESHOLD = 70;
 const MAX_ITERATIONS = 10;
 
 // ─── Pass 1: Code Quality ───────────────────────────────────────────
-async function pass1CodeQuality(base44, templateOutput) {
+async function pass1CodeQuality(base44, templateOutput, runId) {
   const componentCode = JSON.stringify(templateOutput?.component_code || {}).substring(0, 8000);
   const files = JSON.stringify(templateOutput?.files || []).substring(0, 4000);
 
-  const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
+  const result = await invokeOllama(base44, {
+    stage: "pass1_code_quality",
+    runId,
     prompt: `You are a FAANG-level code quality auditor. Analyze this generated template code and score it 0-25.
 
 Check each criterion (deduct points for failures):
@@ -59,13 +62,15 @@ Return the score and a detailed list of issues found. For each issue provide sev
 }
 
 // ─── Pass 2: Visual Parity ──────────────────────────────────────────
-async function pass2VisualParity(base44, architecture, benchmarkResults, screenshots) {
+async function pass2VisualParity(base44, architecture, benchmarkResults, screenshots, runId) {
   const archJson = JSON.stringify(architecture || {}).substring(0, 6000);
   const topBenchmarks = (benchmarkResults || []).slice(0, 5);
   const benchmarksJson = JSON.stringify(topBenchmarks).substring(0, 3000);
   const screenshotUrls = (screenshots || []).filter(s => s.screenshot_url).map(s => s.screenshot_url);
 
-  const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
+  const result = await invokeOllama(base44, {
+    stage: "pass2_visual_parity",
+    runId,
     prompt: `You are a FAANG-level visual design auditor. Compare this template architecture against the top benchmarked sites in the industry and score visual parity 0-25.
 
 Check each criterion:
@@ -107,12 +112,14 @@ Return the score and issues. For each issue provide severity, message, and recom
 }
 
 // ─── Pass 3: Functional ─────────────────────────────────────────────
-async function pass3Functional(base44, architecture, templateOutput) {
+async function pass3Functional(base44, architecture, templateOutput, runId) {
   const archJson = JSON.stringify(architecture || {}).substring(0, 5000);
   const componentCode = JSON.stringify(templateOutput?.component_code || {}).substring(0, 6000);
   const blueprint = JSON.stringify(templateOutput?.blueprint || {}).substring(0, 3000);
 
-  const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
+  const result = await invokeOllama(base44, {
+    stage: "pass3_functional",
+    runId,
     prompt: `You are a FAANG-level functional QA auditor. Analyze this template for functional completeness and score 0-25.
 
 Check each criterion:
@@ -156,11 +163,13 @@ Return the score and issues. For each issue provide severity, message, and recom
 }
 
 // ─── Pass 4: Performance ─────────────────────────────────────────────
-async function pass4Performance(base44, templateOutput) {
+async function pass4Performance(base44, templateOutput, runId) {
   const componentCode = JSON.stringify(templateOutput?.component_code || {}).substring(0, 8000);
   const files = JSON.stringify(templateOutput?.files || []).substring(0, 4000);
 
-  const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
+  const result = await invokeOllama(base44, {
+    stage: "pass4_performance",
+    runId,
     prompt: `You are a FAANG-level performance and accessibility auditor. Analyze this template code and score 0-25.
 
 Check each criterion:
@@ -201,14 +210,16 @@ Return the score and issues. For each issue provide severity, message, and recom
 }
 
 // ─── Auto-Heal: Aggressively regenerate full template with ALL issues fixed ─
-async function autoHeal(base44, allIssues, templateOutput, architecture, iteration) {
+async function autoHeal(base44, allIssues, templateOutput, architecture, iteration, runId) {
   const issuesJson = JSON.stringify(allIssues).substring(0, 8000);
   const componentCode = JSON.stringify(templateOutput?.component_code || {}).substring(0, 8000);
   const filesJson = JSON.stringify(templateOutput?.files || []).substring(0, 4000);
   const archJson = JSON.stringify(architecture || {}).substring(0, 4000);
   const blueprintJson = JSON.stringify(templateOutput?.blueprint || {}).substring(0, 3000);
 
-  const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
+  const result = await invokeOllama(base44, {
+    stage: "auto_heal",
+    runId,
     prompt: `You are a FAANG-level senior engineer performing auto-heal iteration ${iteration}/${MAX_ITERATIONS}.
 
 The template scored below 90/100 on the FAANG QA Gate. You MUST fix EVERY issue listed below and regenerate the COMPLETE component code. This is not a patch — you are rewriting the full template to meet production-grade quality.
@@ -276,6 +287,7 @@ export default async function (req) {
 
     const body = await req.json();
     const { action, jobId, templateId, maxIterations } = body;
+    const runId = `faang-${action}-${jobId || "unknown"}-${Date.now()}`;
 
     // ─── RUN_QA: Execute all 4 passes and score ────────────────────
     if (action === "run_qa") {
@@ -302,10 +314,10 @@ export default async function (req) {
 
       // Run all 4 passes in parallel
       const [p1, p2, p3, p4] = await Promise.all([
-        pass1CodeQuality(base44, job.template_output),
-        pass2VisualParity(base44, job.architecture, job.benchmark_results, job.benchmark_results),
-        pass3Functional(base44, job.architecture, job.template_output),
-        pass4Performance(base44, job.template_output),
+        pass1CodeQuality(base44, job.template_output, runId),
+        pass2VisualParity(base44, job.architecture, job.benchmark_results, job.benchmark_results, runId),
+        pass3Functional(base44, job.architecture, job.template_output, runId),
+        pass4Performance(base44, job.template_output, runId),
       ]);
 
       const totalScore = p1.score + p2.score + p3.score + p4.score;
@@ -371,7 +383,8 @@ export default async function (req) {
         qa.issues,
         job.template_output,
         job.architecture,
-        qa.iteration
+        qa.iteration,
+        runId
       );
 
       // Apply fixes to template
@@ -407,10 +420,10 @@ export default async function (req) {
 
       // Re-run QA with healed template
       const [p1, p2, p3, p4] = await Promise.all([
-        pass1CodeQuality(base44, healedOutput),
-        pass2VisualParity(base44, job.architecture, job.benchmark_results, job.benchmark_results),
-        pass3Functional(base44, job.architecture, healedOutput),
-        pass4Performance(base44, healedOutput),
+        pass1CodeQuality(base44, healedOutput, runId),
+        pass2VisualParity(base44, job.architecture, job.benchmark_results, job.benchmark_results, runId),
+        pass3Functional(base44, job.architecture, healedOutput, runId),
+        pass4Performance(base44, healedOutput, runId),
       ]);
 
       const totalScore = p1.score + p2.score + p3.score + p4.score;
@@ -511,10 +524,10 @@ export default async function (req) {
       // Run 4 passes in parallel
       const currentOutput = qa.healed_template_output || job.template_output;
       const [p1, p2, p3, p4] = await Promise.all([
-        pass1CodeQuality(base44, currentOutput),
-        pass2VisualParity(base44, job.architecture, job.benchmark_results, job.benchmark_results),
-        pass3Functional(base44, job.architecture, currentOutput),
-        pass4Performance(base44, currentOutput),
+        pass1CodeQuality(base44, currentOutput, runId),
+        pass2VisualParity(base44, job.architecture, job.benchmark_results, job.benchmark_results, runId),
+        pass3Functional(base44, job.architecture, currentOutput, runId),
+        pass4Performance(base44, currentOutput, runId),
       ]);
 
       const totalScore = p1.score + p2.score + p3.score + p4.score;
@@ -551,7 +564,7 @@ export default async function (req) {
 
       // If not SHIP and iterations remain, run auto-heal for next call
       if (verdict !== "SHIP" && currentIteration < maxIter) {
-        const healResult = await autoHeal(base44, allIssues, currentOutput, job.architecture, currentIteration);
+        const healResult = await autoHeal(base44, allIssues, currentOutput, job.architecture, currentIteration, runId);
         const healedOutput = {
           ...currentOutput,
           component_code: healResult.updated_component_code || currentOutput.component_code,
