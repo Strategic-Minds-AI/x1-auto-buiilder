@@ -1,9 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Loader2, Plus, ListChecks, Zap, Bot, Radio, CheckCircle2, AlertCircle, Clock, X } from "lucide-react";
+import PortalShell from "@/components/portal/PortalShell";
 
 const STATUS_STYLES = {
-  pending: { color: "text-slate-500", bg: "bg-slate-100", label: "Pending" },
+  pending: { color: "text-slate-600", bg: "bg-slate-100", label: "Pending" },
   assigned: { color: "text-blue-600", bg: "bg-blue-50", label: "Assigned" },
   processing: { color: "text-amber-600", bg: "bg-amber-50", label: "Processing" },
   completed: { color: "text-emerald-600", bg: "bg-emerald-50", label: "Completed" },
@@ -19,6 +21,7 @@ const PRIORITY_STYLES = {
 };
 
 export default function BuildQueueConsole() {
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [bulkText, setBulkText] = useState("");
   const [industry, setIndustry] = useState("");
@@ -28,6 +31,7 @@ export default function BuildQueueConsole() {
   const [processResult, setProcessResult] = useState(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
+  const inputRef = useRef(null);
 
   const loadItems = useCallback(async () => {
     setLoading(true);
@@ -115,16 +119,20 @@ export default function BuildQueueConsole() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0e14] text-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <PortalShell
+      activeTab=""
+      onTabChange={() => navigate("/portal")}
+      onNew={() => inputRef.current?.focus()}
+    >
+      <div className="max-w-5xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="font-black text-2xl sm:text-3xl flex items-center gap-3">
+            <h1 className="font-black text-2xl sm:text-3xl flex items-center gap-3 text-slate-900">
               <ListChecks className="w-7 h-7 text-[#00d4ff]" />
               Build Queue
             </h1>
-            <p className="text-white/40 text-sm mt-1">
+            <p className="text-slate-500 text-sm mt-1">
               Type a list of things to build. GPT processes them when online; the autonomous coder handles them as a fallback.
             </p>
           </div>
@@ -142,12 +150,12 @@ export default function BuildQueueConsole() {
         {processResult && !processResult.error && (
           <div className="mb-6 rounded-xl border border-[#00d4ff]/30 bg-[#00d4ff]/5 p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Radio className={`w-4 h-4 ${processResult.gpt_online ? "text-emerald-400" : "text-amber-400"}`} />
-              <span className="text-sm font-semibold">
+              <Radio className={`w-4 h-4 ${processResult.gpt_online ? "text-emerald-500" : "text-amber-500"}`} />
+              <span className="text-sm font-semibold text-slate-800">
                 GPT Engine: {processResult.gpt_online ? "Online" : "Offline — using autonomous coder"}
               </span>
             </div>
-            <div className="flex flex-wrap gap-4 text-xs text-white/60">
+            <div className="flex flex-wrap gap-4 text-xs text-slate-500">
               <span>Assigned: {processResult.assigned?.length || 0}</span>
               <span>Completed: {processResult.completed?.length || 0}</span>
               <span>Failed: {processResult.failed?.length || 0}</span>
@@ -156,34 +164,35 @@ export default function BuildQueueConsole() {
           </div>
         )}
         {processResult?.error && (
-          <div className="mb-6 rounded-xl border border-red-500/30 bg-red-500/5 p-4 text-sm text-red-400">
+          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
             {processResult.error}
           </div>
         )}
 
         {/* Input panel */}
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-5 mb-6">
-          <label className="block text-xs font-bold tracking-wide text-white/40 uppercase mb-2">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 mb-6 shadow-sm">
+          <label className="block text-xs font-bold tracking-wide text-slate-500 uppercase mb-2">
             Type your build list — one item per line
           </label>
           <textarea
+            ref={inputRef}
             value={bulkText}
             onChange={(e) => setBulkText(e.target.value)}
             placeholder={`Epoxy flooring website for Dallas TX\nHVAC landing page for Phoenix AZ\nPlumbing funnel for Chicago IL\nRoofing site for Denver CO`}
             rows={6}
-            className="w-full rounded-xl bg-[#0a0e14] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#00d4ff]/40 focus:ring-1 focus:ring-[#00d4ff]/20 resize-none"
+            className="w-full rounded-xl bg-slate-50 border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#00d4ff]/40 focus:ring-1 focus:ring-[#00d4ff]/20 resize-none"
           />
           <div className="flex flex-wrap items-center gap-3 mt-3">
             <input
               value={industry}
               onChange={(e) => setIndustry(e.target.value)}
               placeholder="Industry (optional, e.g. epoxy flooring)"
-              className="flex-1 min-w-[200px] rounded-xl bg-[#0a0e14] border border-white/10 px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[#00d4ff]/40"
+              className="flex-1 min-w-[200px] rounded-xl bg-white border border-slate-200 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#00d4ff]/40"
             />
             <select
               value={priority}
               onChange={(e) => setPriority(e.target.value)}
-              className="rounded-xl bg-[#0a0e14] border border-white/10 px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00d4ff]/40"
+              className="rounded-xl bg-white border border-slate-200 px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-[#00d4ff]/40"
             >
               <option value="p0">P0 — Urgent</option>
               <option value="p1">P1 — High</option>
@@ -193,7 +202,7 @@ export default function BuildQueueConsole() {
             <button
               onClick={addBulk}
               disabled={adding || !bulkText.trim()}
-              className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/15 transition disabled:opacity-40"
+              className="inline-flex items-center gap-2 rounded-full bg-slate-900 border border-slate-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 transition disabled:opacity-40"
             >
               {adding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
               Add to Queue
@@ -207,10 +216,10 @@ export default function BuildQueueConsole() {
             <button
               key={key}
               onClick={() => setFilter(filter === key ? "all" : key)}
-              className={`rounded-xl border p-3 text-left transition ${filter === key ? "border-[#00d4ff]/40 bg-[#00d4ff]/5" : "border-white/10 bg-white/5 hover:border-white/20"}`}
+              className={`rounded-xl border p-3 text-left transition ${filter === key ? "border-[#00d4ff]/40 bg-[#00d4ff]/5" : "border-slate-200 bg-white hover:border-slate-300"}`}
             >
-              <div className="text-2xl font-black">{count}</div>
-              <div className="text-xs text-white/40 capitalize">{key}</div>
+              <div className="text-2xl font-black text-slate-900">{count}</div>
+              <div className="text-xs text-slate-500 capitalize">{key}</div>
             </button>
           ))}
         </div>
@@ -218,12 +227,12 @@ export default function BuildQueueConsole() {
         {/* Queue list */}
         <div className="space-y-2">
           {loading ? (
-            <div className="text-center py-12 text-white/40">
+            <div className="text-center py-12 text-slate-400">
               <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
               Loading queue...
             </div>
           ) : filteredItems.length === 0 ? (
-            <div className="text-center py-12 text-white/30 text-sm">
+            <div className="text-center py-12 text-slate-400 text-sm">
               {filter === "all" ? "No items in the queue yet. Type a list above to get started." : `No ${filter} items.`}
             </div>
           ) : (
@@ -233,16 +242,16 @@ export default function BuildQueueConsole() {
               return (
                 <div
                   key={item.id}
-                  className="rounded-xl border border-white/10 bg-white/5 p-4 flex items-start gap-3 hover:border-white/20 transition"
+                  className="rounded-xl border border-slate-200 bg-white p-4 flex items-start gap-3 hover:border-slate-300 hover:shadow-sm transition"
                 >
                   <div className={`shrink-0 rounded-lg ${pr.bg} ${pr.color} px-2 py-1 text-xs font-bold`}>
                     {pr.label}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold text-sm truncate">{item.title}</span>
+                      <span className="font-semibold text-sm text-slate-900 truncate">{item.title}</span>
                       {item.industry && (
-                        <span className="text-xs text-white/30">· {item.industry}</span>
+                        <span className="text-xs text-slate-400">· {item.industry}</span>
                       )}
                     </div>
                     <div className="flex items-center gap-3 mt-1 text-xs">
@@ -253,7 +262,7 @@ export default function BuildQueueConsole() {
                         {st.label}
                       </span>
                       {item.assigned_to && (
-                        <span className="inline-flex items-center gap-1 text-white/40">
+                        <span className="inline-flex items-center gap-1 text-slate-500">
                           {item.assigned_to === "gpt_engine" ? <Radio className="w-3 h-3" /> : <Bot className="w-3 h-3" />}
                           {item.assigned_to === "gpt_engine" ? "GPT Engine" : "Autonomous Coder"}
                         </span>
@@ -261,20 +270,20 @@ export default function BuildQueueConsole() {
                       {item.project_id && (
                         <a
                           href={`/portal?prefill=${encodeURIComponent(item.project_id)}`}
-                          className="text-[#00d4ff] hover:underline"
+                          className="text-[#00d4ff] hover:underline font-semibold"
                         >
                           View project →
                         </a>
                       )}
                       {item.error && (
-                        <span className="text-red-400 truncate" title={item.error}>{item.error}</span>
+                        <span className="text-red-500 truncate" title={item.error}>{item.error}</span>
                       )}
                     </div>
                   </div>
                   {(item.status === "pending" || item.status === "assigned") && (
                     <button
                       onClick={() => cancelItem(item.id)}
-                      className="shrink-0 p-1.5 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-500/10 transition"
+                      className="shrink-0 p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition"
                       title="Cancel"
                     >
                       <X className="w-4 h-4" />
@@ -283,7 +292,7 @@ export default function BuildQueueConsole() {
                   {(item.status === "completed" || item.status === "failed" || item.status === "cancelled") && (
                     <button
                       onClick={() => deleteItem(item.id)}
-                      className="shrink-0 p-1.5 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-500/10 transition"
+                      className="shrink-0 p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition"
                       title="Delete"
                     >
                       <X className="w-4 h-4" />
@@ -295,6 +304,6 @@ export default function BuildQueueConsole() {
           )}
         </div>
       </div>
-    </div>
+    </PortalShell>
   );
 }
