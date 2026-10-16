@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import SyncCommandPanel from "@/components/portal/SyncCommandPanel";
 import AutonomousSyncPanel from "@/components/portal/AutonomousSyncPanel";
-import { Cable, RefreshCw, CheckCircle2, XCircle, Loader2, Activity, AlertCircle, CheckCheck, KeyRound } from "lucide-react";
+import ControlManifestPanel from "@/components/portal/ControlManifestPanel";
+import { Cable, RefreshCw, CheckCircle2, XCircle, Loader2, Activity, AlertCircle, CheckCheck } from "lucide-react";
 
 export default function GPTSyncDashboard() {
   const [receipts, setReceipts] = useState([]);
@@ -56,6 +57,8 @@ export default function GPTSyncDashboard() {
         <StatCard label="Failed" value={stats.error} icon={AlertCircle} color="text-destructive" />
       </div>
 
+      <ControlManifestPanel />
+
       <AutonomousSyncPanel />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -108,15 +111,7 @@ export default function GPTSyncDashboard() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-border bg-card p-5 space-y-2">
-        <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5 mb-1">
-          <KeyRound className="w-3.5 h-3.5" /> External Endpoint
-        </div>
-        <p className="text-xs text-muted-foreground">External systems (e.g. ChatGPT) can send commands to the same engine via:</p>
-        <code className="block rounded-lg bg-background/60 border border-border px-3 py-2 text-sm text-primary font-mono">
-          POST /functions/gptSyncEngine · Authorization: Bearer &lt;GPT_SYNC_API_KEY&gt;
-        </code>
-      </div>
+
     </div>
   );
 }
