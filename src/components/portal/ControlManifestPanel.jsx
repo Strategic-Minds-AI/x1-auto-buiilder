@@ -1,295 +1,207 @@
 import { useState } from "react";
-import {
-  Shield, Copy, Check, ChevronDown, ChevronRight,
-  KeyRound, ArrowLeftRight, Zap, Database, Plug, Lock,
-} from "lucide-react";
+import { Shield, Copy, Check } from "lucide-react";
 
-// The full autonomous control manifest — mirrors SYNC_CONFIG in
-// base44/functions/gptSyncEngine/entry.ts. Displayed directly so the
-// builder can see and copy the JSON that grants GPT bidirectional
-// control over the frontend, backend, and connected accounts.
+// ULTIMATE_AUTO_BUILDER_BIDIRECTIONAL_CONTROL — the full autonomous
+// control manifest. Mirrors SYNC_CONFIG in gptSyncEngine/entry.ts.
+// This is the JSON GPT retrieves via action:"config" and the contract
+// that governs every bidirectional operation end-to-end.
 const SYNC_CONFIG = {
-  name: "APEX_UNIVERSAL_GENERATOR_SYNC",
-  version: "4.1",
-  mode: "bidirectional",
+  name: "ULTIMATE_AUTO_BUILDER_BIDIRECTIONAL_CONTROL",
+  version: "1.0.0",
   enabled: true,
-  endpoint: "/functions/gptSyncEngine",
-  authentication: { enabled: true, type: "bearer", secret_ref: "GPT_SYNC_API_KEY", server_side_only: true },
-  modules: {
-    universal_generator: true, template_library: true, brand_generator: true,
-    logo_generator: true, content_generator: true, responsive_preview: true,
-    agent_orchestration: true, independent_validation: true, deployment_receipts: true,
-    website_factory: true, app_factory: true, component_factory: true,
-    seo_aeo_geo: true, market_research: true, competitor_intelligence: true,
-    social_automation: true, crm_integration: true, analytics: true,
-    self_healing: true, recursive_optimization: true,
-    github_sync: true, vercel_sync: true, supabase_sync: true,
-    railway_sync: true, google_drive_sync: true, base44_sync: true,
+  mode: "full_bidirectional_autonomous",
+  mission: "Operate the Ultimate Auto Builder as an autonomous, evidence-driven build system using GitHub as source truth, Base44 as the synchronized application builder, and authorized external providers for preview, validation, storage, workers, and deployment.",
+  source_truth: {
+    provider: "github",
+    repository: "Strategic-Minds-AI/x1-auto-buiilder",
+    default_branch: "main",
+    git_is_authoritative: true,
+    base44_git_sync: true,
+    require_fresh_sha_before_write: true,
+    require_diff_before_commit: true,
+    require_receipt_after_commit: true,
   },
-  template_factory: {
-    enabled: true, industry_families: 20, universal_generation: true,
-    bulk_generation: true, design_selection: true, noindex_preview: true,
-    responsive_validation: true, existing_X1_runtime: true,
+  base44: {
+    enabled: true, mode: "bidirectional", git_sync_enabled: true,
+    local_dev_enabled: true, remote_dev_enabled: true, builder_sync: true,
+    entity_read: true, entity_write: true, function_read: true, function_write: true,
+    schema_read: true, schema_write: true, app_edit: true, frontend_edit: true,
+    backend_edit: true, auth_edit: true, workflow_edit: true, integration_edit: true,
+    publish_capable: true, production_data_access: true,
+    production_publish_requires_approval: true,
   },
-  sync: {
-    enabled: true, direction: "both", read: true, write: true, create: true,
-    update: true, delete: true, execute: true, events: true, snapshots: true,
-    conflict_detection: true, idempotency_required: true, receipts_required: true,
-  },
-  permissions: {
-    read: true, draft: true, preview: true, production_deploy: true, delete: true,
-    manage_secrets: true, purchase_domains: true, manage_integrations: true,
-    manage_agents: true, manage_templates: true, manage_workflows: true,
-    manage_websites: true, manage_applications: true, autonomous_execution: true,
+  github: {
+    enabled: true, read: true, write: true, create_branch: true,
+    create_file: true, update_file: true, delete_file: true, create_commit: true,
+    create_pull_request: true, review_pull_request: true, update_pull_request: true,
+    merge_pull_request: true, rerun_actions: true, read_workflow_logs: true,
+    force_push: false, protected_branch_merge_requires_approval: true,
   },
   autonomy: {
-    enabled: true, recursive_execution: true, automatic_repair: true,
-    automatic_testing: true, automatic_optimization: true, agent_delegation: true,
-    persistent_execution: true, protected_actions_require_approval: true,
+    enabled: true, level: "maximum_authorized", recursive_execution: true,
+    self_directed_planning: true, self_directed_discovery: true, self_directed_build: true,
+    self_directed_testing: true, self_directed_debugging: true, self_directed_repair: true,
+    self_directed_refactoring: true, self_directed_optimization: true, self_directed_validation: true,
+    self_directed_documentation: true, self_directed_branch_creation: true,
+    self_directed_preview_deployment: true, self_directed_pull_requests: true,
+    self_directed_ci_retry: true, self_directed_rollback_preparation: true,
+    continue_until_complete_or_blocked: true, do_not_stop_at_plan: true,
+    do_not_stop_at_draft: true, do_not_stop_at_queue: true, do_not_stop_at_ready_badge: true,
+  },
+  recursive_engine: {
+    enabled: true,
+    sequence: ["DISCOVER","RECONCILE_SOURCE_TRUTH","PLAN","BUILD","TEST","DIAGNOSE","REPAIR","RETEST","HARDEN","OPTIMIZE","PREVIEW","INDEPENDENTLY_VALIDATE","PREPARE_RELEASE","COMPLETE"],
+    repeat_until: ["acceptance_criteria_pass","authorization_boundary","resource_boundary","provider_boundary","security_boundary"],
+  },
+  capabilities: {
+    website_generation: true, app_generation: true, component_generation: true,
+    template_generation: true, template_reuse: true, unlimited_industries: true,
+    unlimited_markets: true, unlimited_locations: true, multi_language: true,
+    brand_generation: true, logo_generation: true, content_generation: true,
+    seo_generation: true, aeo_generation: true, geo_generation: true, schema_generation: true,
+    forms: true, lead_capture: true, crm_workflows: true, client_portals: true,
+    admin_portals: true, payments: true, email_workflows: true, sms_workflows: true,
+    analytics: true, market_research: true, competitor_research: true,
+    image_generation: true, image_asset_reuse: true, responsive_generation: true,
+    accessibility_validation: true, performance_validation: true, security_validation: true,
+    synthetic_testing: true, visual_regression: true, deployment_receipts: true, rollback_receipts: true,
+  },
+  generator: {
+    enabled: true, universal: true, industry_limit: null, location_limit: null,
+    site_limit: null, app_limit: null, template_limit: null, market_limit: null,
+    batch_generation: true, single_canary_first: true,
+    scale_sequence: [1, 10, 100, 1000], require_canary_validation_before_scale: true,
+  },
+  sync: {
+    enabled: true, direction: "both", github_to_base44: true, base44_to_github: true,
+    read: true, write: true, create: true, update: true, delete: true, execute: true,
+    snapshot: true, events: true, conflict_detection: true,
+    conflict_resolution: "source_truth_and_newest_verified_state",
+    idempotency_required: true, hash_verification: true, receipts_required: true, audit_log_required: true,
+  },
+  providers: {
+    vercel: {
+      enabled: true, preview_deploy: true, production_deploy: true,
+      production_deploy_requires_approval: true, noindex_preview: true,
+      deployment_receipt_required: true,
+    },
+    supabase: {
+      enabled: true, read: true, write: true, auth: true, storage: true,
+      database: true, rls: true, production_schema_changes_require_approval: true,
+    },
+    railway: {
+      enabled: true, durable_workers: true, jobs: true, queues: true, leases: true,
+      retries: true, idempotency: true, reuse_existing_workers: true,
+    },
+    google_drive: {
+      enabled: true, read_assets: true, read_brand_assets: true,
+      read_documents: true, write_generated_assets: true,
+    },
+  },
+  agents: {
+    enabled: true, delegation: true, parallel_research: true, parallel_validation: true,
+    parallel_testing: true, coding_agent: true, design_agent: true, seo_agent: true,
+    qa_agent: true, security_agent: true, deployment_agent: true, guardian_agent: true,
+    independent_validator_required: true,
+  },
+  testing: {
+    enabled: true, build: true, lint: true, typecheck: true, unit: true, integration: true,
+    e2e: true, browser: true, mobile: true, tablet: true, desktop: true, forms: true,
+    auth: true, role_negative_tests: true, tenant_isolation: true, rls: true, api: true,
+    queue: true, lease: true, retry: true, idempotency: true, accessibility: true,
+    performance: true, security: true, seo: true, noindex_preview: true, rollback: true,
+    untested_status: "UNKNOWN",
+  },
+  permissions: {
+    read_everything_authorized: true, write_everything_authorized: true,
+    create: true, update: true, delete: true, execute: true, branch: true,
+    commit: true, pull_request: true, preview: true, deploy: true,
+    manage_templates: true, manage_agents: true, manage_workflows: true,
+    manage_websites: true, manage_apps: true, manage_integrations: true,
+    manage_data: true, manage_auth: true, manage_storage: true, manage_queues: true,
+    manage_workers: true, manage_analytics: true, manage_seo: true, manage_assets: true,
+  },
+  protected_actions: {
+    production_release: true, production_rollback: true, default_branch_merge: true,
+    protected_branch_merge: true, production_database_migration: true, rls_change: true,
+    secret_change: true, oauth_change: true, dns_change: true, domain_purchase: true,
+    permission_change: true, real_payment: true, spend: true, customer_email: true,
+    customer_sms: true, public_social_post: true, destructive_change: true,
+    irreversible_migration: true, require_explicit_scoped_approval: true,
   },
   release_gate: {
-    enabled: true, independent_validation: true, operator_approval: true,
-    rollback_required: true, security_validation: true, deployment_verification: true,
+    enabled: true, require_source_sha: true, require_build_pass: true,
+    require_test_pass: true, require_browser_validation: true, require_mobile_validation: true,
+    require_security_validation: true, require_independent_validation: true,
+    require_preview_url: true, require_noindex_preview: true, require_receipts: true,
+    require_rollback_reference: true, require_operator_approval_for_production: true,
+  },
+  failure_policy: {
+    automatic_diagnosis: true, automatic_repair: true, automatic_retest: true,
+    max_repair_loops: 10, preserve_failure_evidence: true,
+    never_hide_errors: true, never_mark_failed_as_complete: true,
+  },
+  reporting: {
+    required: true,
+    format: ["RESULT","EVIDENCE","VERIFIED","INFERRED","UNKNOWN","GAP","BLOCKERS","WORKAROUND","ROLLBACK","NEXT_ACTION"],
   },
 };
 
 export default function ControlManifestPanel() {
   const [copied, setCopied] = useState(false);
-  const [expanded, setExpanded] = useState({ sync: true, permissions: true, autonomy: true });
-  const config = SYNC_CONFIG;
 
   const copyJson = async () => {
-    if (!config) return;
     try {
-      await navigator.clipboard.writeText(JSON.stringify(config, null, 2));
+      await navigator.clipboard.writeText(JSON.stringify(SYNC_CONFIG, null, 2));
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {}
   };
 
-  const toggle = (key) => setExpanded({ ...expanded, [key]: !expanded[key] });
-
-  const sync = config.sync;
-  const perms = config.permissions;
-  const autonomy = config.autonomy;
-  const modules = config.modules;
-  const releaseGate = config.release_gate;
-
-  const syncActions = [
-    { key: "read", label: "Read", icon: Database },
-    { key: "write", label: "Write", icon: ArrowLeftRight },
-    { key: "create", label: "Create", icon: Zap },
-    { key: "update", label: "Update", icon: ArrowLeftRight },
-    { key: "delete", label: "Delete", icon: ArrowLeftRight },
-    { key: "execute", label: "Execute", icon: Zap },
-    { key: "events", label: "Events", icon: ArrowLeftRight },
-    { key: "snapshots", label: "Snapshots", icon: Database },
-  ];
-
-  const permItems = [
-    { key: "read", label: "Read" },
-    { key: "draft", label: "Draft" },
-    { key: "preview", label: "Preview" },
-    { key: "production_deploy", label: "Production Deploy" },
-    { key: "delete", label: "Delete" },
-    { key: "manage_secrets", label: "Manage Secrets" },
-    { key: "purchase_domains", label: "Purchase Domains" },
-    { key: "manage_integrations", label: "Manage Integrations" },
-    { key: "manage_agents", label: "Manage Agents" },
-    { key: "manage_templates", label: "Manage Templates" },
-    { key: "manage_workflows", label: "Manage Workflows" },
-    { key: "manage_websites", label: "Manage Websites" },
-    { key: "manage_applications", label: "Manage Applications" },
-    { key: "autonomous_execution", label: "Autonomous Execution" },
-  ];
-
-  const autonomyItems = [
-    { key: "enabled", label: "Enabled" },
-    { key: "recursive_execution", label: "Recursive Execution" },
-    { key: "automatic_repair", label: "Automatic Repair" },
-    { key: "automatic_testing", label: "Automatic Testing" },
-    { key: "automatic_optimization", label: "Automatic Optimization" },
-    { key: "agent_delegation", label: "Agent Delegation" },
-    { key: "persistent_execution", label: "Persistent Execution" },
-    { key: "protected_actions_require_approval", label: "Protected Actions Require Approval" },
-  ];
-
-  const connectedAccounts = Object.entries(modules).filter(
-    ([k]) => k.endsWith("_sync")
-  );
+  const jsonString = JSON.stringify(SYNC_CONFIG, null, 2);
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 space-y-4">
+    <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00d4ff] to-[#0066ff] flex items-center justify-center">
-            <Shield className="w-4 h-4 text-white" />
+      <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 bg-slate-50">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#00d4ff] to-[#0066ff] flex items-center justify-center">
+            <Shield className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="font-bold text-sm text-slate-800">Autonomous Control Manifest</h3>
-            <p className="text-xs text-slate-400">
-              {config?.name} v{config?.version} · {config?.mode} ·{" "}
-              {config?.enabled ? "ENABLED" : "DISABLED"}
+            <h3 className="font-bold text-sm text-slate-900">Autonomous Control Manifest</h3>
+            <p className="text-[11px] text-slate-500">
+              {SYNC_CONFIG.name} v{SYNC_CONFIG.version} · {SYNC_CONFIG.mode}
             </p>
           </div>
         </div>
         <button
           onClick={copyJson}
-          className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-[#00d4ff] hover:border-[#00d4ff]/40 transition"
+          className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-[#00d4ff] hover:border-[#00d4ff]/40 transition"
         >
           {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
           {copied ? "Copied!" : "Copy JSON"}
         </button>
       </div>
 
-      {/* Endpoint */}
-      <div className="rounded-lg bg-slate-50 border border-slate-200 px-3 py-2.5">
-        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-slate-400 mb-1">
-          <KeyRound className="w-3 h-3" /> Endpoint
-        </div>
-        <code className="block text-xs text-[#00d4ff] font-mono">
-          POST /functions/gptSyncEngine · Authorization: Bearer &lt;GPT_SYNC_API_KEY&gt;
-        </code>
-        <p className="text-[11px] text-slate-400 mt-1">
-          Send <code className="font-mono text-slate-600">{"{ \"action\": \"config\" }"}</code> to retrieve this manifest.
-          Send <code className="font-mono text-slate-600">{"{ \"action\": \"read|create|update|delete|execute\", ... }"}</code> to control the app.
+      {/* Full JSON — always visible, no collapse */}
+      <pre className="text-[11px] font-mono text-emerald-300 bg-slate-900 p-4 overflow-x-auto leading-relaxed max-h-[700px] overflow-y-auto">
+{jsonString}
+      </pre>
+
+      {/* Footer note */}
+      <div className="px-5 py-3 border-t border-slate-200 bg-slate-50">
+        <p className="text-[11px] text-slate-500">
+          <span className="font-semibold text-slate-700">Endpoint:</span>{" "}
+          <code className="font-mono text-[#00d4ff]">POST /functions/gptSyncEngine</code>
+          {" · "}
+          <span className="font-semibold text-slate-700">Auth:</span>{" "}
+          <code className="font-mono text-[#00d4ff]">Bearer &lt;GPT_SYNC_API_KEY&gt;</code>
+          {" · "}
+          <span className="font-semibold text-slate-700">Retrieve:</span>{" "}
+          <code className="font-mono text-slate-600">{"{ \"action\": \"config\" }"}</code>
         </p>
       </div>
-
-      {/* Sync capabilities */}
-      <Section title="Bidirectional Sync Capabilities" expanded={expanded.sync} onToggle={() => toggle("sync")} icon={ArrowLeftRight}>
-        <div className="grid grid-cols-4 gap-2">
-          {syncActions.map((a) => {
-            const Icon = a.icon;
-            const active = sync[a.key];
-            return (
-              <div
-                key={a.key}
-                className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-2 text-xs font-semibold ${
-                  active
-                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                    : "border-slate-200 bg-slate-50 text-slate-400"
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                {a.label}
-                {active && <Check className="w-3 h-3 text-emerald-500 ml-auto" />}
-              </div>
-            );
-          })}
-        </div>
-        <div className="flex flex-wrap gap-2 mt-2 text-[11px]">
-          <span className={`px-2 py-0.5 rounded-full font-semibold ${sync.conflict_detection ? "bg-emerald-50 text-emerald-600 border border-emerald-200" : "bg-slate-50 text-slate-400 border border-slate-200"}`}>
-            Conflict Detection: {sync.conflict_detection ? "ON" : "OFF"}
-          </span>
-          <span className={`px-2 py-0.5 rounded-full font-semibold ${sync.idempotency_required ? "bg-emerald-50 text-emerald-600 border border-emerald-200" : "bg-slate-50 text-slate-400 border border-slate-200"}`}>
-            Idempotency: {sync.idempotency_required ? "REQUIRED" : "OFF"}
-          </span>
-          <span className={`px-2 py-0.5 rounded-full font-semibold ${sync.receipts_required ? "bg-emerald-50 text-emerald-600 border border-emerald-200" : "bg-slate-50 text-slate-400 border border-slate-200"}`}>
-            Receipts: {sync.receipts_required ? "REQUIRED" : "OFF"}
-          </span>
-        </div>
-      </Section>
-
-      {/* Permissions */}
-      <Section title="Permissions" expanded={expanded.permissions} onToggle={() => toggle("permissions")} icon={Lock}>
-        <div className="grid grid-cols-3 gap-2">
-          {permItems.map((p) => (
-            <div
-              key={p.key}
-              className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold ${
-                perms[p.key]
-                  ? "border-[#00d4ff]/30 bg-[#00d4ff]/5 text-[#0066ff]"
-                  : "border-slate-200 bg-slate-50 text-slate-400"
-              }`}
-            >
-              {perms[p.key] ? <Check className="w-3 h-3 text-[#00d4ff]" /> : <Lock className="w-3 h-3 text-slate-300" />}
-              {p.label}
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* Autonomy */}
-      <Section title="Autonomy Engine" expanded={expanded.autonomy} onToggle={() => toggle("autonomy")} icon={Zap}>
-        <div className="grid grid-cols-3 gap-2">
-          {autonomyItems.map((a) => (
-            <div
-              key={a.key}
-              className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold ${
-                autonomy[a.key]
-                  ? "border-purple-200 bg-purple-50 text-purple-700"
-                  : "border-slate-200 bg-slate-50 text-slate-400"
-              }`}
-            >
-              {autonomy[a.key] ? <Check className="w-3 h-3 text-purple-500" /> : <Lock className="w-3 h-3 text-slate-300" />}
-              {a.label}
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* Connected accounts */}
-      <Section title={`Connected Accounts (${connectedAccounts.length})`} expanded={true} onToggle={() => {}} icon={Plug} forceOpen>
-        <div className="grid grid-cols-3 gap-2">
-          {connectedAccounts.map(([key, active]) => (
-            <div
-              key={key}
-              className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold ${
-                active
-                  ? "border-indigo-200 bg-indigo-50 text-indigo-700"
-                  : "border-slate-200 bg-slate-50 text-slate-400"
-              }`}
-            >
-              <Plug className="w-3 h-3" />
-              {key.replace("_sync", "").replace(/_/g, " ").toUpperCase()}
-              {active && <Check className="w-3 h-3 text-indigo-500 ml-auto" />}
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* Release gate */}
-      <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5">
-        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-amber-600 mb-1">
-          <Shield className="w-3 h-3" /> Release Gate (Safety Rails)
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {Object.entries(releaseGate).map(([k, v]) => (
-            <span key={k} className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${v ? "bg-amber-100 text-amber-700 border-amber-200" : "bg-slate-50 text-slate-400 border-slate-200"}`}>
-              {k.replace(/_/g, " ")}: {v ? "ON" : "OFF"}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Raw JSON — always visible */}
-      <div className="rounded-lg border border-slate-200 bg-slate-900 overflow-hidden">
-        <div className="px-3 py-2 text-xs font-bold text-slate-300 bg-slate-800 border-b border-slate-700 flex items-center gap-1.5">
-          <Database className="w-3.5 h-3.5 text-[#00d4ff]" /> Full JSON Manifest (copy-paste ready)
-        </div>
-        <pre className="text-[11px] font-mono text-emerald-300 p-4 overflow-x-auto max-h-[600px] overflow-y-auto leading-relaxed">
-{JSON.stringify(config, null, 2)}
-        </pre>
-      </div>
-    </div>
-  );
-}
-
-function Section({ title, expanded, onToggle, icon: Icon, children, forceOpen }) {
-  const isOpen = forceOpen || expanded;
-  return (
-    <div className="rounded-lg border border-slate-200 overflow-hidden">
-      <button
-        onClick={onToggle}
-        className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 transition text-left"
-      >
-        {forceOpen ? null : (isOpen ? <ChevronDown className="w-3.5 h-3.5 text-slate-400" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-400" />)}
-        <Icon className="w-3.5 h-3.5 text-[#00d4ff]" />
-        {title}
-      </button>
-      {isOpen && <div className="px-3 pb-3 pt-1">{children}</div>}
     </div>
   );
 }
