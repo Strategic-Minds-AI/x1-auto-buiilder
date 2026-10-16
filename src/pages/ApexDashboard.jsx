@@ -75,117 +75,86 @@ export default function ApexDashboard() {
   const currentPhase = "phase0";
 
   return (
-    <div className="min-h-screen flex bg-white text-slate-800">
-      {/* Black left sidebar */}
-      <aside className="w-56 shrink-0 flex flex-col bg-[#0a0e14] sticky top-0 h-screen">
-        {/* Brand */}
-        <div className="h-16 flex items-center gap-2.5 px-4 border-b border-white/8 shrink-0">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#00d4ff] to-[#0066ff] flex items-center justify-center font-black text-[#0a0e14] text-lg shrink-0">
-            D
-          </div>
-          <div className="leading-none min-w-0">
-            <div className="font-black text-[12px] tracking-wide text-white truncate">APEX GOD MODE</div>
-            <div className="text-[9px] tracking-[0.15em] text-[#00d4ff]">V6 FACTORY</div>
+    <div className="p-6">
+      {/* Action bar */}
+      <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
+        <div className="flex items-center gap-3">
+          <Crown className="w-5 h-5 text-[#00d4ff]" />
+          <div>
+            <h1 className="text-base font-black text-slate-800">APEX God Mode V6</h1>
+            <p className="text-[10px] text-slate-400">National Autonomous Website, App, Lead Gen & AI Swarm Factory</p>
           </div>
         </div>
-
-        {/* Nav */}
-        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
-          {SECTIONS.map((s) => {
-            const Icon = s.icon;
-            const active = activeSection === s.key;
-            return (
-              <button
-                key={s.key}
-                onClick={() => setActiveSection(s.key)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-semibold transition ${
-                  active ? "bg-white/10 text-white" : "text-white/55 hover:text-white hover:bg-white/5"
-                }`}
-                style={active ? { boxShadow: `inset 2px 0 0 ${s.color}` } : {}}
-              >
-                <Icon className="w-4 h-4 shrink-0" style={{ color: active ? s.color : undefined }} />
-                {s.label}
-              </button>
-            );
-          })}
-        </nav>
-
-        {/* Mission loop */}
-        <div className="p-3 shrink-0">
-          <div className="rounded-xl bg-white/5 p-3">
-            <p className="text-[10px] font-bold text-white/30 uppercase tracking-wide mb-2">Mission Loop</p>
-            <div className="text-[9px] text-white/40 leading-relaxed">
-              DISCOVER → RESEARCH → STRATEGIZE → DESIGN → BUILD → TEST → DIAGNOSE → REPAIR → RETEST → HARDEN → VALIDATE → PREVIEW → APPROVAL → OPERATE → LEARN
-            </div>
+        <div className="flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2 text-xs">
+            <span className="text-slate-400">Phase:</span>
+            <span className="font-bold text-[#00d4ff]">{PHASES.find(p => p.phase === currentPhase)?.label}</span>
           </div>
-          <Link to="/portal" className="mt-2 w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[12px] font-semibold text-white/40 hover:text-[#00d4ff] hover:bg-white/5 transition">
-            <Home className="w-3.5 h-3.5" /> Back to Portal
-          </Link>
+          <button
+            onClick={handleSeedAgents}
+            disabled={seeding}
+            className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:text-[#00d4ff] hover:border-[#00d4ff]/40 transition"
+          >
+            {seeding ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Bot className="w-3.5 h-3.5" />}
+            {seeding ? "Seeding..." : `Seed Agents (${counts.agents || 0})`}
+          </button>
+          <button
+            onClick={loadDashboard}
+            className="flex items-center gap-2 rounded-lg bg-[#00d4ff] px-3 py-2 text-xs font-bold text-[#0a0e14] hover:brightness-110 transition"
+          >
+            <Activity className="w-3.5 h-3.5" /> Refresh
+          </button>
         </div>
-      </aside>
+      </div>
 
-      {/* Main content area — white */}
-      <div className="flex-1 min-w-0 flex flex-col">
-        {/* Top bar — white */}
-        <header className="h-16 bg-white border-b border-slate-200 sticky top-0 z-40 flex items-center justify-between px-6 shrink-0">
-          <div className="flex items-center gap-3">
-            <Crown className="w-5 h-5 text-[#00d4ff]" />
-            <div>
-              <h1 className="text-base font-black text-slate-800">APEX God Mode V6</h1>
-              <p className="text-[10px] text-slate-400">National Autonomous Website, App, Lead Gen & AI Swarm Factory</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-2 text-xs">
-              <span className="text-slate-400">Phase:</span>
-              <span className="font-bold text-[#00d4ff]">{PHASES.find(p => p.phase === currentPhase)?.label}</span>
-            </div>
+      {/* Status bar */}
+      <div className="flex items-center gap-5 overflow-x-auto bg-slate-50/50 rounded-xl px-4 py-2.5 mb-4 border border-slate-100">
+        <StatusChip icon={Target} label="Opportunities" value={counts.opportunities || 0} color="#3b82f6" />
+        <StatusChip icon={Activity} label="Active Missions" value={counts.activeMissions || 0} color="#f59e0b" />
+        <StatusChip icon={Bot} label="Agents" value={counts.agents || 0} color="#8b5cf6" />
+        <StatusChip icon={Hammer} label="Active Jobs" value={counts.activeJobs || 0} color="#00d4ff" />
+        <StatusChip icon={Shield} label="Pending Approvals" value={counts.pendingApprovals || 0} color="#10b981" />
+      </div>
+
+      {/* Section tabs */}
+      <div className="flex items-center gap-1.5 mb-5 flex-wrap">
+        {SECTIONS.map((s) => {
+          const Icon = s.icon;
+          const active = activeSection === s.key;
+          return (
             <button
-              onClick={handleSeedAgents}
-              disabled={seeding}
-              className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:text-[#00d4ff] hover:border-[#00d4ff]/40 transition"
+              key={s.key}
+              onClick={() => setActiveSection(s.key)}
+              className={`inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-[13px] font-semibold transition ${
+                active ? "bg-[#00d4ff] text-[#0a0e14]" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              }`}
             >
-              {seeding ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Bot className="w-3.5 h-3.5" />}
-              {seeding ? "Seeding..." : `Seed Agents (${counts.agents || 0})`}
+              <Icon className="w-3.5 h-3.5 shrink-0" style={{ color: active ? "#0a0e14" : s.color }} />
+              {s.label}
             </button>
-            <button
-              onClick={loadDashboard}
-              className="flex items-center gap-2 rounded-lg bg-[#00d4ff] px-3 py-2 text-xs font-bold text-[#0a0e14] hover:brightness-110 transition"
-            >
-              <Activity className="w-3.5 h-3.5" /> Refresh
-            </button>
+          );
+        })}
+      </div>
+
+      {/* Content */}
+      <div>
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-6 h-6 animate-spin text-[#00d4ff]" />
           </div>
-        </header>
-
-        {/* Status bar */}
-        <div className="px-6 py-2.5 flex items-center gap-5 border-b border-slate-100 overflow-x-auto bg-slate-50/50">
-          <StatusChip icon={Target} label="Opportunities" value={counts.opportunities || 0} color="#3b82f6" />
-          <StatusChip icon={Activity} label="Active Missions" value={counts.activeMissions || 0} color="#f59e0b" />
-          <StatusChip icon={Bot} label="Agents" value={counts.agents || 0} color="#8b5cf6" />
-          <StatusChip icon={Hammer} label="Active Jobs" value={counts.activeJobs || 0} color="#00d4ff" />
-          <StatusChip icon={Shield} label="Pending Approvals" value={counts.pendingApprovals || 0} color="#10b981" />
-        </div>
-
-        {/* Content */}
-        <main className="flex-1 overflow-y-auto p-6">
-          {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-6 h-6 animate-spin text-[#00d4ff]" />
-            </div>
-          ) : (
-            <>
-              {activeSection === "intelligence" && <IntelligencePanel data={dashboardData} onRefresh={loadDashboard} />}
-              {activeSection === "build" && <BuildFactoryPanel data={dashboardData} />}
-              {activeSection === "swarm" && <SwarmCommandPanel data={dashboardData} onRefresh={loadDashboard} />}
-              {activeSection === "demand" && <SimplePanel title="Demand Acquisition" icon={TrendingUp} description="SEO, content authority, lead funnel experiments" links={[{ to: "/marketing-library", label: "Marketing Library" }, { to: "/fault-line", label: "Fault Line Scanner" }, { to: "/research-hub", label: "Research Hub" }]} />}
-              {activeSection === "comms" && <SimplePanel title="Communications" icon={Radio} description="Inbound voice, SMS, CRM routing, consent, qualification" links={[{ to: "/comm-library", label: "Comms Library" }, { to: "/crm", label: "AI CRM" }]} />}
-              {activeSection === "social" && <SimplePanel title="Social & Media" icon={Share2} description="Brand assets, generated videos, 30-day calendars, approved posting" links={[{ to: "/brand-assets", label: "Brand Assets" }, { to: "/card-flyer-studio", label: "Card & Flyer Studio" }]} />}
-              {activeSection === "measurement" && <SimplePanel title="Measurement" icon={BarChart3} description="GA4, Search Console, leads, appointments, revenue and profit" links={[{ to: "/analytics", label: "Analytics" }, { to: "/performance-dashboard", label: "Performance Dashboard" }, { to: "/performance-report", label: "Performance Report" }]} />}
-              {activeSection === "gpt" && <SimplePanel title="GPT Control Bridge" icon={Zap} description="Authenticated tool status, commands, draft jobs, approvals and mission results" links={[{ to: "/gpt-sync-logs", label: "GPT Sync Logs" }, { to: "/api-docs", label: "API Documentation" }, { to: "/api-keys", label: "API Key Manager" }]} />}
-              {activeSection === "governance" && <GovernancePanel data={dashboardData} />}
-            </>
-          )}
-        </main>
+        ) : (
+          <>
+            {activeSection === "intelligence" && <IntelligencePanel data={dashboardData} onRefresh={loadDashboard} />}
+            {activeSection === "build" && <BuildFactoryPanel data={dashboardData} />}
+            {activeSection === "swarm" && <SwarmCommandPanel data={dashboardData} onRefresh={loadDashboard} />}
+            {activeSection === "demand" && <SimplePanel title="Demand Acquisition" icon={TrendingUp} description="SEO, content authority, lead funnel experiments" links={[{ to: "/marketing-library", label: "Marketing Library" }, { to: "/fault-line", label: "Fault Line Scanner" }, { to: "/research-hub", label: "Research Hub" }]} />}
+            {activeSection === "comms" && <SimplePanel title="Communications" icon={Radio} description="Inbound voice, SMS, CRM routing, consent, qualification" links={[{ to: "/comm-library", label: "Comms Library" }, { to: "/crm", label: "AI CRM" }]} />}
+            {activeSection === "social" && <SimplePanel title="Social & Media" icon={Share2} description="Brand assets, generated videos, 30-day calendars, approved posting" links={[{ to: "/brand-assets", label: "Brand Assets" }, { to: "/card-flyer-studio", label: "Card & Flyer Studio" }]} />}
+            {activeSection === "measurement" && <SimplePanel title="Measurement" icon={BarChart3} description="GA4, Search Console, leads, appointments, revenue and profit" links={[{ to: "/analytics", label: "Analytics" }, { to: "/performance-dashboard", label: "Performance Dashboard" }, { to: "/performance-report", label: "Performance Report" }]} />}
+            {activeSection === "gpt" && <SimplePanel title="GPT Control Bridge" icon={Zap} description="Authenticated tool status, commands, draft jobs, approvals and mission results" links={[{ to: "/gpt-sync-logs", label: "GPT Sync Logs" }, { to: "/api-docs", label: "API Documentation" }, { to: "/api-keys", label: "API Key Manager" }]} />}
+            {activeSection === "governance" && <GovernancePanel data={dashboardData} />}
+          </>
+        )}
       </div>
     </div>
   );

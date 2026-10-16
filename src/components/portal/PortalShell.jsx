@@ -60,7 +60,7 @@ const NAV_GROUPS = [
   },
 ];
 
-const EXTERNAL_MODULES = [
+export const EXTERNAL_MODULES = [
   { to: "/apex-god-mode", icon: Crown, label: "APEX God Mode V6" },
   { to: "/apex-command", icon: Zap, label: "APEX Command" },
   { to: "/auto-builder", icon: Hammer, label: "Auto Builder" },

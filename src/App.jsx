@@ -6,6 +6,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider } from '@/lib/AuthContext';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import PortalLayout from '@/components/PortalLayout';
 import Home from '@/pages/Home';
 import Portal from '@/pages/Portal';
 import AutoBuilder from '@/pages/AutoBuilder';
@@ -97,71 +98,73 @@ function App() {
             {/* Protected */}
             <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
               <Route path="/portal" element={<Portal />} />
-              <Route path="/auto-builder" element={<AutoBuilder />} />
-              <Route path="/apex-command" element={<ApexCommand />} />
-              <Route path="/agent-orchestrator" element={<AgentOrchestrator />} />
-              <Route path="/brand-assets" element={<BrandAssets />} />
-              <Route path="/gpt-sync-logs" element={<GPTSyncLogs />} />
-              <Route path="/mass-launch-console" element={<MassLaunchConsolePage />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/research-hub" element={<ResearchHub />} />
-              <Route path="/business-onboarding" element={<BusinessOnboarding />} />
-              <Route path="/business-name-studio" element={<BusinessNameStudio />} />
-              <Route path="/logo-workshop" element={<LogoWorkshop />} />
-              <Route path="/project-timeline" element={<ProjectTimeline />} />
-              <Route path="/asset-repository" element={<AssetRepository />} />
-              <Route path="/campaign-monitor" element={<CampaignMonitor />} />
-              <Route path="/launch-monitor" element={<div className="portal-light min-h-screen bg-white"><LaunchMonitorPage /></div>} />
-              <Route path="/style-guide-editor" element={<StyleGuideEditor />} />
-              <Route path="/design-library" element={<div className="portal-light min-h-screen bg-white"><PremiumDesignLibrary /></div>} />
-              <Route path="/card-flyer-studio" element={<div className="portal-light min-h-screen bg-white"><CardFlyerStudio /></div>} />
-              <Route path="/performance-report" element={<PerformanceReport />} />
-              <Route path="/crm" element={<CRM />} />
-              <Route path="/ai-tool-library" element={<AIToolLibrary />} />
-              <Route path="/agent-library" element={<AgentLibrary />} />
-              <Route path="/ai-skills-library" element={<AISkillsLibrary />} />
-              <Route path="/comm-library" element={<CommLibrary />} />
-              <Route path="/api-keys" element={<ApiKeyManager />} />
-              <Route path="/api-connectors" element={<ApiConnectorSettings />} />
-              <Route path="/sheets-setup" element={<SheetsSetupGuide />} />
-              <Route path="/intelligence-hub" element={<IntelligenceHub />} />
-              <Route path="/performance-dashboard" element={<PerformanceDashboard />} />
-              <Route path="/mockup-ingestion" element={<MockupIngestion />} />
-              <Route path="/fault-line" element={<FaultLine />} />
-              <Route path="/client-portal" element={<ClientPortal />} />
-              <Route path="/universal-generator" element={<UniversalGenerator />} />
-              <Route path="/universal-studio" element={<UniversalGeneratorStudio />} />
-              <Route path="/clone-generator" element={<CloneGenerator />} />
-              <Route path="/apex-god-mode" element={<ApexDashboard />} />
-              <Route path="/agent-instructions" element={<AgentInstructions />} />
-              <Route path="/visual-builder" element={<VisualBuilder />} />
-              <Route path="/builder-docs" element={<BuilderDocs />} />
-              <Route path="/system-tests" element={<SystemTestDashboard />} />
-              <Route path="/email-templates" element={<EmailTemplateLibrary />} />
-              <Route path="/entity-library" element={<EntityLibrary />} />
-              <Route path="/platform-dashboard" element={<PlatformDashboard />} />
-              <Route path="/workflow-library" element={<WorkflowLibrary />} />
-              <Route path="/marketing-library" element={<MarketingLibrary />} />
-              <Route path="/workflow-builder" element={<WorkflowBuilder />} />
-              <Route path="/api-docs" element={<ApiDocs />} />
-              <Route path="/free-library" element={<FreeLibrary />} />
-              <Route path="/prompt-library" element={<PromptLibrary />} />
-              <Route path="/factory-console" element={<FactoryConsole />} />
-              <Route path="/gpt-factory" element={<GPTFactory />} />
-              <Route path="/build-queue" element={<BuildQueueConsole />} />
-              <Route path="/integration-hub" element={<IntegrationHub />} />
-              <Route path="/validator-pipeline" element={<ValidatorPipelineConsole />} />
-              <Route path="/local-sandbox" element={<LocalSandboxConsole />} />
-              <Route path="/autonomous-architecture" element={<AutonomousArchitecture />} />
-              <Route path="/project-start-inventory" element={<ProjectStartInventory />} />
-              <Route path="/builder-factory-architecture" element={<BuilderFactoryArchitecture />} />
-              <Route path="/visual-parity-engine" element={<VisualParityEngine />} />
-              <Route path="/pipeline-dashboard" element={<PipelineDashboard />} />
-              <Route path="/playwright-qa" element={<PlaywrightQaConsole />} />
-              <Route path="/system-docs" element={<SystemDocumentGenerator />} />
-              <Route path="/template-factory" element={<TemplateFactoryConsole />} />
-              <Route path="/intelligence-console" element={<IntelligenceConsole />} />
-              <Route path="/mockup-library" element={<MockupLibrary />} />
+              <Route element={<PortalLayout />}>
+                <Route path="/auto-builder" element={<AutoBuilder />} />
+                <Route path="/apex-command" element={<ApexCommand />} />
+                <Route path="/agent-orchestrator" element={<AgentOrchestrator />} />
+                <Route path="/brand-assets" element={<BrandAssets />} />
+                <Route path="/gpt-sync-logs" element={<GPTSyncLogs />} />
+                <Route path="/mass-launch-console" element={<MassLaunchConsolePage />} />
+                <Route path="/analytics" element={<Analytics />} />
+                <Route path="/research-hub" element={<ResearchHub />} />
+                <Route path="/business-onboarding" element={<BusinessOnboarding />} />
+                <Route path="/business-name-studio" element={<BusinessNameStudio />} />
+                <Route path="/logo-workshop" element={<LogoWorkshop />} />
+                <Route path="/project-timeline" element={<ProjectTimeline />} />
+                <Route path="/asset-repository" element={<AssetRepository />} />
+                <Route path="/campaign-monitor" element={<CampaignMonitor />} />
+                <Route path="/launch-monitor" element={<LaunchMonitorPage />} />
+                <Route path="/style-guide-editor" element={<StyleGuideEditor />} />
+                <Route path="/design-library" element={<PremiumDesignLibrary />} />
+                <Route path="/card-flyer-studio" element={<CardFlyerStudio />} />
+                <Route path="/performance-report" element={<PerformanceReport />} />
+                <Route path="/crm" element={<CRM />} />
+                <Route path="/ai-tool-library" element={<AIToolLibrary />} />
+                <Route path="/agent-library" element={<AgentLibrary />} />
+                <Route path="/ai-skills-library" element={<AISkillsLibrary />} />
+                <Route path="/comm-library" element={<CommLibrary />} />
+                <Route path="/api-keys" element={<ApiKeyManager />} />
+                <Route path="/api-connectors" element={<ApiConnectorSettings />} />
+                <Route path="/sheets-setup" element={<SheetsSetupGuide />} />
+                <Route path="/intelligence-hub" element={<IntelligenceHub />} />
+                <Route path="/performance-dashboard" element={<PerformanceDashboard />} />
+                <Route path="/mockup-ingestion" element={<MockupIngestion />} />
+                <Route path="/fault-line" element={<FaultLine />} />
+                <Route path="/client-portal" element={<ClientPortal />} />
+                <Route path="/universal-generator" element={<UniversalGenerator />} />
+                <Route path="/universal-studio" element={<UniversalGeneratorStudio />} />
+                <Route path="/clone-generator" element={<CloneGenerator />} />
+                <Route path="/apex-god-mode" element={<ApexDashboard />} />
+                <Route path="/agent-instructions" element={<AgentInstructions />} />
+                <Route path="/visual-builder" element={<VisualBuilder />} />
+                <Route path="/builder-docs" element={<BuilderDocs />} />
+                <Route path="/system-tests" element={<SystemTestDashboard />} />
+                <Route path="/email-templates" element={<EmailTemplateLibrary />} />
+                <Route path="/entity-library" element={<EntityLibrary />} />
+                <Route path="/platform-dashboard" element={<PlatformDashboard />} />
+                <Route path="/workflow-library" element={<WorkflowLibrary />} />
+                <Route path="/marketing-library" element={<MarketingLibrary />} />
+                <Route path="/workflow-builder" element={<WorkflowBuilder />} />
+                <Route path="/api-docs" element={<ApiDocs />} />
+                <Route path="/free-library" element={<FreeLibrary />} />
+                <Route path="/prompt-library" element={<PromptLibrary />} />
+                <Route path="/factory-console" element={<FactoryConsole />} />
+                <Route path="/gpt-factory" element={<GPTFactory />} />
+                <Route path="/build-queue" element={<BuildQueueConsole />} />
+                <Route path="/integration-hub" element={<IntegrationHub />} />
+                <Route path="/validator-pipeline" element={<ValidatorPipelineConsole />} />
+                <Route path="/local-sandbox" element={<LocalSandboxConsole />} />
+                <Route path="/autonomous-architecture" element={<AutonomousArchitecture />} />
+                <Route path="/project-start-inventory" element={<ProjectStartInventory />} />
+                <Route path="/builder-factory-architecture" element={<BuilderFactoryArchitecture />} />
+                <Route path="/visual-parity-engine" element={<VisualParityEngine />} />
+                <Route path="/pipeline-dashboard" element={<PipelineDashboard />} />
+                <Route path="/playwright-qa" element={<PlaywrightQaConsole />} />
+                <Route path="/system-docs" element={<SystemDocumentGenerator />} />
+                <Route path="/template-factory" element={<TemplateFactoryConsole />} />
+                <Route path="/intelligence-console" element={<IntelligenceConsole />} />
+                <Route path="/mockup-library" element={<MockupLibrary />} />
+              </Route>
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>
