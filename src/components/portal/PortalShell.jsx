@@ -107,6 +107,7 @@ const EXTERNAL_MODULES = [
   { to: "/integration-hub", icon: Boxes, label: "Integration Hub" },
   { to: "/validator-pipeline", icon: Shield, label: "Validator Pipeline" },
   { to: "/local-sandbox", icon: Monitor, label: "Local Sandbox Bridge" },
+  { to: "/autonomous-architecture", icon: Brain, label: "Autonomous Architecture" },
 ];
 
 export default function PortalShell({ activeTab, onTabChange, onNew, children }) {

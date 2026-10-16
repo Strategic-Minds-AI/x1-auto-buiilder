@@ -68,6 +68,7 @@ import BuildQueueConsole from '@/pages/BuildQueueConsole';
 import IntegrationHub from '@/pages/IntegrationHub';
 import ValidatorPipelineConsole from '@/pages/ValidatorPipelineConsole';
 import LocalSandboxConsole from '@/pages/LocalSandboxConsole';
+import AutonomousArchitecture from '@/pages/AutonomousArchitecture';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
 function App() {
@@ -142,6 +143,7 @@ function App() {
               <Route path="/integration-hub" element={<IntegrationHub />} />
               <Route path="/validator-pipeline" element={<ValidatorPipelineConsole />} />
               <Route path="/local-sandbox" element={<LocalSandboxConsole />} />
+              <Route path="/autonomous-architecture" element={<AutonomousArchitecture />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>
