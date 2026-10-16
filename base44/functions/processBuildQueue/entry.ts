@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
+import { waitUntil, secrets } from 'base44:runtime';
 import { buildWebsiteBlueprint } from '../../shared/generation.js';
 
 // Build Queue processor — runs on a schedule (BuildQueueProcessor workflow).
@@ -119,11 +120,64 @@ export default async function(req: Request): Promise<Response> {
       }
     }
 
+    // ── WHATSAPP NOTIFICATION: alert on completions or failures ──
+    if (result.completed.length > 0 || result.failed.length > 0) {
+      waitUntil(sendWhatsAppAlert(result));
+    }
+
     result.success = true;
     return Response.json(result);
   } catch (error: any) {
     return Response.json({ error: error.message }, { status: 500 });
   }
+}
+
+// Send a WhatsApp summary message to the admin's phone via Twilio
+async function sendWhatsAppAlert(result: any): Promise<void> {
+  try {
+    const accountSid = secrets.get('TWILIO_ACCOUNT_SID');
+    const authToken = secrets.get('TWILIO_AUTH_TOKEN');
+    const fromNumber = secrets.get('TWILIO_PHONE_NUMBER');
+    const toPhone = secrets.get('WHATSAPP_ADMIN_PHONE');
+    if (!accountSid || !authToken || !fromNumber || !toPhone) return;
+
+    const lines: string[] = [];
+    if (result.completed.length > 0) {
+      lines.push(`✅ ${result.completed.length} build(s) completed:`);
+      for (const c of result.completed.slice(0, 5)) {
+        lines.push(`  • ${c.title} (${c.via || 'done'})`);
+      }
+    }
+    if (result.failed.length > 0) {
+      lines.push(`❌ ${result.failed.length} build(s) failed:`);
+      for (const f of result.failed.slice(0, 5)) {
+        lines.push(`  • ${f.title}`);
+      }
+    }
+    lines.push(`\nGPT: ${result.gpt_online ? 'Online' : 'Offline (autonomous coder)'}`);
+    lines.push(`Checked: ${result.checked} | Assigned: ${result.assigned.length}`);
+
+    const cleanTo = toPhone.replace(/[^0-9]/g, '');
+    const cleanFrom = fromNumber.replace(/[^0-9]/g, '');
+
+    const params = new URLSearchParams();
+    params.append('To', `whatsapp:+${cleanTo}`);
+    params.append('From', `whatsapp:+${cleanFrom}`);
+    params.append('Body', lines.join('\n'));
+
+    const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
+    const authHeader = 'Basic ' + btoa(`${accountSid}:${authToken}`);
+
+    await fetch(twilioUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': authHeader,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString(),
+      signal: AbortSignal.timeout(15000),
+    });
+  } catch { /* best-effort — don't fail the build on notification error */ }
 }
 
 // Check if the external GPT engine has an active session in GPTMemory
