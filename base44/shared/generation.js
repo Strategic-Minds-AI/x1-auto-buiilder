@@ -3,6 +3,7 @@
 import { skipTraceBusiness, benchmarkIndustry, contentSchema } from './websiteResearch.js';
 import { ultraCoreSchema, ultraSupportSchema, buildUltraPrompt } from './ultraContentSchema.js';
 import { getIndustryIntelligence } from './industryIntelligence.js';
+import { GOOGLE_COMPLIANCE_PROMPT, GOOGLE_RULES, DIFFERENTIATION_LAYERS, TECHNICAL_SEO_QA } from './digitalDominationIntelligence.js';
 
 const CONTENT_PROMPT = (industry, businessResearch, benchmark) =>
   'You are an elite website copywriter and content strategist. Generate ORIGINAL, high-converting website content for a "' + industry + '" business.\n\n' +
@@ -107,7 +108,7 @@ export async function buildWebsiteBlueprint(base44, params) {
   // Ultra-premium path: use industry intelligence + 14-section schema + enhanced prompt
   if (ultra !== false) {
     const intelligence = getIndustryIntelligence(industry);
-    const ultraPrompt = buildUltraPrompt(industry, businessResearch, benchmark, intelligence);
+    const ultraPrompt = buildUltraPrompt(industry, businessResearch, benchmark, intelligence) + GOOGLE_COMPLIANCE_PROMPT;
     // Split into two LLM calls to stay within grammar compiler limits
     const [coreRes, supportRes] = await Promise.all([
       base44.asServiceRole.integrations.Core.InvokeLLM({
@@ -148,6 +149,7 @@ export async function runMassLaunch(base44, params, scope) {
       'Design guidance from benchmarking top sites:\n' + JSON.stringify((benchmark && benchmark.designGuidance) || benchmark) + '\n\n' +
       'For EACH location, produce a complete content blueprint with location-specific hero, services, about, FAQs, valueProps, process, testimonials, finalCta, logoPrompt, heroImagePrompt, metaDescription, and colorTokens. ' +
       'Each location\'s content must feel locally relevant — reference the city/region and local trust signals — while staying 100% original. Do NOT copy any benchmark content. ' +
+      GOOGLE_COMPLIANCE_PROMPT +
       'Return JSON with a "variants" array containing exactly one entry per location, in the same order.',
     response_json_schema: VARIANTS_SCHEMA
   });

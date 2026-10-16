@@ -92,6 +92,16 @@ export default function IntelligenceConsole() {
     finally { setSeeding(false); }
   };
 
+  const seedDD = async () => {
+    setSeeding(true);
+    try {
+      await base44.functions.invoke("seedDigitalDominationIntelligence", {});
+      loadCounts();
+      loadAll();
+    } catch { /* ignore */ }
+    finally { setSeeding(false); }
+  };
+
   const totalRecords = Object.values(counts).reduce((a, b) => a + (b || 0), 0);
 
   return (
@@ -116,6 +126,14 @@ export default function IntelligenceConsole() {
                 <div className="text-2xl font-black text-[#00d4ff]">{totalRecords}</div>
                 <div className="text-[10px] text-slate-400 uppercase tracking-wider">Total Records</div>
               </div>
+              <button
+                onClick={seedDD}
+                disabled={seeding}
+                className="inline-flex items-center gap-2 rounded-full border border-[#00d4ff]/40 bg-[#00d4ff]/10 px-4 py-2.5 text-sm font-bold text-[#00d4ff] hover:bg-[#00d4ff]/20 disabled:opacity-50 transition"
+              >
+                {seeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Database className="w-4 h-4" />}
+                {seeding ? "Seeding..." : "Install DD Intelligence"}
+              </button>
               <button
                 onClick={seed}
                 disabled={seeding}
