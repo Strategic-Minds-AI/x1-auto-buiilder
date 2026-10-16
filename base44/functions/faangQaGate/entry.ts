@@ -6,10 +6,12 @@ import { createClientFromRequest } from "npm:@base44/sdk@0.8.52";
 // Pass 2: Visual Parity (0-25) — Design system vs benchmarked top sites
 // Pass 3: Functional (0-25) — All sections, forms, CTAs, navigation, error states
 // Pass 4: Performance (0-25) — Performance, accessibility, SEO
-// Total >= 90 → SHIP | 70-89 → AUTO_HEAL (max 3 iterations) | <70 → REBUILD
+// Total >= 90 → SHIP | < 90 → AUTO_HEAL (up to 10 iterations, no REBUILD stop)
+// The system is FORCED to keep healing until it ships or hits the hard cap.
 
 const SHIP_THRESHOLD = 90;
 const HEAL_THRESHOLD = 70;
+const MAX_ITERATIONS = 10;
 
 // ─── Pass 1: Code Quality ───────────────────────────────────────────
 async function pass1CodeQuality(base44, templateOutput) {
@@ -198,36 +200,47 @@ Return the score and issues. For each issue provide severity, message, and recom
   return { score: Math.min(25, Math.max(0, result.score || 0)), issues: result.issues || [], details: result.details || "" };
 }
 
-// ─── Auto-Heal: Analyze issues and generate fixes ───────────────────
+// ─── Auto-Heal: Aggressively regenerate full template with ALL issues fixed ─
 async function autoHeal(base44, allIssues, templateOutput, architecture, iteration) {
-  const issuesJson = JSON.stringify(allIssues).substring(0, 6000);
-  const componentCode = JSON.stringify(templateOutput?.component_code || {}).substring(0, 6000);
-  const archJson = JSON.stringify(architecture || {}).substring(0, 3000);
+  const issuesJson = JSON.stringify(allIssues).substring(0, 8000);
+  const componentCode = JSON.stringify(templateOutput?.component_code || {}).substring(0, 8000);
+  const filesJson = JSON.stringify(templateOutput?.files || []).substring(0, 4000);
+  const archJson = JSON.stringify(architecture || {}).substring(0, 4000);
+  const blueprintJson = JSON.stringify(templateOutput?.blueprint || {}).substring(0, 3000);
 
   const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
-    prompt: `You are a FAANG-level auto-heal agent (iteration ${iteration}/3). Analyze these QA issues and generate specific code fixes.
+    prompt: `You are a FAANG-level senior engineer performing auto-heal iteration ${iteration}/${MAX_ITERATIONS}.
 
-Issues found:
+The template scored below 90/100 on the FAANG QA Gate. You MUST fix EVERY issue listed below and regenerate the COMPLETE component code. This is not a patch — you are rewriting the full template to meet production-grade quality.
+
+## ALL ISSUES FOUND (fix every single one):
 ${issuesJson}
 
-Current component code:
+## CURRENT COMPONENT CODE (rewrite this entirely with all fixes):
 ${componentCode}
 
-Architecture:
+## CURRENT FILES:
+${filesJson}
+
+## ARCHITECTURE SPEC:
 ${archJson}
 
-For each issue, generate a specific fix:
-1. issue — the issue message
-2. fix_description — what to change
-3. file — which file/component to update
-4. fixed_code — the corrected code for that component
+## BLUEPRINT:
+${blueprintJson}
 
-Also provide:
-- updated_component_code — the full updated component_code object with all fixes applied
-- updated_files — the full updated files array with all fixes applied
-- summary — brief summary of what was fixed
+## MANDATORY FIXES — apply ALL of these:
+1. Code Quality: Add proper TypeScript types/interfaces (no "any"), remove all console.log/TODO/debugger, use proper React hooks, add key props to all lists, ensure proper component structure
+2. Visual Parity: Ensure design system matches top industry sites — proper color palette, typography scale, spacing, shadows, hover states, transitions, micro-interactions
+3. Functional: Ensure ALL sections present (hero, features, about, testimonials, pricing, CTA, contact, footer), all forms have validation + submission handlers + success/error states, all buttons have actions, navigation works, loading/empty/error states implemented
+4. Performance: Add lazy loading for images, proper alt texts, ARIA labels, semantic HTML, keyboard navigation, WCAG AA color contrast, meta tags, Open Graph, structured data, efficient state management
 
-Focus on critical and warning issues first. Apply all fixes that can be resolved through code changes.`,
+## OUTPUT — provide the COMPLETE regenerated code:
+- updated_component_code: The FULL rewritten component_code object with ALL issues fixed. This must be a complete, production-ready React component — not a patch, not a diff. Include every section, every handler, every state.
+- updated_files: The FULL updated files array with all fixes applied
+- fixes: Array of {issue, fix_description, file, applied: true} for each issue you resolved
+- summary: Brief summary of what was fixed
+
+CRITICAL: The updated_component_code must be a COMPLETE component that would score 90+ on re-testing. Do not leave any issue unresolved.`,
     model: "claude-sonnet-5",
     response_json_schema: {
       type: "object",
@@ -452,7 +465,7 @@ export default async function (req) {
       if (!job.template_output?.blueprint)
         return Response.json({ error: "Template not yet engineered." }, { status: 400 });
 
-      const maxIter = maxIterations || 3;
+      const maxIter = maxIterations || MAX_ITERATIONS;
 
       // Find or create QA result
       const existingQa = await base44.entities.FaangQaResult.filter(
@@ -479,11 +492,15 @@ export default async function (req) {
         qaResultId = qaRec.id;
       } else {
         qaResultId = qa.id;
+        // Update max_iterations if a higher value was passed
+        if (maxIter > (qa.max_iterations || 0)) {
+          await base44.entities.FaangQaResult.update(qa.id, { max_iterations: maxIter });
+        }
       }
 
       const currentIteration = (qa.iteration || 0) + 1;
       if (currentIteration > maxIter) {
-        return Response.json({ ok: false, error: "Max iterations reached", totalScore: qa.total_score, verdict: qa.verdict });
+        return Response.json({ ok: false, error: "Hard cap reached — template needs manual review", totalScore: qa.total_score, verdict: qa.verdict, iteration: qa.iteration });
       }
 
       // If previous iteration already SHIPPED, stop
@@ -508,7 +525,8 @@ export default async function (req) {
         ...p4.issues.map(i => ({ ...i, pass: "Pass 4: Performance" })),
       ];
 
-      const verdict = totalScore >= SHIP_THRESHOLD ? "SHIP" : totalScore >= HEAL_THRESHOLD ? "AUTO_HEAL" : "REBUILD";
+      // NEVER stop on REBUILD — always heal until SHIP or hard cap
+      const verdict = totalScore >= SHIP_THRESHOLD ? "SHIP" : "AUTO_HEAL";
       const status = verdict === "SHIP" ? "shipped" : currentIteration >= maxIter ? "failed" : "auto_healing";
 
       // Update QA result with this iteration's scores

@@ -17,6 +17,7 @@ export default function FaangQaPanel({ job, onRefresh }) {
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState(null);
+  const [progressMsg, setProgressMsg] = useState(null);
 
   const loadQa = async () => {
     try {
@@ -56,19 +57,28 @@ export default function FaangQaPanel({ job, onRefresh }) {
   const autoRun = async () => {
     setRunning(true);
     setError(null);
+    setProgressMsg("Starting autonomous QA loop...");
     try {
-      // Chain iterations until SHIP or max reached
-      for (let i = 0; i < 3; i++) {
-        const res = await base44.functions.invoke("faangQaGate", { action: "auto_run", jobId: job.id, maxIterations: 3 });
+      // Chain iterations until SHIP or hard cap (10) reached
+      for (let i = 0; i < 10; i++) {
+        setProgressMsg(`Running iteration ${i + 1}/10 — testing 4 passes + auto-healing...`);
+        const res = await base44.functions.invoke("faangQaGate", { action: "auto_run", jobId: job.id, maxIterations: 10 });
         const data = res.data;
-        if (data?.verdict === "SHIP" || data?.status === "shipped") break;
-        if (data?.status === "failed" && data?.verdict !== "AUTO_HEAL") break;
-        loadQa();
+        loadQa(); // refresh after each iteration
+        if (data?.verdict === "SHIP" || data?.status === "shipped") {
+          setProgressMsg(`SHIPPED! Score: ${data.totalScore}/100`);
+          break;
+        }
+        if (data?.status === "failed") {
+          setProgressMsg(`Hard cap reached. Final score: ${data.totalScore}/100`);
+          break;
+        }
+        setProgressMsg(`Iteration ${data.iteration} done — score ${data.totalScore}/100. ${data.fixesApplied || 0} fixes applied. Continuing...`);
       }
       loadQa();
       onRefresh?.();
     } catch (e) { setError(e.response?.data?.error || e.message); }
-    finally { setRunning(false); }
+    finally { setRunning(false); setProgressMsg(null); }
   };
 
   if (loading) return <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-[#00d4ff]" /></div>;
@@ -121,12 +131,19 @@ export default function FaangQaPanel({ job, onRefresh }) {
               </button>
             )}
             <button onClick={autoRun} disabled={running}
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 px-4 py-2 text-xs font-bold text-slate-600 hover:text-[#00d4ff] disabled:opacity-50 transition">
+              className="inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-4 py-2 text-xs font-bold text-white hover:bg-slate-800 disabled:opacity-50 transition">
               {running ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
-              Auto-Run Full Loop
+              {running ? "Healing..." : "Auto-Run Until Ship"}
             </button>
           </div>
         </div>
+
+        {progressMsg && (
+          <div className="mb-3 rounded-lg bg-[#00d4ff]/5 border border-[#00d4ff]/20 px-3 py-2 text-xs text-[#0066ff] font-medium flex items-center gap-2">
+            <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+            {progressMsg}
+          </div>
+        )}
 
         {qaResult ? (
           <>
@@ -162,13 +179,12 @@ export default function FaangQaPanel({ job, onRefresh }) {
                 </div>
                 <div className="h-3 rounded-full bg-slate-100 overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all ${totalScore >= 90 ? "bg-emerald-500" : totalScore >= 70 ? "bg-amber-500" : "bg-red-500"}`}
+                    className={`h-full rounded-full transition-all ${totalScore >= 90 ? "bg-emerald-500" : "bg-amber-500"}`}
                     style={{ width: `${totalScore}%` }}
                   />
                 </div>
                 <div className="flex justify-between mt-1 text-[9px] text-slate-400">
-                  <span>REBUILD below 70</span>
-                  <span>AUTO-HEAL 70-89</span>
+                  <span>HEAL below 90</span>
                   <span>SHIP 90+</span>
                 </div>
               </div>
