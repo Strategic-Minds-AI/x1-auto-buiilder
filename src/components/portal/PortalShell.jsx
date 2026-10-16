@@ -45,6 +45,7 @@ const NAV_GROUPS = [
       { tab: "images", icon: Image, label: "Image Library" },
       { tab: "web-packs", icon: Package, label: "Web Pack Library" },
       { tab: "app-packs", icon: Monitor, label: "App Pack Library" },
+      { tab: "mockups", icon: Scan, label: "Mockup Library" },
     ],
   },
   {
