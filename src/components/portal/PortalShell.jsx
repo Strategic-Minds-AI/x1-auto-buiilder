@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Wand2, Library, Globe, LayoutTemplate, Rocket, LayoutGrid, Cable,
   Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown, Mail, Workflow, Code,
-  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2, Key, Plug, Brain, Scan, AlertTriangle, Megaphone, Download, Copy, Crown, UploadCloud
+  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2, Key, Plug, Brain, Scan, AlertTriangle, Megaphone, Download, Copy, Crown, UploadCloud, BookOpen
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -100,6 +100,7 @@ const EXTERNAL_MODULES = [
   { to: "/workflow-builder", icon: Workflow, label: "Workflow Builder" },
   { to: "/workflow-library", icon: Workflow, label: "Workflow Library" },
   { to: "/free-library", icon: Download, label: "Free Assets Library" },
+  { to: "/prompt-library", icon: BookOpen, label: "Prompt Library" },
   { to: "/integration-hub", icon: Boxes, label: "Integration Hub" },
 ];
 

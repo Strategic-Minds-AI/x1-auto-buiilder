@@ -10,11 +10,13 @@ import { secrets } from 'base44:runtime';
 const SNAPSHOT_ENTITIES = [
   'WebsiteProject', 'DesignTemplate', 'LaunchCampaign', 'GenerationItem',
   'ApexMission', 'ApexOpportunity', 'Lead', 'SocialCampaign', 'ApprovalRequest',
-  'CloneProject', 'Client', 'BuildProject',
+  'CloneProject', 'Client', 'BuildProject', 'PromptPack', 'SiteTemplate',
+  'FreeAsset', 'Template', 'FaultLineScan', 'MockupProject',
 ];
 
 const RECENT_ENTITIES = [
   'WebsiteProject', 'LaunchCampaign', 'ApexMission', 'ApprovalRequest', 'Lead',
+  'PromptPack', 'DesignTemplate', 'CloneProject',
 ];
 
 const FIELD_MAP = {
@@ -24,6 +26,8 @@ const FIELD_MAP = {
   ApprovalRequest: ['id', 'approval_type', 'status', 'description', 'created_date'],
   Lead: ['id', 'name', 'email', 'status', 'service', 'created_date'],
   CloneProject: ['id', 'source_url', 'source_title', 'status', 'industry', 'created_date'],
+  PromptPack: ['id', 'name', 'category', 'prompt_type', 'usage_count', 'created_date'],
+  DesignTemplate: ['id', 'name', 'industry', 'layout', 'created_date'],
 };
 
 export default async function(req: Request): Promise<Response> {
@@ -141,37 +145,17 @@ export default async function(req: Request): Promise<Response> {
             let failed = 0;
 
             for (const cmd of commands) {
-              try {
-                const execRes = await fetch(syncEngineUrl, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${syncKey}`,
-                  },
-                  body: JSON.stringify(cmd),
-                  signal: AbortSignal.timeout(45000),
-                });
-
-                const execData = await execRes.json().catch(() => ({}));
-                const ok = execRes.ok && !execData.error;
-                result.executed.push({
-                  command_id: cmd.id || cmd.idempotency_key || '',
-                  action: cmd.action || '',
-                  entity: cmd.entity || cmd.function || '',
-                  ok,
-                  status: execRes.status,
-                  result: execData.status || execData.error || '',
-                });
-                if (ok) succeeded++; else failed++;
-              } catch (cmdErr: any) {
-                result.executed.push({
-                  command_id: cmd.id || cmd.idempotency_key || '',
-                  action: cmd.action || '',
-                  ok: false,
-                  error: cmdErr.message,
-                });
-                failed++;
-              }
+              const execResult = await executeWithRetry(syncEngineUrl, syncKey, cmd);
+              result.executed.push({
+                command_id: cmd.id || cmd.idempotency_key || '',
+                action: cmd.action || '',
+                entity: cmd.entity || cmd.function || '',
+                ok: execResult.ok,
+                status: execResult.status,
+                result: execResult.data?.status || execResult.data?.error || execResult.error || '',
+                retries: execResult.attempts - 1,
+              });
+              if (execResult.ok) succeeded++; else failed++;
             }
 
             // ── ACK PHASE: confirm completed commands ─────────────
@@ -290,4 +274,37 @@ async function logReceipt(base44: any, action: string, entity: string, status: s
       summary: String(summary).slice(0, 400),
     });
   } catch { /* receipt logging is best-effort */ }
+}
+
+// Executes a single command through gptSyncEngine with one automatic retry on failure.
+async function executeWithRetry(
+  syncEngineUrl: string,
+  syncKey: string,
+  cmd: any
+): Promise<{ ok: boolean; status: number; data: any; error?: string; attempts: number }> {
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const execRes = await fetch(syncEngineUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${syncKey}`,
+        },
+        body: JSON.stringify(cmd),
+        signal: AbortSignal.timeout(45000),
+      });
+      const execData = await execRes.json().catch(() => ({}));
+      const ok = execRes.ok && !execData.error;
+      if (ok || attempt === 2) {
+        return { ok, status: execRes.status, data: execData, attempts: attempt };
+      }
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    } catch (err: any) {
+      if (attempt === 2) {
+        return { ok: false, status: 0, data: {}, error: err.message, attempts: attempt };
+      }
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+  }
+  return { ok: false, status: 0, data: {}, error: 'Max retries exceeded', attempts: 2 };
 }
