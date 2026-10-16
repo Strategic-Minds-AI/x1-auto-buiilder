@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Wand2, Library, Globe, LayoutTemplate, Rocket, LayoutGrid, Cable,
   Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown, Mail, Workflow, Code,
-  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2, Key, Plug, Brain, Scan, AlertTriangle, Megaphone, Download, Copy, Crown, UploadCloud, BookOpen, Factory, ListChecks, ClipboardList
+  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2, Key, Plug, Brain, Scan, AlertTriangle, Megaphone, Download, Copy, Crown, UploadCloud, BookOpen, Factory, ListChecks, ClipboardList, Layers
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -109,6 +109,7 @@ const EXTERNAL_MODULES = [
   { to: "/local-sandbox", icon: Monitor, label: "Local Sandbox Bridge" },
   { to: "/autonomous-architecture", icon: Brain, label: "Autonomous Architecture" },
   { to: "/project-start-inventory", icon: ClipboardList, label: "Project Start Inventory" },
+  { to: "/builder-factory-architecture", icon: Layers, label: "Builder Factory Architecture" },
 ];
 
 export default function PortalShell({ activeTab, onTabChange, onNew, children }) {

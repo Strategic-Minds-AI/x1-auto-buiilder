@@ -70,6 +70,7 @@ import ValidatorPipelineConsole from '@/pages/ValidatorPipelineConsole';
 import LocalSandboxConsole from '@/pages/LocalSandboxConsole';
 import AutonomousArchitecture from '@/pages/AutonomousArchitecture';
 import ProjectStartInventory from '@/pages/ProjectStartInventory';
+import BuilderFactoryArchitecture from '@/pages/BuilderFactoryArchitecture';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
 function App() {
@@ -146,6 +147,7 @@ function App() {
               <Route path="/local-sandbox" element={<LocalSandboxConsole />} />
               <Route path="/autonomous-architecture" element={<AutonomousArchitecture />} />
               <Route path="/project-start-inventory" element={<ProjectStartInventory />} />
+              <Route path="/builder-factory-architecture" element={<BuilderFactoryArchitecture />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>
