@@ -1,0 +1,98 @@
+{
+  "schema_version": "1.0.0",
+  "phase": "PHASE_0_ENVIRONMENT_ALIGNMENT_GATE",
+  "project_id": "UNLIMITED_WEBSITES",
+  "project_slug": "gpt-builder-factory-prime",
+  "observed_at": "2026-10-16T16:28:00-04:00",
+  "source_truth": {
+    "repository": "Strategic-Minds-AI/x1-auto-buiilder",
+    "branch": "feature/gptbf-phase0-environment-alignment",
+    "github_sha": "0e4cb7090623fdace249459b001e2be81d157400",
+    "local_sha": "0e4cb7090623fdace249459b001e2be81d157400",
+    "status": "VERIFIED"
+  },
+  "systems": [
+    {
+      "system": "GPT_PROJECT",
+      "status": "VERIFIED",
+      "evidence": "UNLIMITED WEBSITES project visible in authenticated ChatGPT workspace",
+      "id": "g-p-6acb9b86ea4481918d0d2a06bb6be852"
+    },
+    {
+      "system": "GOOGLE_DRIVE",
+      "status": "VERIFIED",
+      "evidence": "18_ULTIMATE_AUTO_BUILDER exists and canonical 00-17 folders created",
+      "id": "1zazPL7umsp0ccFoPbtC6mHLnqpx-zjO8"
+    },
+    {
+      "system": "GITHUB",
+      "status": "VERIFIED",
+      "evidence": "repo resolved with admin/push permissions; alignment branch created",
+      "id": "1420119041"
+    },
+    {
+      "system": "LOCAL_FOLDER",
+      "status": "VERIFIED",
+      "evidence": "C:\\_Strategic_Minds_AI_OS\\66_GPT BUILDER FACTORY with 00-17 folders and repo clone",
+      "id": "C:\\_Strategic_Minds_AI_OS\\66_GPT BUILDER FACTORY"
+    },
+    {
+      "system": "DOCKER",
+      "status": "VERIFIED",
+      "evidence": "Docker client/server 29.8.1, Compose v5.5.1, Strategic Minds containers running"
+    },
+    {
+      "system": "RAILWAY",
+      "status": "VERIFIED",
+      "evidence": "Strategic Sandbox System with sandbox-code/orchestrator/swarm/etc.",
+      "id": "15f90272-e2f6-4739-8286-91447f545d71"
+    },
+    {
+      "system": "SUPABASE",
+      "status": "VERIFIED",
+      "evidence": "X1 AI Hub Staging and X1 AI Hub are ACTIVE_HEALTHY",
+      "id": "uvdkzsbjackpjvpoxtyk"
+    },
+    {
+      "system": "VERCEL",
+      "status": "VERIFIED_PROVIDER",
+      "evidence": "website-launch-engine project resolved",
+      "id": "prj_JbkX4yKWygqBFRhkHL6nbeQXM46f"
+    },
+    {
+      "system": "X1_QUEUE",
+      "status": "UNKNOWN",
+      "evidence": "runtime exists but exact authoritative queue binding for GPT Builder Factory not yet read back"
+    },
+    {
+      "system": "SUPER_AGENTS",
+      "status": "VERIFIED",
+      "evidence": "Railway bnm-super-agent and worker services plus local sm-swarm/sm-validator containers observed"
+    },
+    {
+      "system": "ARTIFACT_VAULT",
+      "status": "PARTIAL",
+      "evidence": "repo/local references present; end-to-end save/readback receipt not yet validated"
+    },
+    {
+      "system": "QA_AGENT",
+      "status": "PARTIAL",
+      "evidence": "qa_agent code and local validator container present; current canary not executed"
+    },
+    {
+      "system": "INDEPENDENT_VALIDATOR",
+      "status": "PARTIAL",
+      "evidence": "validator_agent code and sm-validator container present; current alignment canary not executed"
+    }
+  ],
+  "gates": {
+    "all_required_aligned": false,
+    "build_ready": false,
+    "blocker_summary": [
+      "Resolve exact X1 authoritative queue binding",
+      "Prove Artifact Vault save/readback receipt",
+      "Run QA and Independent Validator on one alignment canary",
+      "Bind a project-specific Vercel preview and compare deployed SHA"
+    ]
+  }
+}
