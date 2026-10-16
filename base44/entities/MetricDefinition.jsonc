@@ -1,0 +1,83 @@
+{
+  "name": "MetricDefinition",
+  "type": "object",
+  "properties": {
+    "metric_id": {
+      "type": "string",
+      "description": "Unique metric identifier (e.g. MET-001)"
+    },
+    "area": {
+      "type": "string",
+      "description": "Metric area (Acquisition, Conversion, Revenue, etc.)"
+    },
+    "kpi": {
+      "type": "string",
+      "description": "KPI name"
+    },
+    "definition": {
+      "type": "string",
+      "description": "Full definition with grain, numerator/denominator, window, filter"
+    },
+    "qualification": {
+      "type": "string",
+      "description": "When this metric is valid/observable"
+    },
+    "authoritative_source": {
+      "type": "string",
+      "description": "Where this metric comes from (GA4, GSC, CRM, X1 ledger)"
+    },
+    "statistical_honesty": {
+      "type": "string",
+      "description": "Statistical honesty rule (never invent sample size, etc.)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "UNCONFIGURED",
+        "CONFIGURED",
+        "ACTIVE",
+        "DEPRECATED"
+      ],
+      "default": "UNCONFIGURED"
+    },
+    "current_value": {
+      "type": "number",
+      "description": "Current observed value if available"
+    },
+    "target_value": {
+      "type": "number",
+      "description": "Target value"
+    },
+    "unit": {
+      "type": "string",
+      "description": "Unit of measurement (count, percentage, USD, etc.)"
+    }
+  },
+  "required": [
+    "metric_id",
+    "kpi",
+    "area"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

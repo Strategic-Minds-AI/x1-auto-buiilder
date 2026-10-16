@@ -1,0 +1,107 @@
+{
+  "name": "KeywordCandidate",
+  "type": "object",
+  "properties": {
+    "keyword_id": {
+      "type": "string",
+      "description": "Unique keyword identifier (e.g. KW-001)"
+    },
+    "industry": {
+      "type": "string",
+      "description": "Target industry"
+    },
+    "search_phrase": {
+      "type": "string",
+      "description": "The search phrase hypothesis"
+    },
+    "intent": {
+      "type": "string",
+      "enum": [
+        "Transactional",
+        "Commercial investigation",
+        "Informational",
+        "Navigational",
+        "Local",
+        "Comparison"
+      ],
+      "description": "Search intent type"
+    },
+    "geo_caution": {
+      "type": "string",
+      "description": "Geographic scope caution (LOCAL INTENT, NATIONAL/LOCAL TEST, etc.)"
+    },
+    "industry_context": {
+      "type": "string",
+      "description": "Industry context notes"
+    },
+    "validate_with": {
+      "type": "string",
+      "description": "How to validate this keyword (Google Ads historical metrics, etc.)"
+    },
+    "monthly_searches": {
+      "type": "number",
+      "description": "Monthly search volume (null until imported from real data)"
+    },
+    "competition": {
+      "type": "number",
+      "description": "Competition score 0-10 (null until imported)"
+    },
+    "top_page_bid": {
+      "type": "number",
+      "description": "Top page bid in USD (null until imported)"
+    },
+    "modeled_evidence_score": {
+      "type": "number",
+      "description": "Modeled evidence score 0-100"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "RESEARCH_CANDIDATE",
+        "VALIDATED",
+        "IMPORTED",
+        "DEPLOYED",
+        "REJECTED"
+      ],
+      "default": "RESEARCH_CANDIDATE"
+    },
+    "source_url": {
+      "type": "string",
+      "description": "Source reference URL"
+    },
+    "modifier_group": {
+      "type": "string",
+      "description": "If this is a modifier, which group (Location, Price, Service, etc.)"
+    },
+    "reusable_suffix": {
+      "type": "string",
+      "description": "Reusable suffix/phrase for modifiers"
+    }
+  },
+  "required": [
+    "keyword_id",
+    "search_phrase"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

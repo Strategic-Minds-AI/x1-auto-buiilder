@@ -1,0 +1,106 @@
+{
+  "name": "AgentPlaybook",
+  "type": "object",
+  "properties": {
+    "agent_id": {
+      "type": "string",
+      "description": "Unique agent identifier (e.g. AG-001)"
+    },
+    "pod": {
+      "type": "string",
+      "enum": [
+        "Strategy",
+        "Discovery",
+        "Build",
+        "Content",
+        "Design",
+        "QA",
+        "Deployment",
+        "Governance",
+        "Operations",
+        "Marketing",
+        "Research",
+        "Intelligence"
+      ],
+      "description": "Agent pod/specialization group"
+    },
+    "agent_name": {
+      "type": "string",
+      "description": "Agent specialization name"
+    },
+    "system_prompt": {
+      "type": "string",
+      "description": "Full copy-ready system prompt for this agent"
+    },
+    "inputs": {
+      "type": "string",
+      "description": "What inputs this agent needs"
+    },
+    "tool_route": {
+      "type": "string",
+      "description": "What tools/routes this agent uses"
+    },
+    "allowed_authority": {
+      "type": "string",
+      "description": "What authority level this agent has"
+    },
+    "definition_of_success": {
+      "type": "string",
+      "description": "What defines a successful run"
+    },
+    "required_proof": {
+      "type": "string",
+      "description": "What evidence must be produced"
+    },
+    "failure_escalation": {
+      "type": "string",
+      "description": "What happens on failure / human escalation"
+    },
+    "governance_rule": {
+      "type": "string",
+      "description": "Governance constraint"
+    },
+    "installation_state": {
+      "type": "string",
+      "enum": [
+        "CANDIDATE_SPEC",
+        "INSTALLED",
+        "ACTIVE",
+        "PAUSED",
+        "RETIRED"
+      ],
+      "default": "CANDIDATE_SPEC"
+    },
+    "linked_agent_profile_id": {
+      "type": "string",
+      "description": "Linked AgentProfile ID if installed"
+    }
+  },
+  "required": [
+    "agent_id",
+    "agent_name",
+    "pod"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

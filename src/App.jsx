@@ -76,6 +76,7 @@ import PipelineDashboard from '@/pages/PipelineDashboard';
 import PlaywrightQaConsole from '@/pages/PlaywrightQaConsole';
 import SystemDocumentGenerator from '@/pages/SystemDocumentGenerator';
 import TemplateFactoryConsole from '@/pages/TemplateFactoryConsole';
+import IntelligenceConsole from '@/pages/IntelligenceConsole';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
 function App() {
@@ -158,6 +159,7 @@ function App() {
               <Route path="/playwright-qa" element={<PlaywrightQaConsole />} />
               <Route path="/system-docs" element={<SystemDocumentGenerator />} />
               <Route path="/template-factory" element={<TemplateFactoryConsole />} />
+              <Route path="/intelligence-console" element={<IntelligenceConsole />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>

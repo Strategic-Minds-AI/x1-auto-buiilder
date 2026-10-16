@@ -1,0 +1,108 @@
+{
+  "name": "IntelligenceQuestion",
+  "type": "object",
+  "properties": {
+    "question_id": {
+      "type": "string",
+      "description": "Unique question identifier (e.g. DD-04-Q01)"
+    },
+    "intelligence_area": {
+      "type": "string",
+      "description": "Intelligence area/category"
+    },
+    "question": {
+      "type": "string",
+      "description": "The high-leverage question to ask"
+    },
+    "required_evidence": {
+      "type": "string",
+      "description": "What evidence is required to answer"
+    },
+    "verification_method": {
+      "type": "string",
+      "description": "How to verify the answer"
+    },
+    "expected_answer_format": {
+      "type": "string",
+      "description": "Expected format (Answer + impact + source + confidence + next action)"
+    },
+    "module_workbook": {
+      "type": "string",
+      "description": "Which workbook this question belongs to"
+    },
+    "answer_status": {
+      "type": "string",
+      "enum": [
+        "NOT_ANSWERED",
+        "IN_PROGRESS",
+        "ANSWERED",
+        "VERIFIED",
+        "BLOCKED"
+      ],
+      "default": "NOT_ANSWERED"
+    },
+    "answer": {
+      "type": "string",
+      "description": "The answer when resolved"
+    },
+    "impact": {
+      "type": "string",
+      "description": "Business impact of this answer"
+    },
+    "source": {
+      "type": "string",
+      "description": "Source of the answer"
+    },
+    "confidence": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "inferred",
+        "simulated",
+        "unknown"
+      ],
+      "default": "unknown"
+    },
+    "next_action": {
+      "type": "string",
+      "description": "What to do next based on this answer"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "P0",
+        "P1",
+        "P2",
+        "P3"
+      ],
+      "default": "P1"
+    }
+  },
+  "required": [
+    "question_id",
+    "question",
+    "intelligence_area"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

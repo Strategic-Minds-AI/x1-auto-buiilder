@@ -1,0 +1,118 @@
+{
+  "name": "IntelligenceWorkbook",
+  "type": "object",
+  "properties": {
+    "workbook_id": {
+      "type": "string",
+      "description": "Unique workbook identifier (e.g. DD-01)"
+    },
+    "title": {
+      "type": "string",
+      "description": "Intelligence workbook name"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "CORE EXISTING",
+        "INTELLIGENCE",
+        "BUILD",
+        "LAUNCH",
+        "GOVERNANCE",
+        "OPERATIONS",
+        "RESEARCH",
+        "DOCS"
+      ],
+      "default": "INTELLIGENCE",
+      "description": "Workbook category"
+    },
+    "phase": {
+      "type": "string",
+      "description": "Pipeline phase (DISCOVERY, BUILD, LAUNCH, QA, etc.)"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "P0",
+        "P1",
+        "P2",
+        "P3"
+      ],
+      "default": "P1"
+    },
+    "intended_outcome": {
+      "type": "string",
+      "description": "What this workbook produces"
+    },
+    "first_question": {
+      "type": "string",
+      "description": "The first question to ask when consuming this workbook"
+    },
+    "filename": {
+      "type": "string",
+      "description": "Source filename"
+    },
+    "artifact_status": {
+      "type": "string",
+      "enum": [
+        "POPULATED_SPEC",
+        "DRAFT",
+        "CANDIDATE",
+        "INSTALLED",
+        "ARCHIVED"
+      ],
+      "default": "POPULATED_SPEC"
+    },
+    "system_installed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the system described in this workbook is installed"
+    },
+    "how_to_consume": {
+      "type": "string",
+      "description": "How to use this workbook"
+    },
+    "key_prerequisite": {
+      "type": "string",
+      "description": "What must be true before consuming"
+    },
+    "routing_rule": {
+      "type": "string",
+      "description": "How this workbook routes work in the pipeline"
+    },
+    "sheets_summary": {
+      "type": "string",
+      "description": "Summary of sheets contained in the workbook file"
+    },
+    "install_notes": {
+      "type": "string",
+      "description": "Notes on installation progress"
+    }
+  },
+  "required": [
+    "workbook_id",
+    "title",
+    "category"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

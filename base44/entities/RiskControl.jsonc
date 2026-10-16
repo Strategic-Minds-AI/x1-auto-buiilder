@@ -1,0 +1,93 @@
+{
+  "name": "RiskControl",
+  "type": "object",
+  "properties": {
+    "risk_id": {
+      "type": "string",
+      "description": "Unique risk identifier (e.g. RISK-001)"
+    },
+    "risk": {
+      "type": "string",
+      "description": "Risk name/description"
+    },
+    "control_stage": {
+      "type": "string",
+      "enum": [
+        "Prevention",
+        "Detection",
+        "Response",
+        "Recovery",
+        "Governance"
+      ],
+      "description": "Which control stage this risk belongs to"
+    },
+    "failure_scenario": {
+      "type": "string",
+      "description": "What failure looks like"
+    },
+    "mitigation": {
+      "type": "string",
+      "description": "How to mitigate this risk"
+    },
+    "default_severity": {
+      "type": "string",
+      "enum": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ],
+      "default": "HIGH"
+    },
+    "owner": {
+      "type": "string",
+      "description": "Who owns this risk (Guardian, Operator, etc.)"
+    },
+    "current_evidence": {
+      "type": "string",
+      "description": "Current evidence status"
+    },
+    "source_reference": {
+      "type": "string",
+      "description": "Source URL or reference"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "OPEN",
+        "MITIGATED",
+        "MONITORING",
+        "ACCEPTED",
+        "CLOSED"
+      ],
+      "default": "OPEN"
+    }
+  },
+  "required": [
+    "risk_id",
+    "risk",
+    "control_stage"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
