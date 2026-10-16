@@ -77,6 +77,7 @@ import PlaywrightQaConsole from '@/pages/PlaywrightQaConsole';
 import SystemDocumentGenerator from '@/pages/SystemDocumentGenerator';
 import TemplateFactoryConsole from '@/pages/TemplateFactoryConsole';
 import IntelligenceConsole from '@/pages/IntelligenceConsole';
+import MockupLibrary from '@/pages/MockupLibrary';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
 function App() {
@@ -160,6 +161,7 @@ function App() {
               <Route path="/system-docs" element={<SystemDocumentGenerator />} />
               <Route path="/template-factory" element={<TemplateFactoryConsole />} />
               <Route path="/intelligence-console" element={<IntelligenceConsole />} />
+              <Route path="/mockup-library" element={<MockupLibrary />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>

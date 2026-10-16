@@ -1,0 +1,153 @@
+{
+  "name": "MockupLibrary",
+  "type": "object",
+  "properties": {
+    "mockup_id": {
+      "type": "string",
+      "description": "Unique mockup identifier (e.g. MK-001)"
+    },
+    "title": {
+      "type": "string",
+      "description": "Mockup display title"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-safe slug"
+    },
+    "website_type": {
+      "type": "string",
+      "description": "Website type category (e.g. business, ecommerce, landing, portfolio)"
+    },
+    "industry": {
+      "type": "string",
+      "description": "Primary industry category"
+    },
+    "sub_industry": {
+      "type": "string",
+      "description": "Sub-industry or niche"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Mockup preview image URL (full-page screenshot or design render)"
+    },
+    "desktop_image_url": {
+      "type": "string",
+      "description": "Desktop layout mockup image URL"
+    },
+    "mobile_image_url": {
+      "type": "string",
+      "description": "Mobile layout mockup image URL"
+    },
+    "source_url": {
+      "type": "string",
+      "description": "Original source URL if cloned from a live site"
+    },
+    "design_system": {
+      "type": "object",
+      "description": "Extracted design tokens: colors, typography, spacing, radii, shadows"
+    },
+    "layout_structure": {
+      "type": "object",
+      "description": "Section order, hero pattern, navigation style, component patterns"
+    },
+    "content_blueprint": {
+      "type": "object",
+      "description": "Content sections and copy structure extracted from the mockup"
+    },
+    "conversion_elements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "CTAs, forms, lead-capture patterns present in the mockup"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Searchable tags (style, mood, feature keywords)"
+    },
+    "style": {
+      "type": "string",
+      "enum": [
+        "modern",
+        "classic",
+        "minimal",
+        "bold",
+        "elegant",
+        "playful",
+        "corporate",
+        "editorial",
+        "dark",
+        "vibrant",
+        "luxury",
+        "rustic"
+      ],
+      "default": "modern",
+      "description": "Visual style classification"
+    },
+    "quality_score": {
+      "type": "number",
+      "description": "0-100 quality score from FAANG QA gate"
+    },
+    "verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this mockup has passed independent validation"
+    },
+    "installed_by": {
+      "type": "string",
+      "description": "Who installed this mockup (gpt, admin, pipeline)"
+    },
+    "usage_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many generated sites used this mockup as reference"
+    },
+    "for_digital_domination": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this mockup is approved for the Digital Domination mass-launch system"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "active",
+        "archived",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Library status"
+    }
+  },
+  "required": [
+    "title",
+    "website_type",
+    "industry",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
