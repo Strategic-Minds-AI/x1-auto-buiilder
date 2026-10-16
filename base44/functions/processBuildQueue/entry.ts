@@ -157,12 +157,17 @@ async function sendWhatsAppAlert(result: any): Promise<void> {
     lines.push(`\nGPT: ${result.gpt_online ? 'Online' : 'Offline (autonomous coder)'}`);
     lines.push(`Checked: ${result.checked} | Assigned: ${result.assigned.length}`);
 
-    const cleanTo = toPhone.replace(/[^0-9]/g, '');
-    const cleanFrom = fromNumber.replace(/[^0-9]/g, '');
+    // Normalize: prepend US country code (1) if the number is 10 digits without one
+    const normalize = (num: string) => {
+      const digits = num.replace(/[^0-9]/g, '');
+      return digits.length === 10 ? `1${digits}` : digits;
+    };
+    const cleanTo = normalize(toPhone);
+    const cleanFrom = normalize(fromNumber);
 
     const params = new URLSearchParams();
-    params.append('To', `whatsapp:+${cleanTo}`);
-    params.append('From', `whatsapp:+${cleanFrom}`);
+    params.append('To', `+${cleanTo}`);
+    params.append('From', `+${cleanFrom}`);
     params.append('Body', lines.join('\n'));
 
     const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;

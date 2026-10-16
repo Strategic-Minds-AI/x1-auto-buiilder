@@ -23,9 +23,13 @@ export default async function(req) {
       return Response.json({ error: 'Twilio credentials not configured. Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER secrets.' }, { status: 500 });
     }
 
-    // Clean phone numbers (strip non-digits, ensure country code)
-    const cleanTo = to.replace(/[^0-9]/g, '');
-    const cleanFrom = fromNumber.replace(/[^0-9]/g, '');
+    // Normalize: prepend US country code (1) if 10 digits without one
+    const normalize = (num) => {
+      const digits = num.replace(/[^0-9]/g, '');
+      return digits.length === 10 ? `1${digits}` : digits;
+    };
+    const cleanTo = normalize(to);
+    const cleanFrom = normalize(fromNumber);
 
     // Build form data for Twilio API
     const params = new URLSearchParams();
