@@ -110,6 +110,7 @@ const EXTERNAL_MODULES = [
   { to: "/autonomous-architecture", icon: Brain, label: "Autonomous Architecture" },
   { to: "/project-start-inventory", icon: ClipboardList, label: "Project Start Inventory" },
   { to: "/builder-factory-architecture", icon: Layers, label: "Builder Factory Architecture" },
+  { to: "/visual-parity-engine", icon: Scan, label: "Visual Parity Engine" },
 ];
 
 export default function PortalShell({ activeTab, onTabChange, onNew, title, children }) {

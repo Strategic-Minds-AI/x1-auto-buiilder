@@ -1,0 +1,95 @@
+{
+  "name": "ProjectInventory",
+  "type": "object",
+  "properties": {
+    "project_name": {
+      "type": "string",
+      "description": "Project name"
+    },
+    "project_id": {
+      "type": "string",
+      "description": "Linked WebsiteProject ID if applicable"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Client name"
+    },
+    "inventory_data": {
+      "type": "object",
+      "description": "Full inventory JSON: all 18 sections with items and tracked statuses"
+    },
+    "bootstrap_ready": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when all items are VERIFIED or NOT_APPLICABLE"
+    },
+    "stats": {
+      "type": "object",
+      "description": "Summary: { total, verified, missing, unknown, blocked, na }",
+      "properties": {
+        "total": {
+          "type": "number"
+        },
+        "verified": {
+          "type": "number"
+        },
+        "missing": {
+          "type": "number"
+        },
+        "unknown": {
+          "type": "number"
+        },
+        "blocked": {
+          "type": "number"
+        },
+        "na": {
+          "type": "number"
+        }
+      }
+    },
+    "template_version": {
+      "type": "string",
+      "default": "v1",
+      "description": "Which template version this inventory was created from"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "archived"
+      ],
+      "default": "active"
+    },
+    "current_gate": {
+      "type": "string",
+      "description": "Current gate the project is at (GATE 00 - GATE 17)"
+    }
+  },
+  "required": [
+    "project_name",
+    "inventory_data"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -71,6 +71,7 @@ import LocalSandboxConsole from '@/pages/LocalSandboxConsole';
 import AutonomousArchitecture from '@/pages/AutonomousArchitecture';
 import ProjectStartInventory from '@/pages/ProjectStartInventory';
 import BuilderFactoryArchitecture from '@/pages/BuilderFactoryArchitecture';
+import VisualParityEngine from '@/pages/VisualParityEngine';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
 function App() {
@@ -148,6 +149,7 @@ function App() {
               <Route path="/autonomous-architecture" element={<AutonomousArchitecture />} />
               <Route path="/project-start-inventory" element={<ProjectStartInventory />} />
               <Route path="/builder-factory-architecture" element={<BuilderFactoryArchitecture />} />
+              <Route path="/visual-parity-engine" element={<VisualParityEngine />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>

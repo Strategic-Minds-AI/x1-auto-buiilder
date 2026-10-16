@@ -1,0 +1,123 @@
+{
+  "name": "VisualParityCheck",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "Linked WebsiteProject or MockupProject ID"
+    },
+    "project_name": {
+      "type": "string",
+      "description": "Project name for display"
+    },
+    "mockup_image_url": {
+      "type": "string",
+      "description": "Approved design mockup image URL"
+    },
+    "site_url": {
+      "type": "string",
+      "description": "Generated site URL to compare against mockup"
+    },
+    "screenshot_url": {
+      "type": "string",
+      "description": "Captured screenshot of the generated site"
+    },
+    "parity_score": {
+      "type": "number",
+      "description": "0-100 pixel parity score (100 = perfect match)"
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "MATCH",
+        "PARTIAL_MATCH",
+        "MISMATCH",
+        "BLOCKED"
+      ],
+      "default": "BLOCKED",
+      "description": "Parity verdict: MATCH (90+), PARTIAL_MATCH (60-89), MISMATCH (below 60)"
+    },
+    "differences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "section": {
+            "type": "string"
+          },
+          "issue": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "recommendation": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Array of identified visual differences"
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Actionable fixes to achieve pixel parity"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Brief overall assessment from the LLM"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "running",
+        "completed",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "error": {
+      "type": "string",
+      "description": "Error message if failed"
+    },
+    "auto_triggered": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if automatically triggered by the pipeline"
+    }
+  },
+  "required": [
+    "site_url",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
