@@ -1,0 +1,43 @@
+{
+  "name": "Client Auto-Onboarding Research",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "client_auto_onboarding",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "auto_research": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoOnboardClient",
+            "args": {
+              "client_id": "${ .trigger.entity_id }",
+              "website": "${ .trigger.data.website }",
+              "industry": "${ .trigger.data.industry }",
+              "businessName": "${ .trigger.data.name }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Auto skip-trace & research",
+            "description": "Runs skip-tracing + industry benchmark on new client"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "Client"
+    }
+  },
+  "description": "Automatically triggers skip-tracing and business research the moment a new client is added to the portal. Gathers all necessary data before building begins."
+}

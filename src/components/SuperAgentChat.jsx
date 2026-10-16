@@ -4,7 +4,7 @@ import { useAuth } from "@/lib/AuthContext";
 import ReactMarkdown from "react-markdown";
 import {
   Bot, Send, X, Plus, Loader2,
-  ChevronDown, ChevronRight, Wrench, CheckCircle, AlertCircle, Clock, Sparkles, MessageCircle
+  ChevronDown, ChevronRight, Wrench, CheckCircle, AlertCircle, Clock, Sparkles, MessageCircle, Bell, Trophy
 } from "lucide-react";
 
 const AGENT_NAME = "super_agent";
@@ -17,8 +17,32 @@ export default function SuperAgentChat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertType, setAlertType] = useState("decision");
+  const [alertMsg, setAlertMsg] = useState("");
+  const [alertSending, setAlertSending] = useState(false);
+  const [alertSent, setAlertSent] = useState(false);
 
   const scrollRef = useRef(null);
+
+  const sendAlert = async () => {
+    if (!alertMsg.trim()) return;
+    setAlertSending(true);
+    setAlertSent(false);
+    try {
+      await base44.functions.invoke("sendAgentAlert", {
+        alert_type: alertType,
+        message: alertMsg.trim(),
+      });
+      setAlertSent(true);
+      setAlertMsg("");
+      setTimeout(() => { setAlertSent(false); setAlertOpen(false); }, 2000);
+    } catch (err) {
+      console.error("Alert failed:", err);
+    } finally {
+      setAlertSending(false);
+    }
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -103,6 +127,9 @@ export default function SuperAgentChat() {
             </div>
           </div>
           <div className="flex items-center gap-1">
+            <button onClick={() => setAlertOpen(!alertOpen)} title="Alert Admin" className={`p-1.5 rounded-lg transition ${alertOpen ? "text-[#00d4ff] bg-white/10" : "text-white/60 hover:text-[#00d4ff] hover:bg-white/10"}`}>
+              <Bell className="w-4 h-4" />
+            </button>
             <a href={base44.agents.getWhatsAppConnectURL(AGENT_NAME)} target="_blank" title="Connect via WhatsApp" className="p-1.5 rounded-lg text-white/60 hover:text-[#25D366] hover:bg-white/10 transition">
               <MessageCircle className="w-4 h-4" />
             </a>
@@ -124,6 +151,47 @@ export default function SuperAgentChat() {
                 {c.metadata?.name || "Chat"}
               </button>
             ))}
+          </div>
+        )}
+
+        {/* Alert Admin panel */}
+        {alertOpen && (
+          <div className="border-b border-slate-200 bg-amber-50 px-4 py-3 space-y-2 shrink-0">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setAlertType("decision")}
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold transition ${alertType === "decision" ? "bg-amber-500 text-white" : "bg-white text-slate-500 border border-slate-200"}`}
+              >
+                <Bell className="w-3 h-3" /> Decision Needed
+              </button>
+              <button
+                onClick={() => setAlertType("win")}
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold transition ${alertType === "win" ? "bg-emerald-500 text-white" : "bg-white text-slate-500 border border-slate-200"}`}
+              >
+                <Trophy className="w-3 h-3" /> Major Win
+              </button>
+            </div>
+            <textarea
+              value={alertMsg}
+              onChange={(e) => setAlertMsg(e.target.value)}
+              placeholder={alertType === "win" ? "Describe the win..." : "What decision is needed?"}
+              rows={2}
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/30 resize-none"
+            />
+            <div className="flex items-center justify-between">
+              {alertSent ? (
+                <span className="text-xs text-emerald-600 font-semibold flex items-center gap-1"><CheckCircle className="w-3.5 h-3.5" /> SMS sent to admin phone</span>
+              ) : (
+                <span className="text-[10px] text-slate-400">Sends instant SMS to your admin phone</span>
+              )}
+              <button
+                onClick={sendAlert}
+                disabled={!alertMsg.trim() || alertSending}
+                className="rounded-lg bg-amber-500 px-4 py-1.5 text-xs font-bold text-white disabled:opacity-40 hover:brightness-110 transition"
+              >
+                {alertSending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : alertSent ? "Sent!" : "Send Alert"}
+              </button>
+            </div>
           </div>
         )}
 

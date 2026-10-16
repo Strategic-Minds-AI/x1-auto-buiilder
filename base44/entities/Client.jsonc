@@ -18,11 +18,47 @@
       "type": "string",
       "enum": [
         "onboarding",
+        "researching",
         "active",
         "suspended",
         "churned"
       ],
       "default": "onboarding"
+    },
+    "website": {
+      "type": "string",
+      "description": "Client business website URL for automated skip-tracing"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "brand_color": {
+      "type": "string",
+      "description": "Brand accent color hex"
+    },
+    "logo_url": {
+      "type": "string"
+    },
+    "business_research": {
+      "type": "object",
+      "description": "Auto-populated skip-trace research data (business name, services, service area, tone, competitors)"
+    },
+    "benchmark": {
+      "type": "object",
+      "description": "Auto-populated industry benchmark data from research"
+    },
+    "onboarding_prefill": {
+      "type": "object",
+      "description": "Pre-filled onboarding payload extracted from automated research"
+    },
+    "research_completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When automated skip-tracing completed"
+    },
+    "research_error": {
+      "type": "string",
+      "description": "Error message if automated research failed"
     },
     "supabase_project_ref": {
       "type": "string",
@@ -35,16 +71,6 @@
     "portal_url": {
       "type": "string",
       "description": "Client portal URL slug"
-    },
-    "industry": {
-      "type": "string"
-    },
-    "brand_color": {
-      "type": "string",
-      "description": "Brand accent color hex"
-    },
-    "logo_url": {
-      "type": "string"
     },
     "config": {
       "type": "object",

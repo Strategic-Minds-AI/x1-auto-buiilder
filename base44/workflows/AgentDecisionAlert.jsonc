@@ -1,0 +1,42 @@
+{
+  "name": "Agent Decision Alert",
+  "description": "Sends an instant SMS alert to the admin phone whenever an agent creates an approval request that needs a decision, or when a major win occurs (pipeline ships, site goes live).",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "ApprovalRequest",
+      "events": [
+        "create"
+      ]
+    },
+    "condition": "${ .trigger.data.status == \"PENDING\" }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "agent_decision_alert",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "send_alert": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "sendAgentAlert",
+            "args": {
+              "alert_type": "decision",
+              "message": "${ \"Approval needed: \" + .trigger.data.action_class + \" \u2014 \" + .trigger.data.scope }",
+              "context": "${ .trigger.data.description }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Send SMS alert to admin",
+            "description": "Notifies admin phone of pending decision"
+          }
+        }
+      }
+    ]
+  }
+}
