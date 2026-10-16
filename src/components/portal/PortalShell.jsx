@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Wand2, Library, Globe, LayoutTemplate, Rocket, LayoutGrid, Cable,
   Palette, Image, Package, Monitor, Smartphone, Sparkles, ChevronDown, Mail, Workflow, Code,
-  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2, Key, Plug, Brain, Scan, AlertTriangle, Megaphone, Download, Copy, Crown, UploadCloud, BookOpen, Factory, ListChecks, ClipboardList, Layers
+  Hammer, ExternalLink, Home, Search, Bot, BarChart3, GitBranch, SlidersHorizontal, Table, Activity, Zap, Video, Shield, Boxes, CalendarDays, Gauge, Radio, CreditCard, Database, Building2, Key, Plug, Brain, Scan, AlertTriangle, Megaphone, Download, Copy, Crown, UploadCloud, BookOpen, Factory, ListChecks, ClipboardList, Layers, FileText
 } from "lucide-react";
 
 const NAV_GROUPS = [
@@ -111,6 +111,9 @@ const EXTERNAL_MODULES = [
   { to: "/project-start-inventory", icon: ClipboardList, label: "Project Start Inventory" },
   { to: "/builder-factory-architecture", icon: Layers, label: "Builder Factory Architecture" },
   { to: "/visual-parity-engine", icon: Scan, label: "Visual Parity Engine" },
+  { to: "/pipeline-dashboard", icon: Rocket, label: "Autonomous Pipeline" },
+  { to: "/playwright-qa", icon: Monitor, label: "Playwright QA" },
+  { to: "/system-docs", icon: FileText, label: "System Document Generator" },
 ];
 
 export default function PortalShell({ activeTab, onTabChange, onNew, title, children }) {

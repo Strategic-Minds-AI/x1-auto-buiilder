@@ -1,0 +1,92 @@
+{
+  "name": "SystemDocument",
+  "type": "object",
+  "properties": {
+    "project_name": {
+      "type": "string",
+      "description": "System/project name"
+    },
+    "pipeline_run_id": {
+      "type": "string",
+      "description": "Linked PipelineRun ID"
+    },
+    "doc_type": {
+      "type": "string",
+      "enum": [
+        "system_spec",
+        "architecture",
+        "api_reference",
+        "deployment_guide",
+        "readme",
+        "full_package"
+      ],
+      "default": "full_package",
+      "description": "Type of document generated"
+    },
+    "system_name": {
+      "type": "string",
+      "description": "Formal system name"
+    },
+    "description": {
+      "type": "string",
+      "description": "System description"
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Document sections"
+    },
+    "content_markdown": {
+      "type": "string",
+      "description": "Full document in markdown"
+    },
+    "specs": {
+      "type": "object",
+      "description": "Structured specs: tech stack, features, entities, APIs, integrations"
+    },
+    "version": {
+      "type": "string",
+      "default": "1.0.0"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "project_name",
+    "doc_type"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

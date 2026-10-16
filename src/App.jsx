@@ -72,6 +72,9 @@ import AutonomousArchitecture from '@/pages/AutonomousArchitecture';
 import ProjectStartInventory from '@/pages/ProjectStartInventory';
 import BuilderFactoryArchitecture from '@/pages/BuilderFactoryArchitecture';
 import VisualParityEngine from '@/pages/VisualParityEngine';
+import PipelineDashboard from '@/pages/PipelineDashboard';
+import PlaywrightQaConsole from '@/pages/PlaywrightQaConsole';
+import SystemDocumentGenerator from '@/pages/SystemDocumentGenerator';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
 function App() {
@@ -150,6 +153,9 @@ function App() {
               <Route path="/project-start-inventory" element={<ProjectStartInventory />} />
               <Route path="/builder-factory-architecture" element={<BuilderFactoryArchitecture />} />
               <Route path="/visual-parity-engine" element={<VisualParityEngine />} />
+              <Route path="/pipeline-dashboard" element={<PipelineDashboard />} />
+              <Route path="/playwright-qa" element={<PlaywrightQaConsole />} />
+              <Route path="/system-docs" element={<SystemDocumentGenerator />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>

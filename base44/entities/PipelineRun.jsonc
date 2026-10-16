@@ -1,0 +1,188 @@
+{
+  "name": "PipelineRun",
+  "type": "object",
+  "properties": {
+    "project_name": {
+      "type": "string",
+      "description": "Project name"
+    },
+    "mockup_url": {
+      "type": "string",
+      "description": "Uploaded mockup image URL"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "intake",
+        "processing",
+        "validated",
+        "fixing",
+        "qa",
+        "provisioning",
+        "launching",
+        "live",
+        "failed",
+        "paused"
+      ],
+      "default": "intake"
+    },
+    "current_stage": {
+      "type": "string",
+      "description": "Current pipeline stage ID"
+    },
+    "current_stage_index": {
+      "type": "number",
+      "default": 0
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "FAILED",
+              "SKIPPED",
+              "BLOCKED"
+            ]
+          },
+          "agent": {
+            "type": "string"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "validator_result": {
+            "type": "object"
+          },
+          "fixer_actions": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "output": {
+            "type": "object"
+          },
+          "error": {
+            "type": "string"
+          },
+          "retry_count": {
+            "type": "number",
+            "default": 0
+          }
+        }
+      },
+      "description": "Full stage-by-stage pipeline execution data"
+    },
+    "builder_docs": {
+      "type": "object",
+      "description": "Transcribed builder documents: specs, component tree, layout system, content structure"
+    },
+    "generated_frontend": {
+      "type": "object",
+      "description": "Generated frontend code and component tree"
+    },
+    "backend_needed": {
+      "type": "boolean",
+      "default": false
+    },
+    "backend_schema": {
+      "type": "object",
+      "description": "Generated Supabase schema if backend needed"
+    },
+    "deploy_url": {
+      "type": "string",
+      "description": "Live production URL after launch"
+    },
+    "github_repo": {
+      "type": "string"
+    },
+    "supabase_ref": {
+      "type": "string"
+    },
+    "railway_url": {
+      "type": "string"
+    },
+    "final_checklist": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "FAIL",
+              "PENDING"
+            ]
+          },
+          "detail": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Final pre-launch checklist results"
+    },
+    "google_sheets_row": {
+      "type": "string",
+      "description": "Google Sheets row ID for this project's tracking data"
+    },
+    "parity_score": {
+      "type": "number",
+      "description": "Final visual parity score (0-100) against original mockup"
+    },
+    "auto_launch": {
+      "type": "boolean",
+      "default": true,
+      "description": "If true, auto-launches once all checks pass"
+    }
+  },
+  "required": [
+    "project_name",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
