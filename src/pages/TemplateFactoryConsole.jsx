@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import PortalShell from "@/components/portal/PortalShell";
 import PhaseProgress from "@/components/template-factory/PhaseProgress";
 import BenchmarkResults from "@/components/template-factory/BenchmarkResults";
+import FaangQaPanel from "@/components/template-factory/FaangQaPanel";
 import { base44 } from "@/api/base44Client";
 import {
   Factory, Loader2, Plus, Rocket, ChevronRight, Globe, Search, Star,
   CheckCircle2, XCircle, AlertTriangle, Package, Palette, Code2,
-  FileText, DollarSign, Zap, Layers, ArrowRight, Eye,
+  FileText, DollarSign, Zap, Layers, ArrowRight, Eye, ShieldCheck,
 } from "lucide-react";
 
 const INDUSTRY_SUGGESTIONS = [
@@ -343,6 +344,7 @@ export default function TemplateFactoryConsole() {
                   <SectionTab active={activeSection === "patterns"} onClick={() => setActiveSection("patterns")} icon={Palette}>Patterns ({selectedJob.reverse_engineered?.length || 0})</SectionTab>
                   <SectionTab active={activeSection === "architecture"} onClick={() => setActiveSection("architecture")} icon={Layers}>Architecture</SectionTab>
                   <SectionTab active={activeSection === "output"} onClick={() => setActiveSection("output")} icon={Code2}>Template Output</SectionTab>
+                  <SectionTab active={activeSection === "qa"} onClick={() => setActiveSection("qa")} icon={ShieldCheck}>FAANG QA</SectionTab>
                 </div>
 
                 {/* Overview */}
@@ -517,6 +519,11 @@ export default function TemplateFactoryConsole() {
                     <Code2 className="w-8 h-8 text-slate-200 mx-auto mb-2" />
                     <p className="text-sm text-slate-400">Template not engineered yet.</p>
                   </div>
+                )}
+
+                {/* FAANG QA Gate */}
+                {activeSection === "qa" && (
+                  <FaangQaPanel job={selectedJob} onRefresh={() => loadJob(selectedJob.id)} />
                 )}
               </div>
             )}

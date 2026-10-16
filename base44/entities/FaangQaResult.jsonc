@@ -1,0 +1,176 @@
+{
+  "name": "FaangQaResult",
+  "type": "object",
+  "properties": {
+    "result_id": {
+      "type": "string",
+      "description": "Unique QA result identifier (e.g. QA-001)"
+    },
+    "template_factory_job_id": {
+      "type": "string",
+      "description": "Linked TemplateFactoryJob ID"
+    },
+    "template_id": {
+      "type": "string",
+      "description": "Linked SiteTemplate ID"
+    },
+    "industry": {
+      "type": "string",
+      "description": "Industry being tested"
+    },
+    "pass1_code_quality": {
+      "type": "number",
+      "default": 0,
+      "description": "Pass 1 score (0-25): TypeScript, ESLint, React best practices, security"
+    },
+    "pass2_visual_parity": {
+      "type": "number",
+      "default": 0,
+      "description": "Pass 2 score (0-25): Design system vs benchmarked top sites"
+    },
+    "pass3_functional": {
+      "type": "number",
+      "default": 0,
+      "description": "Pass 3 score (0-25): All sections, forms, CTAs, navigation, error states"
+    },
+    "pass4_performance": {
+      "type": "number",
+      "default": 0,
+      "description": "Pass 4 score (0-25): Performance, accessibility, SEO"
+    },
+    "total_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Total FAANG score (0-100)"
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "SHIP",
+        "AUTO_HEAL",
+        "REBUILD",
+        "PENDING"
+      ],
+      "default": "PENDING",
+      "description": "SHIP (>=90), AUTO_HEAL (70-89), REBUILD (<70)"
+    },
+    "iteration": {
+      "type": "number",
+      "default": 1,
+      "description": "Current auto-heal iteration (max 3)"
+    },
+    "max_iterations": {
+      "type": "number",
+      "default": 3
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pass": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "critical",
+              "warning",
+              "info"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "recommendation": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "All issues found across 4 passes"
+    },
+    "auto_fixes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "issue": {
+            "type": "string"
+          },
+          "fix_description": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "applied": {
+            "type": "boolean"
+          }
+        }
+      },
+      "description": "Auto-heal fixes applied"
+    },
+    "screenshot_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Cloud Browser screenshots from testing"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "running",
+        "passed",
+        "failed",
+        "auto_healing",
+        "rebuilt",
+        "shipped"
+      ],
+      "default": "pending"
+    },
+    "test_report": {
+      "type": "object",
+      "description": "Detailed test results per pass"
+    },
+    "healed_template_output": {
+      "type": "object",
+      "description": "Updated template output after auto-heal fixes"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "result_id",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
