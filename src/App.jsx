@@ -62,6 +62,7 @@ import WorkflowBuilder from '@/pages/WorkflowBuilder';
 import ApiDocs from '@/pages/ApiDocs';
 import FreeLibrary from '@/pages/FreeLibrary';
 import PromptLibrary from '@/pages/PromptLibrary';
+import FactoryConsole from '@/pages/FactoryConsole';
 import IntegrationHub from '@/pages/IntegrationHub';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
@@ -131,6 +132,7 @@ function App() {
               <Route path="/api-docs" element={<ApiDocs />} />
               <Route path="/free-library" element={<FreeLibrary />} />
               <Route path="/prompt-library" element={<PromptLibrary />} />
+              <Route path="/factory-console" element={<FactoryConsole />} />
               <Route path="/integration-hub" element={<IntegrationHub />} />
             </Route>
             <Route path="*" element={<PageNotFound />} />

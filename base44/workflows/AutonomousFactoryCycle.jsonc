@@ -1,0 +1,45 @@
+{
+  "name": "Autonomous Factory Cycle",
+  "description": "Runs the full autonomous factory cycle every 10 minutes: GPT bi-directional JSON sync, Vercel production auto-deploy, Google Search Console + Analytics sync, and Railway sandbox provisioning for new client projects. No manual intervention required.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "interval",
+      "cron_expression": null,
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": 10,
+      "interval_unit": "minutes",
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "autonomous_factory_cycle",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "factory_cycle": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autonomousFactoryCycle",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Run Autonomous Factory Cycle",
+            "description": "GPT sync, Vercel deploy, Analytics sync, Railway sandbox provision"
+          }
+        }
+      }
+    ]
+  }
+}

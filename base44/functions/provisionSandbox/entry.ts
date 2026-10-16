@@ -47,7 +47,7 @@ export default async function(req) {
           const token = secrets.get("RAILWAY_API_TOKEN");
           if (!token) throw new Error("RAILWAY_API_TOKEN not set");
 
-          // Create Railway project via GraphQL
+          // Create Railway project via GraphQL v2 (uses $input variable)
           const res = await fetch(RAILWAY_API, {
             method: "POST",
             headers: {
@@ -55,7 +55,8 @@ export default async function(req) {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              query: `mutation { projectCreate(name: "${sandboxName}") { id } }`,
+              query: `mutation projectCreate($input: ProjectCreateInput!) { projectCreate(input: $input) { id name } }`,
+              variables: { input: { name: sandboxName } },
             }),
             signal: AbortSignal.timeout(15000),
           });
