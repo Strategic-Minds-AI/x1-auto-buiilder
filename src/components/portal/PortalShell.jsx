@@ -102,6 +102,7 @@ const EXTERNAL_MODULES = [
   { to: "/free-library", icon: Download, label: "Free Assets Library" },
   { to: "/prompt-library", icon: BookOpen, label: "Prompt Library" },
   { to: "/factory-console", icon: Factory, label: "Factory Console" },
+  { to: "/gpt-factory", icon: Factory, label: "GPT Website Factory" },
   { to: "/integration-hub", icon: Boxes, label: "Integration Hub" },
 ];
 

@@ -1,0 +1,134 @@
+{
+  "name": "GPTMemory",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "Unique session identifier"
+    },
+    "agent_id": {
+      "type": "string",
+      "description": "Agent identifier (e.g. apex-commander, gpt-operator, factory-builder)"
+    },
+    "agent_name": {
+      "type": "string",
+      "description": "Display name of the agent"
+    },
+    "memory_type": {
+      "type": "string",
+      "enum": [
+        "session",
+        "persistent",
+        "context",
+        "skill_memory"
+      ],
+      "default": "session",
+      "description": "Type of memory record"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "logged_in",
+        "active",
+        "logged_out",
+        "expired"
+      ],
+      "default": "logged_in"
+    },
+    "login_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the agent session started"
+    },
+    "logout_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the agent session ended"
+    },
+    "last_activity": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last activity timestamp"
+    },
+    "context": {
+      "type": "object",
+      "description": "Current context: project_id, industry, phase, current_task"
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant",
+              "system",
+              "tool"
+            ]
+          },
+          "content": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Conversation/messages in this session"
+    },
+    "skills_loaded": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Skills currently loaded in this session"
+    },
+    "tools_available": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tools available to this agent session"
+    },
+    "projects_worked": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "WebsiteProject IDs this session has touched"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Summary of what was accomplished in this session"
+    }
+  },
+  "required": [
+    "session_id",
+    "agent_id",
+    "memory_type"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

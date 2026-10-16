@@ -1,0 +1,41 @@
+{
+  "name": "Digital Domination Pipeline",
+  "description": "When a WebsiteProject reaches 'generated' status, automatically runs Google compliance check, auto-fixes issues, and deploys to Vercel \u2014 the core of the Digital Domination system. No manual intervention required.",
+  "trigger": {
+    "condition": "${ .trigger.data.status == \"generated\" }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "WebsiteProject"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "digital_domination_pipeline",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_domination_pipeline": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "gptFactoryPipeline",
+            "args": {
+              "projectId": "${ .trigger.entity_id }",
+              "skipGenerate": true
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Run Digital Domination Pipeline",
+            "description": "Google compliance \u2192 Auto-fix \u2192 Deploy to Vercel"
+          }
+        }
+      }
+    ]
+  }
+}

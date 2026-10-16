@@ -8,6 +8,8 @@ export default function BlueprintReview({ result, onGenerateAssets, loadingAsset
   const [editing, setEditing] = useState({});
   const [regenerating, setRegenerating] = useState({});
   const [editValues, setEditValues] = useState({});
+  const [regenPrompt, setRegenPrompt] = useState({});
+  const [showRegenPrompt, setShowRegenPrompt] = useState({});
 
   const updateContent = (newContent) => {
     setContent(newContent);
@@ -43,17 +45,21 @@ export default function BlueprintReview({ result, onGenerateAssets, loadingAsset
   };
 
   const regenerateSection = async (section) => {
+    const customPrompt = regenPrompt[section]?.trim();
+    const comment = customPrompt || `Regenerate the ${section} section with higher quality, more compelling copy`;
     setRegenerating({ ...regenerating, [section]: true });
+    setShowRegenPrompt({ ...showRegenPrompt, [section]: false });
     try {
       const res = await base44.functions.invoke("enhanceWebsite", {
-        comment: `Regenerate the ${section} section with higher quality, more compelling copy`,
+        comment,
         section,
-        content: content, // pass current content for context
+        content: content,
       });
       if (res.data?.content) {
         const newContent = { ...content, ...res.data.content };
         updateContent(newContent);
       }
+      setRegenPrompt({ ...regenPrompt, [section]: "" });
     } catch (err) {
       console.error("Regenerate failed:", err);
     } finally {
@@ -95,7 +101,7 @@ export default function BlueprintReview({ result, onGenerateAssets, loadingAsset
       {/* Hero Section — Editable */}
       {content.hero && (
         <Card title="Hero Section" subtitle="Main headline and call-to-action" actions={
-          <RegenButton onClick={() => regenerateSection("hero")} loading={regenerating.hero} />
+          <RegenButton onClick={() => regenerateSection("hero")} loading={regenerating.hero} section="hero" regenPrompt={regenPrompt} setRegenPrompt={setRegenPrompt} showRegenPrompt={showRegenPrompt} setShowRegenPrompt={setShowRegenPrompt} />
         }>
           <div className="space-y-3">
             <EditableField
@@ -148,7 +154,7 @@ export default function BlueprintReview({ result, onGenerateAssets, loadingAsset
       {/* Services — Editable */}
       {content.services?.length > 0 && (
         <Card title="Services" subtitle={`${content.services.length} services`} actions={
-          <RegenButton onClick={() => regenerateSection("services")} loading={regenerating.services} />
+          <RegenButton onClick={() => regenerateSection("services")} loading={regenerating.services} section="services" regenPrompt={regenPrompt} setRegenPrompt={setRegenPrompt} showRegenPrompt={showRegenPrompt} setShowRegenPrompt={setShowRegenPrompt} />
         }>
           <div className="grid sm:grid-cols-2 gap-2">
             {content.services.map((s, i) => (
@@ -193,7 +199,7 @@ export default function BlueprintReview({ result, onGenerateAssets, loadingAsset
       {/* About — Editable */}
       {content.about && (
         <Card title="About" subtitle="Company story" actions={
-          <RegenButton onClick={() => regenerateSection("about")} loading={regenerating.about} />
+          <RegenButton onClick={() => regenerateSection("about")} loading={regenerating.about} section="about" regenPrompt={regenPrompt} setRegenPrompt={setRegenPrompt} showRegenPrompt={showRegenPrompt} setShowRegenPrompt={setShowRegenPrompt} />
         }>
           <div className="space-y-3">
             <EditableField
@@ -224,7 +230,7 @@ export default function BlueprintReview({ result, onGenerateAssets, loadingAsset
       {/* FAQs — Editable */}
       {content.faqs?.length > 0 && (
         <Card title="FAQs" subtitle={`${content.faqs.length} questions`} actions={
-          <RegenButton onClick={() => regenerateSection("faqs")} loading={regenerating.faqs} />
+          <RegenButton onClick={() => regenerateSection("faqs")} loading={regenerating.faqs} section="faqs" regenPrompt={regenPrompt} setRegenPrompt={setRegenPrompt} showRegenPrompt={showRegenPrompt} setShowRegenPrompt={setShowRegenPrompt} />
         }>
           <div className="space-y-2">
             {content.faqs.map((f, i) => (
@@ -257,7 +263,7 @@ export default function BlueprintReview({ result, onGenerateAssets, loadingAsset
       {/* Testimonials */}
       {content.testimonials?.length > 0 && (
         <Card title="Testimonials" subtitle={`${content.testimonials.length} testimonials`} actions={
-          <RegenButton onClick={() => regenerateSection("testimonials")} loading={regenerating.testimonials} />
+          <RegenButton onClick={() => regenerateSection("testimonials")} loading={regenerating.testimonials} section="testimonials" regenPrompt={regenPrompt} setRegenPrompt={setRegenPrompt} showRegenPrompt={showRegenPrompt} setShowRegenPrompt={setShowRegenPrompt} />
         }>
           <div className="space-y-2">
             {content.testimonials.map((t, i) => (
@@ -290,7 +296,7 @@ export default function BlueprintReview({ result, onGenerateAssets, loadingAsset
       {/* Value Props */}
       {content.valueProps?.length > 0 && (
         <Card title="Value Props" subtitle={`${content.valueProps.length} value propositions`} actions={
-          <RegenButton onClick={() => regenerateSection("valueProps")} loading={regenerating.valueProps} />
+          <RegenButton onClick={() => regenerateSection("valueProps")} loading={regenerating.valueProps} section="valueProps" regenPrompt={regenPrompt} setRegenPrompt={setRegenPrompt} showRegenPrompt={showRegenPrompt} setShowRegenPrompt={setShowRegenPrompt} />
         }>
           <div className="grid sm:grid-cols-2 gap-2">
             {content.valueProps.map((v, i) => (
@@ -323,7 +329,7 @@ export default function BlueprintReview({ result, onGenerateAssets, loadingAsset
       {/* Process */}
       {content.process?.length > 0 && (
         <Card title="Process" subtitle={`${content.process.length} steps`} actions={
-          <RegenButton onClick={() => regenerateSection("process")} loading={regenerating.process} />
+          <RegenButton onClick={() => regenerateSection("process")} loading={regenerating.process} section="process" regenPrompt={regenPrompt} setRegenPrompt={setRegenPrompt} showRegenPrompt={showRegenPrompt} setShowRegenPrompt={setShowRegenPrompt} />
         }>
           <div className="space-y-2">
             {content.process.map((p, i) => (
@@ -359,7 +365,7 @@ export default function BlueprintReview({ result, onGenerateAssets, loadingAsset
       {/* Final CTA */}
       {content.finalCta && (
         <Card title="Final CTA" subtitle="Closing call-to-action" actions={
-          <RegenButton onClick={() => regenerateSection("finalCta")} loading={regenerating.finalCta} />
+          <RegenButton onClick={() => regenerateSection("finalCta")} loading={regenerating.finalCta} section="finalCta" regenPrompt={regenPrompt} setRegenPrompt={setRegenPrompt} showRegenPrompt={showRegenPrompt} setShowRegenPrompt={setShowRegenPrompt} />
         }>
           <div className="space-y-3">
             <EditableField
@@ -389,7 +395,7 @@ export default function BlueprintReview({ result, onGenerateAssets, loadingAsset
       {/* Color Palette — Expanded */}
       {content.colorTokens && (
         <Card title="Color Palette" subtitle={`${colorKeys.length} color tokens — click to edit any color`} actions={
-          <RegenButton onClick={() => regenerateSection("colorTokens")} loading={regenerating.colorTokens} />
+          <RegenButton onClick={() => regenerateSection("colorTokens")} loading={regenerating.colorTokens} section="colorTokens" regenPrompt={regenPrompt} setRegenPrompt={setRegenPrompt} showRegenPrompt={showRegenPrompt} setShowRegenPrompt={setShowRegenPrompt} />
         }>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {colorKeys.map((k) => (
@@ -530,10 +536,49 @@ function EditableField({ label, value, editing, editValue, onEdit, onChange, onS
   );
 }
 
-function RegenButton({ onClick, loading }) {
+function RegenButton({ onClick, loading, section, regenPrompt, setRegenPrompt, showRegenPrompt, setShowRegenPrompt }) {
+  const togglePrompt = () => {
+    if (loading) return;
+    setShowRegenPrompt({ ...showRegenPrompt, [section]: !showRegenPrompt[section] });
+  };
+
+  if (showRegenPrompt[section]) {
+    return (
+      <div className="flex flex-col gap-1.5 shrink-0 w-64">
+        <textarea
+          value={regenPrompt[section] || ""}
+          onChange={(e) => setRegenPrompt({ ...regenPrompt, [section]: e.target.value })}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) onClick();
+          }}
+          placeholder={`e.g. Make it more bold, add urgency, use a darker color scheme...`}
+          className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary resize-none"
+          rows={2}
+          autoFocus
+        />
+        <div className="flex gap-1.5">
+          <button
+            onClick={onClick}
+            disabled={loading}
+            className="inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[11px] font-bold text-primary-foreground hover:brightness-110 transition disabled:opacity-50"
+          >
+            {loading ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+            {loading ? "..." : "Apply"}
+          </button>
+          <button
+            onClick={togglePrompt}
+            className="rounded-full border border-border px-2.5 py-1 text-[11px] font-semibold text-muted-foreground hover:text-foreground transition"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <button
-      onClick={onClick}
+      onClick={togglePrompt}
       disabled={loading}
       className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-primary hover:border-primary/40 transition disabled:opacity-50 shrink-0"
     >
