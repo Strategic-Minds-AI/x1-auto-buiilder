@@ -1,0 +1,113 @@
+{
+  "name": "LocalSandboxCommand",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "Which local sandbox session this command is for"
+    },
+    "command_id": {
+      "type": "string",
+      "description": "Unique command identifier"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "gpt_engine",
+        "admin",
+        "pipeline",
+        "auto"
+      ],
+      "default": "gpt_engine",
+      "description": "Who issued this command"
+    },
+    "command_type": {
+      "type": "string",
+      "enum": [
+        "shell",
+        "file_write",
+        "file_read",
+        "file_list",
+        "dev_server",
+        "git_clone",
+        "npm_install",
+        "npm_run",
+        "custom"
+      ],
+      "default": "shell",
+      "description": "Type of command to execute"
+    },
+    "payload": {
+      "type": "object",
+      "description": "Command-specific data: {cmd, args, path, content, url, etc.}"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "assigned",
+        "executing",
+        "completed",
+        "failed",
+        "timeout",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "result": {
+      "type": "object",
+      "description": "Execution result: {stdout, stderr, exit_code, files, url, error}"
+    },
+    "assigned_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "timeout_seconds": {
+      "type": "number",
+      "default": 120,
+      "description": "Max execution time before timeout"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "p0",
+        "p1",
+        "p2",
+        "p3"
+      ],
+      "default": "p2"
+    }
+  },
+  "required": [
+    "session_id",
+    "command_id",
+    "command_type",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
