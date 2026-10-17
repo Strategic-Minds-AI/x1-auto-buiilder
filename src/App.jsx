@@ -82,6 +82,7 @@ import MockupLibrary from '@/pages/MockupLibrary';
 import IndustryLibrary from '@/pages/IndustryLibrary';
 import GPTControlCenter from '@/pages/GPTControlCenter';
 import SuperAgentMonitor from '@/pages/SuperAgentMonitor';
+import ProductionReadinessAudit from '@/pages/ProductionReadinessAudit';
 import SuperAgentChat from '@/components/SuperAgentChat';
 
 function App() {
@@ -170,6 +171,7 @@ function App() {
                 <Route path="/industry-library" element={<IndustryLibrary />} />
                 <Route path="/gpt-control" element={<GPTControlCenter />} />
                 <Route path="/super-agent-monitor" element={<SuperAgentMonitor />} />
+                <Route path="/production-readiness-audit" element={<ProductionReadinessAudit />} />
               </Route>
             </Route>
             <Route path="*" element={<PageNotFound />} />
