@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
-import { Shield, CheckCircle2, XCircle, AlertTriangle, Loader2, ArrowRight, Play, Wrench } from "lucide-react";
+import { Shield, CheckCircle2, XCircle, AlertTriangle, Loader2, ArrowRight, Play, Wrench, Bookmark, Sparkles } from "lucide-react";
+
+const BLUEPRINT_THRESHOLD = 80;
 
 const GATE_STYLES = {
   pass: { icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", label: "PASS" },
@@ -21,6 +23,40 @@ export default function ValidatorPipelineConsole() {
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState(null);
   const [form, setForm] = useState({ businessWebsiteUrl: "", industry: "", businessName: "" });
+  const [saving, setSaving] = useState(false);
+  const [savedBlueprint, setSavedBlueprint] = useState(null);
+  const [saveError, setSaveError] = useState(null);
+
+  // Compute the overall quality score from gate scores
+  const overallScore = useMemo(() => {
+    if (!result?.gates?.length) return null;
+    const scored = result.gates.filter((g) => typeof g.score === "number");
+    if (!scored.length) return null;
+    return Math.round(scored.reduce((s, g) => s + g.score, 0) / scored.length);
+  }, [result]);
+
+  const qualifiesForBlueprint = result?.success && !result.gated && overallScore != null && overallScore >= BLUEPRINT_THRESHOLD;
+
+  const saveBlueprint = async () => {
+    if (!result?.project_id) return;
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const res = await base44.functions.invoke("saveHighPerformerBlueprint", {
+        projectId: result.project_id,
+        qualityScoreOverride: overallScore,
+      });
+      if (res.data?.error) {
+        setSaveError(res.data.error);
+      } else {
+        setSavedBlueprint(res.data);
+      }
+    } catch (err) {
+      setSaveError(err.message || "Failed to save blueprint");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const runPipeline = async () => {
     setRunning(true);
@@ -110,14 +146,49 @@ export default function ValidatorPipelineConsole() {
           </div>
         )}
         {result?.success && !result.gated && (
-          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6 flex items-center gap-3">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-            <div>
-              <div className="font-bold text-emerald-900 text-sm">Pipeline Complete — {result.final_verdict?.toUpperCase()}</div>
-              <div className="text-emerald-700 text-sm">
-                {result.gates_passed}/{result.gates_total} gates passed · {result.total_fix_runs} fix runs · {result.stages_completed} stages · {(result.duration_ms / 1000).toFixed(1)}s
+          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6">
+            <div className="flex items-start gap-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-emerald-900 text-sm">Pipeline Complete — {result.final_verdict?.toUpperCase()}</div>
+                <div className="text-emerald-700 text-sm">
+                  {result.gates_passed}/{result.gates_total} gates passed · {result.total_fix_runs} fix runs · {result.stages_completed} stages · {(result.duration_ms / 1000).toFixed(1)}s
+                  {overallScore != null && <span className="font-bold"> · Quality Score: {overallScore}/100</span>}
+                </div>
               </div>
+              {qualifiesForBlueprint && result.project_id && (
+                <button
+                  onClick={saveBlueprint}
+                  disabled={saving || !!savedBlueprint}
+                  className="inline-flex items-center gap-2 rounded-full bg-[#00d4ff] px-4 py-2 text-sm font-bold text-[#0a0e14] hover:brightness-110 disabled:opacity-60 transition shrink-0"
+                >
+                  {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : savedBlueprint ? <CheckCircle2 className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+                  {saving ? "Saving..." : savedBlueprint ? "Saved" : "Save as Blueprint"}
+                </button>
+              )}
             </div>
+            {qualifiesForBlueprint && (
+              <div className="mt-2 flex items-center gap-1.5 text-xs text-emerald-700">
+                <Sparkles className="w-3 h-3" />
+                <span>Exceeds quality threshold ({overallScore}/100 ≥ {BLUEPRINT_THRESHOLD}) — eligible to save as a reusable high-performer blueprint.</span>
+              </div>
+            )}
+            {savedBlueprint && (
+              <div className="mt-3 bg-white/70 rounded-lg border border-emerald-200 p-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span className="text-sm font-bold text-emerald-900">Blueprint saved: {savedBlueprint.template?.name || "High-Performer Blueprint"}</span>
+                </div>
+                <div className="text-xs text-slate-600">
+                  Quality: {savedBlueprint.source_metrics?.quality_score ?? overallScore}/100 ·
+                  Parity: {savedBlueprint.source_metrics?.parity_score ?? "n/a"} ·
+                  {savedBlueprint.source_metrics?.performance_metrics ? ` LCP: ${Math.round(savedBlueprint.source_metrics.performance_metrics.lcp_ms ?? 0)}ms` : ""}
+                </div>
+              </div>
+            )}
+            {saveError && (
+              <div className="mt-2 text-xs text-red-600 font-medium">⚠ {saveError}</div>
+            )}
           </div>
         )}
 
