@@ -120,6 +120,7 @@ export const EXTERNAL_MODULES = [
   { to: "/intelligence-console", icon: Brain, label: "Intelligence Console" },
   { to: "/industry-library", icon: Layers, label: "Industry Library" },
   { to: "/gpt-control", icon: Cpu, label: "GPT Control Center" },
+  { to: "/super-agent-monitor", icon: Cpu, label: "Super Agent Monitor" },
 ];
 
 export default function PortalShell({ activeTab, onTabChange, onNew, title, children }) {
