@@ -120,6 +120,14 @@ export default async function(req: Request): Promise<Response> {
       usage_count: 0,
     });
 
+    // ── Push the blueprint to the connected GitHub repo's templates folder ──
+    let githubResult: any = null;
+    try {
+      githubResult = await pushTemplateToGitHub(base44, rec);
+    } catch (err: any) {
+      githubResult = { error: err.message };
+    }
+
     return Response.json({
       template: rec,
       source_metrics: {
@@ -129,8 +137,93 @@ export default async function(req: Request): Promise<Response> {
         gate_results: gateResults,
         pipeline_run_id: pipelineRunId,
       },
+      github_sync: githubResult,
     });
   } catch (error: any) {
     return Response.json({ error: error.message }, { status: 500 });
   }
+}
+
+// ── Push a blueprint template JSON file to the connected GitHub repo ──
+async function pushTemplateToGitHub(base44: any, template: any): Promise<any> {
+  const repo = process.env.GITHUB_TEMPLATE_REPO || 'xps-admin/cloudbrowser-sync-engine';
+  const folder = process.env.GITHUB_TEMPLATES_FOLDER || 'templates';
+
+  const { accessToken } = await base44.asServiceRole.connectors.getConnection('github');
+
+  // Slugify filename: {industry}-{template-name}.json
+  const slug = (s: string) => (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'blueprint';
+  const filename = `${slug(template.industry)}-${slug(template.name)}.json`;
+  const path = `${folder}/${filename}`;
+
+  // Build the file content
+  const fileContent = JSON.stringify({
+    name: template.name,
+    industry: template.industry,
+    sub_industry: template.sub_industry,
+    website_type: template.website_type,
+    template: template.template,
+    variables: template.variables,
+    visual_pack: template.visual_pack,
+    quality_score: template.quality_score,
+    parity_score: template.parity_score,
+    performance_metrics: template.performance_metrics,
+    gate_results: template.gate_results,
+    blueprint_status: template.blueprint_status,
+    source_project_id: template.source_project_id,
+    source_deploy_url: template.source_deploy_url,
+    synced_at: new Date().toISOString(),
+  }, null, 2);
+
+  // UTF-8 safe base64
+  const bytes = new TextEncoder().encode(fileContent);
+  let binary = '';
+  for (const b of bytes) binary += String.fromCharCode(b);
+  const encodedContent = btoa(binary);
+
+  // Check if file already exists (to get SHA for update vs create)
+  let sha: string | null = null;
+  try {
+    const checkRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+      headers: { Authorization: `Bearer ${accessToken}`, Accept: 'application/vnd.github+json' },
+    });
+    if (checkRes.ok) {
+      const existing = await checkRes.json();
+      sha = existing.sha;
+    }
+  } catch { /* file doesn't exist yet — that's fine */ }
+
+  // Create or update the file
+  const commitMessage = sha
+    ? `Update blueprint: ${template.name} (${template.industry})`
+    : `Add blueprint: ${template.name} (${template.industry})`;
+
+  const createRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      Accept: 'application/vnd.github+json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      message: commitMessage,
+      content: encodedContent,
+      ...(sha ? { sha } : {}),
+    }),
+  });
+
+  if (!createRes.ok) {
+    const err = await createRes.json().catch(() => ({}));
+    throw new Error(`GitHub API error: ${err.message || createRes.statusText}`);
+  }
+
+  const result = await createRes.json();
+  return {
+    repo,
+    path,
+    url: result.content?.html_url || '',
+    commit_sha: result.commit?.sha || '',
+    commit_url: result.commit?.html_url || '',
+    updated: !!sha,
+  };
 }
