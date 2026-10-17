@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import PortalShell from "@/components/portal/PortalShell";
+import BlueprintSelector from "@/components/portal/BlueprintSelector";
 import { base44 } from "@/api/base44Client";
 import { ALL_SECTIONS, STATUS_OPTIONS, TOTAL_ITEMS } from "@/data/projectStartInventory";
 import {
@@ -165,6 +166,9 @@ export default function ProjectStartInventory() {
             <p className="text-sm text-slate-500">Track status, verification, and blockers for every item. Template system for every project.</p>
           </div>
         </div>
+
+        {/* Blueprint selector — load proven structures into the factory pipeline */}
+        <BlueprintSelector />
 
         {/* Create new inventory */}
         <div className="bg-white rounded-2xl border border-slate-200 p-5 mb-6">
