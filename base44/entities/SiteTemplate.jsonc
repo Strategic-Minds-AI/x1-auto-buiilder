@@ -10,9 +10,21 @@
       "type": "string",
       "description": "Industry this template suits"
     },
+    "sub_industry": {
+      "type": "string",
+      "description": "Sub-industry or niche for finer filtering"
+    },
+    "website_type": {
+      "type": "string",
+      "description": "Website type category (business, ecommerce, landing, portfolio, etc.)"
+    },
     "source_project_id": {
       "type": "string",
       "description": "WebsiteProject this template was universalized from"
+    },
+    "source_deploy_url": {
+      "type": "string",
+      "description": "Live deploy URL of the source high-performing site"
     },
     "template": {
       "type": "object",
@@ -24,6 +36,50 @@
         "type": "object"
       },
       "description": "Placeholder variables: [{ key, description }]"
+    },
+    "visual_pack": {
+      "type": "object",
+      "description": "Machine-testable VisualPack design token contract from the source project"
+    },
+    "blueprint_status": {
+      "type": "string",
+      "enum": [
+        "high_performer",
+        "standard",
+        "archived"
+      ],
+      "default": "standard",
+      "description": "Whether this template is tagged as a high-performing blueprint"
+    },
+    "quality_score": {
+      "type": "number",
+      "description": "0-100 overall quality score from the validator pipeline gates"
+    },
+    "parity_score": {
+      "type": "number",
+      "description": "0-100 visual parity score from the source project"
+    },
+    "performance_metrics": {
+      "type": "object",
+      "description": "Core Web Vitals and render metrics from the cloud browser test: { lcp_ms, cls, inp_ms, dom_node_count, resource_count }"
+    },
+    "gate_results": {
+      "type": "object",
+      "description": "Summary of validator gate verdicts from the source pipeline run"
+    },
+    "pipeline_run_id": {
+      "type": "string",
+      "description": "Linked PipelineRun that validated the source project"
+    },
+    "usage_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many new factory builds have used this blueprint"
+    },
+    "last_used_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this blueprint was last selected for a new build"
     }
   },
   "required": [
