@@ -5,6 +5,7 @@ import {
   Activity, Bot, CheckCircle2, XCircle, Loader2, Clock, Zap,
   AlertTriangle, Pause, Radio, RefreshCw, Cpu, Layers, Gauge, CircleDot,
 } from "lucide-react";
+import FailedBuildsSection from "@/components/portal/FailedBuildsSection";
 
 const STATUS_CONFIG = {
   pending: { label: "Pending", color: "text-slate-500", bg: "bg-slate-100", icon: Clock },
@@ -229,6 +230,11 @@ export default function SuperAgentMonitor() {
               ))}
             </div>
           )}
+
+          {/* Failed builds & self-healing watcher */}
+          <div className="mt-6 mb-6">
+            <FailedBuildsSection live={live} />
+          </div>
 
           {/* Build queue */}
           {queue.length > 0 && (

@@ -1,0 +1,45 @@
+{
+  "name": "Auto-Repair Watcher",
+  "description": "Continuously watches for failed/gated pipeline builds and automatically re-triggers the validator pipeline to attempt a fresh repair pass. Runs every 10 minutes. Caps at 3 repair attempts per project to prevent infinite loops.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "interval",
+      "cron_expression": null,
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": 10,
+      "interval_unit": "minutes",
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "auto_repair_watcher",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "scan_and_repair": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoRepairFailedBuilds",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Scan & Repair Failed Builds",
+            "description": "Finds gated builds and re-triggers the validator pipeline"
+          }
+        }
+      }
+    ]
+  }
+}
