@@ -71,6 +71,7 @@ export default async function(req: Request): Promise<Response> {
       pipeline_run_id: null,
       work_packets: {},
       thresholds,
+      admin_email: user.email || '',
     };
 
     let content: any = null;
@@ -244,7 +245,15 @@ export default async function(req: Request): Promise<Response> {
     const gate3 = await runGateWithFix({
       base44,
       gateName: 'google_compliance',
-...
+      validate: () => validateGoogleCompliance(base44, content, industry, businessName),
+      fix: (v) => fixCompliance(base44, content, v.issues || [], industry, businessName)
+        .then(r => ({ content: r.content, summary: r.summary })),
+      onContentUpdate: (newContent) => {
+        content = newContent;
+        if (pipeline.project_id) {
+          base44.entities.WebsiteProject.update(pipeline.project_id, { content }).catch(() => {});
+        }
+      },
       thresholds,
       maxRepairLoops,
     });
@@ -283,7 +292,42 @@ export default async function(req: Request): Promise<Response> {
       const gate4 = await runGateWithFix({
         base44,
         gateName: 'fix_verification',
-...
+        validate: () => validateFixes(base44, content, complianceIssues, industry, businessName),
+        fix: (v) => fixUnresolved(base44, content, v.issues || [], industry, businessName)
+          .then(r => ({ content: r.content, summary: r.summary })),
+        onContentUpdate: (newContent) => {
+          content = newContent;
+          if (pipeline.project_id) {
+            base44.entities.WebsiteProject.update(pipeline.project_id, { content }).catch(() => {});
+          }
+        },
+        thresholds,
+        maxRepairLoops,
+      });
+      pipeline.gates.push(gate4);
+      await recordGate('auto_fix', gate4);
+      if (gate4.gated) {
+        if (pipeline.work_packets.auto_fix) await failPacket(base44, pipeline.work_packets.auto_fix, gate4.gate_reason).catch(() => {});
+        pipeline.gated = true;
+        pipeline.gate_reason = gate4.gate_reason;
+        return finalizePipeline(pipeline, base44);
+      }
+    }
+
+    // ── GATE 5: Human Quality (with fixer) ──
+    if (pipeline.work_packets.qa) await startPacket(base44, pipeline.work_packets.qa).catch(() => {});
+    const gate5 = await runGateWithFix({
+      base44,
+      gateName: 'human_quality',
+      validate: () => validateHumanQuality(base44, content, industry, businessName),
+      fix: (v) => fixHumanQuality(base44, content, v.issues || [], industry, businessName)
+        .then(r => ({ content: r.content, summary: r.summary })),
+      onContentUpdate: (newContent) => {
+        content = newContent;
+        if (pipeline.project_id) {
+          base44.entities.WebsiteProject.update(pipeline.project_id, { content }).catch(() => {});
+        }
+      },
       thresholds,
       maxRepairLoops,
     });
@@ -294,6 +338,10 @@ export default async function(req: Request): Promise<Response> {
       pipeline.gated = true;
       pipeline.gate_reason = gate5.gate_reason;
       return finalizePipeline(pipeline, base44);
+    }
+    if (pipeline.work_packets.qa) {
+      await completePacket(base44, pipeline.work_packets.qa, { quality_checked: true }, ['human_quality']).catch(() => {});
+      await updatePipelineRunStage(base44, pipeline.pipeline_run_id, 'qa', 4, 'COMPLETED', 'qa').catch(() => {});
     }
 
     // ── GATE 5.5: Cross-Model Jury Validation (Claude + Gemini, mandatory before deploy) ──
@@ -528,7 +576,6 @@ async function runGateWithFix({ base44, gateName, validate, fix, onContentUpdate
       try {
         const fixResult = await fix(verdict);
         if (fixResult?.content) {
-          currentContent = fixResult.content;
           onContentUpdate(fixResult.content);
           attempts[attempt].fix_applied = fixResult.summary;
         } else {
@@ -556,7 +603,7 @@ async function runGateWithFix({ base44, gateName, validate, fix, onContentUpdate
   };
 }
 
-function finalizePipeline(pipeline: any, base44?: any): Response {
+async function finalizePipeline(pipeline: any, base44?: any): Promise<Response> {
   pipeline.completed_at = new Date().toISOString();
   pipeline.duration_ms = Date.parse(pipeline.completed_at) - Date.parse(pipeline.started_at);
   pipeline.stages_completed = pipeline.stages.filter((s: any) => s.status === 'complete' || s.status === 'skipped').length;
@@ -567,5 +614,98 @@ function finalizePipeline(pipeline: any, base44?: any): Response {
   if (base44 && pipeline.pipeline_run_id) {
     finalizePipelineRun(base44, pipeline.pipeline_run_id, pipeline.success, pipeline.deploy_url || '').catch(() => {});
   }
+  // ── Alert on quality gate failure ──
+  if (pipeline.gated && base44) {
+    try {
+      await sendGateFailureAlert(base44, pipeline);
+    } catch { /* best-effort */ }
+  }
   return Response.json(pipeline);
+}
+
+// ── Gate failure alert: email + approval request ───────────────
+// When a build fails a quality gate, send the admin an email with the specific
+// performance metrics that triggered the failure and create an ApprovalRequest
+// so they can decide whether to override and release the build anyway.
+async function sendGateFailureAlert(base44: any, pipeline: any) {
+  const failedGates = pipeline.gates.filter((g: any) => g.gated);
+  if (failedGates.length === 0) return;
+
+  const gateRows = failedGates.map((g: any) => {
+    let metricsHtml = '';
+    if (g.performance_metrics) {
+      const m = g.performance_metrics;
+      metricsHtml = `
+        <div style="margin-top:10px; padding:12px; background:#1a2536; border-radius:8px; font-size:13px; color:#8fa2bc;">
+          <strong style="color:#00d4ff;">Performance Metrics:</strong><br/>
+          LCP: ${m.lcp_ms != null ? Math.round(m.lcp_ms) + 'ms' : 'n/a'} (budget: 2500ms)<br/>
+          INP: ${m.inp_ms != null ? Math.round(m.inp_ms) + 'ms' : 'n/a'} (budget: 200ms)<br/>
+          CLS: ${m.cls ?? 'n/a'} (budget: 0.1)<br/>
+          DOM Nodes: ${m.dom_node_count ?? 'n/a'} &middot; Resources: ${m.resource_count ?? 'n/a'}
+        </div>`;
+    }
+    return `
+      <div style="margin-bottom:14px; padding:16px; background:#0f1a2e; border:1px solid #1e3a4f; border-radius:12px;">
+        <div style="font-weight:700; color:#00d4ff; font-size:15px;">${g.gate}</div>
+        <div style="color:#ffffff; font-size:14px; margin-top:6px; line-height:1.5;">${g.summary || g.gate_reason || 'Gate failed'}</div>
+        ${g.score != null ? `<div style="margin-top:6px; font-size:13px; color:#8fa2bc;">Score: ${g.score}/100</div>` : ''}
+        ${metricsHtml}
+      </div>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"></head>
+<body style="margin:0; padding:0; background:#0b1523; font-family:Arial, sans-serif;">
+  <div style="max-width:600px; margin:0 auto; padding:24px;">
+    <div style="background:#00d4ff; padding:18px 24px; border-radius:16px 16px 0 0; display:flex; align-items:center; gap:12px;">
+      <img src="https://media.base44.com/images/public/6acfedce320afe2f706c6bfd/22fdb73df_logo.png" alt="Logo" style="height:28px;"/>
+      <span style="color:#0b1523; font-weight:900; font-size:16px;">GPT AUTO BUILDER</span>
+    </div>
+    <div style="background:#0b1523; border:1px solid #1e2a3f; border-top:none; border-radius:0 0 16px 16px; padding:28px 24px;">
+      <h1 style="color:#ffffff; font-size:20px; margin:0 0 8px;">Build Failed Quality Gate</h1>
+      <p style="color:#8fa2bc; font-size:14px; line-height:1.6; margin:0 0 20px;">
+        A pipeline build did not meet the quality threshold. Review the performance metrics below and decide whether to approve or reject the build.
+      </p>
+      <div style="background:#1a2536; border-radius:10px; padding:14px; margin-bottom:20px;">
+        <div style="color:#8fa2bc; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Gate Reason</div>
+        <div style="color:#ffffff; font-size:14px; line-height:1.5;">${pipeline.gate_reason || 'Quality threshold not met'}</div>
+      </div>
+      <div style="color:#8fa2bc; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Failed Gates &amp; Metrics</div>
+      ${gateRows}
+      <div style="margin-top:24px;">
+        <a href="https://x1-auto-builder.base44.app/validator-pipeline" style="display:inline-block; background:#00d4ff; color:#0b1523; font-weight:700; font-size:14px; padding:14px 28px; border-radius:16px; text-decoration:none;">Review &amp; Decide in Pipeline Console</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+
+  // Create an ApprovalRequest for override decision
+  try {
+    const approval = await base44.entities.ApprovalRequest.create({
+      request_id: `AR-${Date.now()}`,
+      pipeline_run_id: pipeline.pipeline_run_id || '',
+      work_packet_id: '',
+      action_class: 'PRODUCTION_RELEASE',
+      scope: 'Override quality gate failure',
+      description: `Pipeline gated: ${pipeline.gate_reason || 'quality threshold not met'}. Failed gates: ${failedGates.map((g: any) => g.gate).join(', ')}. Project: ${pipeline.project_id || 'n/a'}.`,
+      status: 'PENDING',
+      requested_by: 'validator_gated_pipeline',
+      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      created_at: new Date().toISOString(),
+    });
+    pipeline.approval_request_id = approval.id;
+  } catch { /* best-effort */ }
+
+  // Send alert email to the admin
+  const adminEmail = pipeline.admin_email;
+  if (adminEmail) {
+    try {
+      await base44.asServiceRole.integrations.Core.SendEmail({
+        to: adminEmail,
+        subject: `Build Failed Quality Gate: ${(pipeline.gate_reason || 'Action Required').slice(0, 80)}`,
+        html,
+      });
+    } catch { /* best-effort */ }
+  }
 }
