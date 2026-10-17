@@ -93,6 +93,7 @@ export default async function(req: Request): Promise<Response> {
 
     // Re-trigger the validator pipeline with the project ID
     // The fixers use LLM calls that may produce different results, giving a fresh chance
+    const thisAttempt = repairAttempt + 1;
     let repairResult: any = null;
     let repairError: string | null = null;
     try {
@@ -105,6 +106,21 @@ export default async function(req: Request): Promise<Response> {
       repairError = err.message;
     }
 
+    // ── If the 2nd attempt still fails, notify immediately with full error report ──
+    const repairFailed = repairError || (repairResult && (repairResult.gated || !repairResult.success));
+    if (thisAttempt >= 2 && repairFailed) {
+      try {
+        await sendSecondAttemptFailureAlert(base44, user.email, {
+          projectName,
+          projectId,
+          repairAttempt: thisAttempt,
+          repairError,
+          repairResult,
+          originalRun: repairTarget,
+        });
+      } catch { /* best-effort */ }
+    }
+
     return Response.json({
       watcher: 'auto_repair',
       checked_at: new Date().toISOString(),
@@ -112,7 +128,7 @@ export default async function(req: Request): Promise<Response> {
       repair_triggered: true,
       target: projectName,
       project_id: projectId,
-      repair_attempt: repairAttempt + 1,
+      repair_attempt: thisAttempt,
       max_repairs: MAX_REPAIRS,
       result: repairResult ? {
         success: repairResult.success,
@@ -126,5 +142,112 @@ export default async function(req: Request): Promise<Response> {
     });
   } catch (error: any) {
     return Response.json({ error: error.message }, { status: 500 });
+  }
+}
+
+// ── Send a detailed error report when the 2nd repair attempt still fails ──
+// Includes every gate verdict, every stage status, performance metrics, and
+// the full gate_reason so the admin has the complete picture in one email.
+async function sendSecondAttemptFailureAlert(base44: any, adminEmail: string, ctx: any) {
+  const { projectName, projectId, repairAttempt, repairError, repairResult, originalRun } = ctx;
+
+  // Build gate detail rows
+  const gates = repairResult?.gates || [];
+  const gateRows = gates.length > 0
+    ? gates.map((g: any) => `
+      <tr>
+        <td style="padding:8px 12px; border-bottom:1px solid #1e2a3f; color:#00d4ff; font-weight:700; font-size:13px;">${g.gate || '—'}</td>
+        <td style="padding:8px 12px; border-bottom:1px solid #1e2a3f; font-size:13px; color:${g.gated ? '#ff6b6b' : '#51cf66'}; font-weight:700;">${g.gated ? 'FAIL' : 'PASS'}</td>
+        <td style="padding:8px 12px; border-bottom:1px solid #1e2a3f; font-size:13px; color:#ffffff;">${g.score != null ? g.score + '/100' : '—'}</td>
+        <td style="padding:8px 12px; border-bottom:1px solid #1e2a3f; font-size:12px; color:#8fa2bc;">${(g.summary || g.gate_reason || '').slice(0, 200)}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="4" style="padding:12px; color:#8fa2bc; font-size:13px;">No gate data available</td></tr>';
+
+  // Build stage detail rows
+  const stages = repairResult?.stages || originalRun?.stages || [];
+  const stageRows = stages.length > 0
+    ? stages.map((s: any) => {
+      const statusColor = s.status === 'complete' || s.status === 'skipped' ? '#51cf66' : s.status === 'failed' ? '#ff6b6b' : '#fcc419';
+      return `
+      <tr>
+        <td style="padding:6px 12px; border-bottom:1px solid #1e2a3f; color:#ffffff; font-size:12px; font-weight:600;">${s.stage || '—'}</td>
+        <td style="padding:6px 12px; border-bottom:1px solid #1e2a3f; font-size:12px; color:${statusColor}; font-weight:700;">${s.status || '—'}</td>
+        <td style="padding:6px 12px; border-bottom:1px solid #1e2a3f; font-size:11px; color:#8fa2bc;">${(s.error || '').slice(0, 150)}</td>
+      </tr>`;
+    }).join('')
+    : '<tr><td colspan="3" style="padding:12px; color:#8fa2bc; font-size:13px;">No stage data available</td></tr>';
+
+  // Performance metrics from browser test
+  const browserStage = stages.find((s: any) => s.stage === 'cloud_browser_test');
+  const metrics = browserStage?.performance_metrics;
+  const metricsHtml = metrics ? `
+    <div style="margin:16px 0; padding:14px; background:#1a2536; border-radius:10px;">
+      <div style="color:#00d4ff; font-weight:700; font-size:13px; margin-bottom:8px;">Core Web Vitals</div>
+      <div style="display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:#8fa2bc;">
+        <span>LCP: <strong style="color:#ffffff;">${metrics.lcp_ms != null ? Math.round(metrics.lcp_ms) + 'ms' : 'n/a'}</strong> (budget: 2500ms)</span>
+        <span>INP: <strong style="color:#ffffff;">${metrics.inp_ms != null ? Math.round(metrics.inp_ms) + 'ms' : 'n/a'}</strong> (budget: 200ms)</span>
+        <span>CLS: <strong style="color:#ffffff;">${metrics.cls ?? 'n/a'}</strong> (budget: 0.1)</span>
+        <span>DOM: <strong style="color:#ffffff;">${metrics.dom_node_count ?? 'n/a'}</strong></span>
+      </div>
+    </div>` : '';
+
+  const html = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"></head>
+<body style="margin:0; padding:0; background:#0b1523; font-family:Arial, sans-serif;">
+  <div style="max-width:640px; margin:0 auto; padding:24px;">
+    <div style="background:#ff3b3b; padding:18px 24px; border-radius:16px 16px 0 0; display:flex; align-items:center; gap:12px;">
+      <img src="https://media.base44.com/images/public/6acfedce320afe2f706c6bfd/22fdb73df_logo.png" alt="Logo" style="height:28px;"/>
+      <span style="color:#ffffff; font-weight:900; font-size:16px;">CRITICAL: 2nd Repair Attempt Failed</span>
+    </div>
+    <div style="background:#0b1523; border:1px solid #1e2a3f; border-top:none; border-radius:0 0 16px 16px; padding:28px 24px;">
+      <h1 style="color:#ffffff; font-size:18px; margin:0 0 6px;">Auto-Repair Failed — Manual Review Required</h1>
+      <p style="color:#ff6b6b; font-size:14px; font-weight:700; margin:0 0 16px;">Project: ${projectName} · Attempt ${repairAttempt} of ${MAX_REPAIRS}</p>
+
+      <div style="background:#1a2536; border-radius:10px; padding:14px; margin-bottom:16px;">
+        <div style="color:#8fa2bc; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Gate Reason</div>
+        <div style="color:#ffffff; font-size:14px; line-height:1.5;">${repairError || repairResult?.gate_reason || 'Unknown failure'}</div>
+      </div>
+
+      ${metricsHtml}
+
+      <div style="color:#8fa2bc; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin:20px 0 8px;">Quality Gate Results</div>
+      <table style="width:100%; border-collapse:collapse; background:#0f1a2e; border-radius:8px; overflow:hidden;">
+        <thead>
+          <tr style="background:#1a2536;">
+            <th style="padding:8px 12px; text-align:left; color:#8fa2bc; font-size:11px; text-transform:uppercase;">Gate</th>
+            <th style="padding:8px 12px; text-align:left; color:#8fa2bc; font-size:11px; text-transform:uppercase;">Verdict</th>
+            <th style="padding:8px 12px; text-align:left; color:#8fa2bc; font-size:11px; text-transform:uppercase;">Score</th>
+            <th style="padding:8px 12px; text-align:left; color:#8fa2bc; font-size:11px; text-transform:uppercase;">Detail</th>
+          </tr>
+        </thead>
+        <tbody>${gateRows}</tbody>
+      </table>
+
+      <div style="color:#8fa2bc; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin:20px 0 8px;">Pipeline Stage Status</div>
+      <table style="width:100%; border-collapse:collapse; background:#0f1a2e; border-radius:8px; overflow:hidden;">
+        <thead>
+          <tr style="background:#1a2536;">
+            <th style="padding:6px 12px; text-align:left; color:#8fa2bc; font-size:11px; text-transform:uppercase;">Stage</th>
+            <th style="padding:6px 12px; text-align:left; color:#8fa2bc; font-size:11px; text-transform:uppercase;">Status</th>
+            <th style="padding:6px 12px; text-align:left; color:#8fa2bc; font-size:11px; text-transform:uppercase;">Error</th>
+          </tr>
+        </thead>
+        <tbody>${stageRows}</tbody>
+      </table>
+
+      <div style="margin-top:24px;">
+        <a href="https://x1-auto-builder.base44.app/super-agent-monitor" style="display:inline-block; background:#00d4ff; color:#0b1523; font-weight:700; font-size:14px; padding:14px 28px; border-radius:16px; text-decoration:none;">Review in Super Agent Monitor</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+
+  if (adminEmail) {
+    await base44.asServiceRole.integrations.Core.SendEmail({
+      to: adminEmail,
+      subject: `CRITICAL: 2nd repair failed for ${projectName} — manual review required`,
+      html,
+    });
   }
 }
