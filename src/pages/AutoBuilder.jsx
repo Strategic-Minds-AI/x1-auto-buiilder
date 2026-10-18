@@ -61,13 +61,13 @@ export default function AutoBuilder() {
   };
 
   // Step transitions — each carries accumulated state forward
-  const approveVision = (v) => { setVision(v); setStep("strategy"); updateProject({ vision: v, vision_type: v.type, status: "vision" }); };
+  const approveVision = (v) => { setVision(v); setStep("strategy"); updateProject({ vision: v, vision_type: v.type, industry: v.industry, industry_label: v.industryLabel, industry_profile: v.industryProfile, status: "vision" }); };
   const approveStrategy = ({ strategy: s, addons }) => { setStrategy({ ...s, addons }); setStep("name"); updateProject({ strategy: s, addons, status: "strategy" }); };
   const approveName = (n) => { setNameData(n); setStep("brand"); updateProject({ status: "building" }); };
-  const approveBrand = (b) => { setBrandData(b); setStep("template"); updateProject({ accent_color: b.palette?.accent || accent }); };
-  const approveTemplate = (t) => { setTemplateData(t); setStep("website"); };
-  const approveWebsite = (w) => { setWebsiteData(w); setStep("content"); updateProject({ status: "building" }); };
-  const approveContent = (c) => { setContentData(c); setStep("compliance"); };
+  const approveBrand = (b) => { setBrandData(b); setStep("template"); updateProject({ accent_color: b.palette?.accent || accent, brand_palette_id: b.palette?.id, brand_palette: b.palette, logo_url: b.logoUrl || "" }); };
+  const approveTemplate = (t) => { setTemplateData(t); setStep("website"); updateProject({ template: t.template || t }); };
+  const approveWebsite = (w) => { setWebsiteData(w); setStep("content"); updateProject({ website_blueprint: w.website, design_context: w.designContext, status: "building" }); };
+  const approveContent = (c) => { setContentData(c); setStep("compliance"); updateProject({ approved_content: c.content }); };
   const approveCompliance = (c) => { setComplianceData(c); setStep("social"); };
   const approveSocial = (s) => { setSocialData(s); setStep("review"); };
   const approveReview = () => { setStep("launch"); updateProject({ status: "complete" }); };
