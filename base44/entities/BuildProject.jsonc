@@ -50,7 +50,7 @@
     "accent_color": {
       "type": "string",
       "description": "Chosen accent hex color",
-      "default": "#00d4ff"
+      "default": "#176BFF"
     },
     "vision_type": {
       "type": "string",
