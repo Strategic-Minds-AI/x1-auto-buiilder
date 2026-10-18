@@ -173,10 +173,13 @@ const FUNCTION_ALLOWLIST = [
 const PROTECTED_FUNCTIONS = new Set([
   'deploySite', 'batchDeploy', 'authorizeRelease', 'massLaunch',
   'provisionDomain', 'provisionSandbox', 'batchDeploy',
+  'provisionSite', 'autoConvergeSite', 'apexOrchestrator',
+  'gptControlBridge', 'customApiGateway',
 ]);
 const PROTECTED_ACTIONS = new Set(['delete']);
 
 const WRITE_ACTIONS = new Set(['create', 'update', 'delete', 'execute']);
+const INDEPENDENT_CONTROL_ENTITIES = new Set(['ApprovalRequest', 'ValidationReceipt']);
 
 // ── Inline function handlers (shared module imports) ───────────
 const INLINE_HANDLERS = {
@@ -203,6 +206,16 @@ export default async function(req) {
     body = await req.json();
     const { action, idempotency_key } = body;
 
+    if (WRITE_ACTIONS.has(action) && !idempotency_key) {
+      return Response.json({ error: 'A stable idempotency_key is required for writes' }, { status: 428 });
+    }
+    if (WRITE_ACTIONS.has(action) && INDEPENDENT_CONTROL_ENTITIES.has(body.entity)) {
+      return Response.json({ error: 'Independent approvals and validator receipts are read-only to this sync bridge' }, { status: 403 });
+    }
+    if (action === 'update' && !body.expected_updated_date) {
+      return Response.json({ error: 'expected_updated_date is required to prevent stale writes' }, { status: 428 });
+    }
+
     // ── Idempotency check ──────────────────────────────────────
     if (idempotency_key && WRITE_ACTIONS.has(action)) {
       const existing = await base44.asServiceRole.entities.SyncReceipt.filter({ idempotency_key }, { limit: 1 });
@@ -219,7 +232,28 @@ export default async function(req) {
     // ── Release gate: protected actions require approval ──────
     const isProtected = PROTECTED_ACTIONS.has(action) ||
       (action === 'execute' && PROTECTED_FUNCTIONS.has(body.function));
-    if (isProtected && !body.approved) {
+    let approvalValid = false;
+    if (isProtected) {
+      const approvalClass = action === 'delete' ? 'DESTRUCTIVE_ACTION'
+        : body.function === 'provisionDomain' ? 'DNS_CHANGE'
+        : body.function === 'provisionSandbox' ? 'PAYMENT_SPEND'
+        : 'PRODUCTION_RELEASE';
+      const targetRef = action === 'delete'
+        ? `delete:${body.entity}:${body.id || ''}`
+        : `execute:${body.function}:${body.work_packet_id || ''}`;
+      try {
+        if (body.approval_id && (action === 'delete' ? !!body.id : !!body.work_packet_id)) {
+          const approval = await base44.asServiceRole.entities.ApprovalRequest.get(body.approval_id);
+          const expiryValid = !approval?.expires_at || (Number.isFinite(Date.parse(approval.expires_at)) && Date.parse(approval.expires_at) > Date.now());
+          approvalValid = !!(approval && approval.status === 'APPROVED' &&
+            approval.action_class === approvalClass && approval.scope === targetRef &&
+            approval.request_id && approval.approved_by && approval.resolved_at &&
+            approval.rollback_ref && expiryValid &&
+            (action === 'delete' || approval.work_packet_id === body.work_packet_id));
+        }
+      } catch { /* fail closed */ }
+    }
+    if (isProtected && !approvalValid) {
       const receipt = await base44.asServiceRole.entities.SyncReceipt.create({
         receipt_id: crypto.randomUUID(),
         idempotency_key: idempotency_key || '',
@@ -228,7 +262,7 @@ export default async function(req) {
         operation: body.function || '',
         status: 'error',
         record_id: body.id || '',
-        summary: 'Protected action requires operator approval (set approved: true)',
+        summary: 'Protected action requires independently verified scoped ApprovalRequest',
       });
       return Response.json({
         error: 'Protected action requires operator approval',
@@ -262,7 +296,7 @@ export default async function(req) {
         try { snapshot[e] = await base44.asServiceRole.entities[e].count(); }
         catch { snapshot[e] = -1; }
       }
-      return Response.json({ snapshot, config: { version: '4.1', modules: Object.keys(SYNC_CONFIG.modules) } });
+      return Response.json({ snapshot, config: { version: '4.1', modules: Object.keys(ENTITY_GROUPS) } });
     }
 
     // ── Events ─────────────────────────────────────────────────
@@ -327,7 +361,7 @@ export default async function(req) {
               expected_updated_date: body.expected_updated_date,
             }, { status: 409 });
           }
-        } catch { /* if get fails, proceed with update */ }
+        } catch { return Response.json({ error: 'Unable to verify existing record version' }, { status: 409 }); }
       }
       const rec = await base44.asServiceRole.entities[body.entity].update(body.id, body.data || {});
       record_id = body.id;
