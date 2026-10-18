@@ -24,7 +24,7 @@ const FIELD_MAP = {
   LaunchCampaign: ['id', 'campaign_name', 'status', 'created_date', 'updated_date'],
   ApexMission: ['id', 'title', 'mission_type', 'status', 'priority', 'assigned_agent', 'created_date'],
   ApprovalRequest: ['id', 'approval_type', 'status', 'description', 'created_date'],
-  Lead: ['id', 'name', 'email', 'status', 'service', 'created_date'],
+  Lead: ['id', 'status', 'service', 'created_date'],
   CloneProject: ['id', 'source_url', 'source_title', 'status', 'industry', 'created_date'],
   PromptPack: ['id', 'name', 'category', 'prompt_type', 'usage_count', 'created_date'],
   DesignTemplate: ['id', 'name', 'industry', 'layout', 'created_date'],
@@ -39,6 +39,9 @@ export default async function(req: Request): Promise<Response> {
 
     const body = await req.json().catch(() => ({}));
     const { action = 'cycle' } = body;
+    if (!['cycle', 'push', 'pull', 'status'].includes(action)) {
+      return Response.json({ error: 'Unknown sync action' }, { status: 400 });
+    }
 
     let engineUrl = secrets.get('ENGINE_URL');
     const engineKey = secrets.get('ENGINE_API_KEY');
@@ -136,7 +139,10 @@ export default async function(req: Request): Promise<Response> {
         };
 
         // ── EXECUTE PHASE: process each command through gptSyncEngine ──
-        if (commands.length > 0) {
+        if (!pullRes.ok) {
+          result.errors.push('Pull HTTP ' + pullRes.status);
+          await logReceipt(base44, 'pull', 'commands', 'error', 'Pull HTTP ' + pullRes.status);
+        } else if (commands.length > 0) {
           if (!syncKey || !appUrl) {
             result.errors.push('Cannot execute commands: GPT_SYNC_API_KEY or app URL missing');
           } else {
@@ -155,7 +161,11 @@ export default async function(req: Request): Promise<Response> {
                 result: execResult.data?.status || execResult.data?.error || execResult.error || '',
                 retries: execResult.attempts - 1,
               });
-              if (execResult.ok) succeeded++; else failed++;
+              if (execResult.ok) succeeded++;
+              else {
+                failed++;
+                result.errors.push('Command execution failed for ' + (cmd.id || cmd.idempotency_key || 'unknown'));
+              }
             }
 
             // ── ACK PHASE: confirm completed commands ─────────────
@@ -180,6 +190,7 @@ export default async function(req: Request): Promise<Response> {
                   signal: AbortSignal.timeout(10000),
                 });
                 result.acked = { ok: ackRes.ok, status: ackRes.status, count: commandIds.length };
+                if (!ackRes.ok) result.errors.push('Ack HTTP ' + ackRes.status);
               } catch (ackErr: any) {
                 result.acked = { ok: false, error: ackErr.message };
                 result.errors.push(`Ack failed: ${ackErr.message}`);
@@ -217,7 +228,11 @@ export default async function(req: Request): Promise<Response> {
       });
     }
 
-    result.success = result.errors.length === 0;
+    result.success = result.errors.length === 0 &&
+      (!(action === 'push' || action === 'cycle') || result.pushed?.ok === true) &&
+      (!(action === 'pull' || action === 'cycle') || result.pulled?.ok === true) &&
+      (!result.acked || result.acked.ok === true) &&
+      result.executed.every((item: any) => item.ok === true);
     return Response.json(result);
   } catch (error: any) {
     return Response.json({ error: error.message }, { status: 500 });
