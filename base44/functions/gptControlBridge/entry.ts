@@ -10,20 +10,23 @@ export default async function(req) {
     // Authenticate via GPT_SYNC_API_KEY for external AI clients, or user session
     const authHeader = req.headers.get('authorization') || '';
     const body = await req.json();
-    const { action, tool, params, apiKey } = body;
+    const { action, tool, params } = body;
 
     // Validate API key for external access
     const { secrets } = await import('base44:runtime');
     const validKey = secrets.get('GPT_SYNC_API_KEY');
     let authenticatedUser = null;
 
-    if (apiKey && validKey && apiKey === validKey) {
-      // External AI client — use service role
+    const bearer = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+    if (bearer && validKey && bearer === validKey) {
       authenticatedUser = { role: 'admin', id: 'gpt-bridge' };
     } else {
-      // Try user session
-      authenticatedUser = await base44.auth.me();
-      if (!authenticatedUser) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      authenticatedUser = await base44.auth.me().catch(() => null);
+    }
+    if (!authenticatedUser) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    // The bridge uses asServiceRole for cross-tenant records: non-admin access must be denied.
+    if (authenticatedUser.role !== 'admin') {
+      return Response.json({ error: 'Administrator authority required for service-role operations' }, { status: 403 });
     }
 
     // Tool registry — typed tools with read/write separation
@@ -107,22 +110,33 @@ export default async function(req) {
 
       // Governance tools (protected actions)
       list_pending_approvals: async () => {
-        const { items } = await base44.asServiceRole.entities.ApprovalRequest.filter({ status: 'pending' }, { sort: '-created_date', limit: 20 });
+        const { items } = await base44.asServiceRole.entities.ApprovalRequest.filter({ status: 'PENDING' }, { sort: '-created_date', limit: 20 });
         return items;
       },
 
       request_operator_approval: async (p) => {
+        const approvedClasses = new Set([
+          'PRODUCTION_RELEASE', 'BRANCH_MERGE', 'DB_CHANGE', 'SECRET_ROTATION',
+          'DNS_CHANGE', 'PAYMENT_SPEND', 'LIVE_COMMUNICATION',
+          'DESTRUCTIVE_ACTION', 'PERMISSION_ESCALATION',
+        ]);
+        if (!approvedClasses.has(p?.actionClass) || !p?.scope || !p?.rollbackRef) {
+          throw new Error('Valid actionClass, exact scope, and rollbackRef are required');
+        }
         return await base44.asServiceRole.entities.ApprovalRequest.create({
-          project_id: p?.projectId || '',
-          approval_type: p?.approvalType || 'release',
+          request_id: 'AR-' + crypto.randomUUID(),
+          action_class: p.actionClass,
+          scope: p.scope,
           description: p?.description || 'Approval requested via GPT bridge',
-          options: p?.options || [],
-          status: 'pending'
+          requested_by: authenticatedUser.id,
+          rollback_ref: p.rollbackRef,
+          created_at: new Date().toISOString(),
+          status: 'PENDING',
         });
       },
 
       get_security_findings: async () => {
-        const { items } = await base44.asServiceRole.entities.ValidationReceipt.filter({ result: 'fail' }, { sort: '-created_date', limit: 10 });
+        const { items } = await base44.asServiceRole.entities.ValidationReceipt.filter({ verdict: 'FAIL' }, { sort: '-created_date', limit: 10 });
         return items;
       }
     };
