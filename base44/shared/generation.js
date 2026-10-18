@@ -111,7 +111,7 @@ export async function buildWebsiteBlueprint(base44, params) {
     "Keep every claim grounded in provided business facts or label it as a placeholder requiring owner verification.",
     "Use industry-appropriate photography prompts and avoid generic stock-photo descriptions. The logoPrompt and heroImagePrompt must reflect the selected industry, audience, chosen palette, and selected template.",
     "Optimize page copy for SEO, AEO, and GEO: clear entity/service/location context where provided, concise answer-first FAQs, descriptive headings, natural internal-link opportunities, and useful local signals. Do not fabricate reviews, awards, licenses, statistics, addresses, or service areas."
-  ].join("\\n");
+  ].join("\n");
 
   // Ultra-premium path: use industry intelligence + 14-section schema + enhanced prompt
   if (ultra !== false) {
@@ -168,7 +168,7 @@ export async function buildWebsiteBlueprint(base44, params) {
   // Legacy path (basic content schema)
   const content = await base44.asServiceRole.integrations.Core.InvokeLLM({
     model: 'claude-sonnet-5',
-    prompt: CONTENT_PROMPT(industry, businessResearch, benchmark) + '\\n\\n' + designDirective,
+    prompt: CONTENT_PROMPT(industry, businessResearch, benchmark) + '\n\n' + designDirective,
     response_json_schema: contentSchema
   });
   return { businessResearch, benchmark, content };
