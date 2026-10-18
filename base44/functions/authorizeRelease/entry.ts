@@ -12,16 +12,27 @@ export default async function(req) {
     if (user.role !== 'admin') return Response.json({ error: 'Operator administrator required' }, { status: 403 });
 
     const body = await req.json();
-    const { projectId, releaseNotes } = body;
+    const { projectId, pipelineRunId, sourceSha, releaseNotes } = body;
     if (!projectId) return Response.json({ error: 'projectId is required' }, { status: 400 });
+    if (!pipelineRunId || !/^[0-9a-f]{40}$/i.test(sourceSha || '')) {
+      return Response.json({ error: 'pipelineRunId and a 40-character sourceSha are required' }, { status: 428 });
+    }
 
     // 1. Load the project
     const project = await base44.entities.WebsiteProject.get(projectId);
     if (!project) return Response.json({ error: 'Project not found' }, { status: 404 });
+    const pipelineRun = await base44.entities.PipelineRun.get(pipelineRunId).catch(() => null);
+    const expectedNames = [
+      project.business_name,
+      [project.business_name, project.industry].filter(Boolean).join(' — '),
+    ];
+    if (!pipelineRun || !expectedNames.includes(pipelineRun.project_name)) {
+      return Response.json({ error: 'PipelineRun cannot be bound to this project' }, { status: 409 });
+    }
 
     // 2. Check all validation receipts — every type must pass
     const { items: receipts } = await base44.entities.ValidationReceipt.filter(
-      { project_id: projectId },
+      { pipeline_run_id: pipelineRunId },
       { sort: '-created_date', limit: 50 }
     );
 
@@ -88,8 +99,9 @@ export default async function(req) {
     const approval = await base44.entities.ApprovalRequest.create({
       request_id: 'AR-' + crypto.randomUUID(),
       action_class: 'PRODUCTION_RELEASE',
-      scope: 'release:website_project:' + projectId,
-      description: releaseNotes || 'Request a separately authorized production release',
+      scope: 'release:website_project:' + projectId + ':sha:' + sourceSha,
+      pipeline_run_id: pipelineRunId,
+      description: releaseNotes || 'Request a separately authorized production release for source SHA ' + sourceSha,
       status: 'PENDING',
       requested_by: user.id,
       rollback_ref: body.rollback_ref,
