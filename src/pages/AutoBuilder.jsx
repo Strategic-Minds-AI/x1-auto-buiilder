@@ -15,6 +15,7 @@ import SocialStep from "@/components/autobuilder/SocialStep";
 import ReviewStep from "@/components/autobuilder/ReviewStep";
 import LaunchStep from "@/components/autobuilder/LaunchStep";
 import { Hammer, ArrowLeft } from "lucide-react";
+import "@/components/autobuilder/autoBuilderTheme.css";
 
 // The guided 12-step Auto Builder — a distraction-free, step-by-step journey
 // with a horizontal timeline at the top. Each step persists into the BuildProject
@@ -22,7 +23,7 @@ import { Hammer, ArrowLeft } from "lucide-react";
 // content → compliance → social → review → launch.
 export default function AutoBuilder() {
   const [step, setStep] = useState("project");
-  const [accent, setAccent] = useState("#00d4ff");
+  const [accent, setAccent] = useState("#176BFF");
   const [projectId, setProjectId] = useState(null);
   const [saving, setSaving] = useState(false);
 
@@ -60,22 +61,22 @@ export default function AutoBuilder() {
   };
 
   // Step transitions — each carries accumulated state forward
-  const approveVision = (v) => { setVision(v); setStep("strategy"); updateProject({ vision: v, vision_type: v.type, status: "vision" }); };
+  const approveVision = (v) => { setVision(v); setStep("strategy"); updateProject({ vision: v, vision_type: v.type, industry: v.industry, industry_label: v.industryLabel, industry_profile: v.industryProfile, status: "vision" }); };
   const approveStrategy = ({ strategy: s, addons }) => { setStrategy({ ...s, addons }); setStep("name"); updateProject({ strategy: s, addons, status: "strategy" }); };
   const approveName = (n) => { setNameData(n); setStep("brand"); updateProject({ status: "building" }); };
-  const approveBrand = (b) => { setBrandData(b); setStep("template"); updateProject({ accent_color: b.palette?.accent || accent }); };
-  const approveTemplate = (t) => { setTemplateData(t); setStep("website"); };
-  const approveWebsite = (w) => { setWebsiteData(w); setStep("content"); updateProject({ status: "building" }); };
-  const approveContent = (c) => { setContentData(c); setStep("compliance"); };
+  const approveBrand = (b) => { setBrandData(b); setStep("template"); updateProject({ accent_color: b.palette?.accent || accent, brand_palette_id: b.palette?.id, brand_palette: b.palette, logo_url: b.logoUrl || "" }); };
+  const approveTemplate = (t) => { setTemplateData(t); setStep("website"); updateProject({ template: t.template || t }); };
+  const approveWebsite = (w) => { setWebsiteData(w); setStep("content"); updateProject({ website_blueprint: w.website, design_context: w.designContext, status: "building" }); };
+  const approveContent = (c) => { setContentData(c); setStep("compliance"); updateProject({ approved_content: c.content }); };
   const approveCompliance = (c) => { setComplianceData(c); setStep("social"); };
   const approveSocial = (s) => { setSocialData(s); setStep("review"); };
   const approveReview = () => { setStep("launch"); updateProject({ status: "complete" }); };
   const approveLaunch = () => { /* done — stay on launch page */ };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900">
+    <div className="auto-builder-dark min-h-screen bg-[#05070B] text-white">
       {/* Top bar */}
-      <header className="border-b border-slate-200 bg-white">
+      <header className="border-b border-slate-800 bg-[#05070B]">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-3">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: accent }}>
             <Hammer className="h-4 w-4 text-slate-900" />

@@ -87,7 +87,7 @@ const RESEARCH_SCHEMA = {
 };
 
 export async function buildWebsiteBlueprint(base44, params) {
-  const { businessWebsiteUrl, industry, businessName, ultra } = params;
+  const { businessWebsiteUrl, industry, businessName, ultra, designContext = {} } = params;
   let businessResearch;
   if (businessWebsiteUrl && businessWebsiteUrl.trim()) {
     businessResearch = await skipTraceBusiness(base44, businessWebsiteUrl, industry, businessName);
@@ -105,12 +105,19 @@ export async function buildWebsiteBlueprint(base44, params) {
     };
   }
   const benchmark = await benchmarkIndustry(base44, industry);
+  const designDirective = [
+    "BUILDER DESIGN + CONTENT REQUIREMENTS (treat as requirements, not optional inspiration):",
+    JSON.stringify(designContext || {}),
+    "Keep every claim grounded in provided business facts or label it as a placeholder requiring owner verification.",
+    "Use industry-appropriate photography prompts and avoid generic stock-photo descriptions. The logoPrompt and heroImagePrompt must reflect the selected industry, audience, chosen palette, and selected template.",
+    "Optimize page copy for SEO, AEO, and GEO: clear entity/service/location context where provided, concise answer-first FAQs, descriptive headings, natural internal-link opportunities, and useful local signals. Do not fabricate reviews, awards, licenses, statistics, addresses, or service areas."
+  ].join("\n");
 
   // Ultra-premium path: use industry intelligence + 14-section schema + enhanced prompt
   if (ultra !== false) {
     const intelligence = getIndustryIntelligence(industry);
     const registryContext = buildRegistryContext(industry);
-    const ultraPrompt = buildUltraPrompt(industry, businessResearch, benchmark, intelligence) + registryContext + GOOGLE_COMPLIANCE_PROMPT;
+    const ultraPrompt = buildUltraPrompt(industry, businessResearch, benchmark, intelligence) + registryContext + designDirective + GOOGLE_COMPLIANCE_PROMPT;
     // Pass 1: Generate core + support sections in parallel
     const [coreRes, supportRes] = await Promise.all([
       base44.asServiceRole.integrations.Core.InvokeLLM({
@@ -155,16 +162,30 @@ export async function buildWebsiteBlueprint(base44, params) {
       auditIssueCount: auditIssues.length,
       intelligence: intelligence ? { hasIntelligence: true, industry: intelligence.designDirection?.tone || '' } : { hasIntelligence: false },
       registryMatched: !!registryContext,
+      designContext,
+      requestedModules: designContext.requestedModules || [],
+      requestedPages: designContext.requestedPages || [],
+      targetImageCount: designContext.targetImageCount || 0,
+      optimization: designContext.optimization || {},
     };
   }
 
   // Legacy path (basic content schema)
   const content = await base44.asServiceRole.integrations.Core.InvokeLLM({
     model: 'claude-sonnet-5',
-    prompt: CONTENT_PROMPT(industry, businessResearch, benchmark),
+    prompt: CONTENT_PROMPT(industry, businessResearch, benchmark) + '\n\n' + designDirective,
     response_json_schema: contentSchema
   });
-  return { businessResearch, benchmark, content };
+  return {
+    businessResearch,
+    benchmark,
+    content,
+    designContext,
+    requestedModules: designContext.requestedModules || [],
+    requestedPages: designContext.requestedPages || [],
+    targetImageCount: designContext.targetImageCount || 0,
+    optimization: designContext.optimization || {},
+  };
 }
 
 export async function runMassLaunch(base44, params, scope) {

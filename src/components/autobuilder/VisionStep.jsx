@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { PROVEN_VISIONS, ACCENT_COLORS } from "@/lib/autoBuilderSteps";
+import { INDUSTRY_BUILD_PROFILES, getIndustryBuildProfile } from "@/lib/industryBuildProfiles";
 import { Sparkles, Loader2, RefreshCw, ArrowRight, Check } from "lucide-react";
 
 // Step 2 — Vision. Pick one of 10 proven visions, or describe your own and let
@@ -12,13 +13,15 @@ export default function VisionStep({ accent, setAccent, onApprove }) {
   const [error, setError] = useState("");
   const [vision, setVision] = useState(null);
   const [pickedType, setPickedType] = useState(null);
+  const [industryId, setIndustryId] = useState("general-business");
+  const industryProfile = getIndustryBuildProfile(industryId);
 
   const runAssist = async (overrideSeed) => {
     const s = (overrideSeed !== undefined ? overrideSeed : seed).trim();
     if (!s) { setError("Describe your vision or pick one of the proven visions first."); return; }
     setLoading(true); setError(""); setVision(null);
     try {
-      const res = await base44.functions.invoke("generateVision", { seed: s, accentColor: accent });
+      const res = await base44.functions.invoke("generateVision", { seed: s, accentColor: accent, industry: industryProfile.label, industryProfile });
       setVision(res.data.vision);
     } catch (err) {
       setError(err.response?.data?.error || err.message || "Vision generation failed");
@@ -35,7 +38,7 @@ export default function VisionStep({ accent, setAccent, onApprove }) {
 
   const approve = () => {
     if (!vision) return;
-    onApprove({ ...vision, type: vision.type || pickedType || "Build a Website" });
+    onApprove({ ...vision, type: vision.type || pickedType || "Build a Website", industry: industryProfile.id, industryLabel: industryProfile.label, industryProfile });
   };
 
   return (
@@ -44,6 +47,19 @@ export default function VisionStep({ accent, setAccent, onApprove }) {
         <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Define Your Vision</h2>
         <p className="text-slate-500 mt-1.5">Pick a proven starting point, or describe your own and let AI refine it.</p>
       </header>
+
+      {/* Industry profile is the source of truth for generated copy, imagery, proof points, and conversion flow. */}
+      <section className="rounded-2xl border border-slate-700 bg-slate-900/80 p-5 text-left">
+        <label htmlFor="builder-industry" className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-300">Target industry</label>
+        <select id="builder-industry" value={industryId} onChange={(event) => setIndustryId(event.target.value)} className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white focus:outline-none focus:ring-2" style={{ "--tw-ring-color": accent }}>
+          {INDUSTRY_BUILD_PROFILES.map((profile) => <option key={profile.id} value={profile.id}>{profile.label}</option>)}
+        </select>
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <div><div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Visual direction</div><p className="mt-1 text-xs leading-relaxed text-slate-300">{industryProfile.visual}</p></div>
+          <div><div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Trust signals</div><p className="mt-1 text-xs leading-relaxed text-slate-300">{industryProfile.proof}</p></div>
+          <div><div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Conversion goal</div><p className="mt-1 text-xs leading-relaxed text-slate-300">{industryProfile.conversion}</p></div>
+        </div>
+      </section>
 
       {/* 10 proven visions */}
       <div>

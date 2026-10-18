@@ -13,7 +13,7 @@ export default function TemplateStep({ accent, vision, strategy, onApprove }) {
   const [showAll, setShowAll] = useState(false);
 
   // Extract industry from vision/strategy for template suggestions
-  const industry = vision?.industry || strategy?.industry || vision?.type || "";
+  const industry = vision?.industryLabel || vision?.industryProfile?.label || vision?.industry || strategy?.industry || vision?.type || "";
 
   useEffect(() => {
     (async () => {

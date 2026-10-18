@@ -1,18 +1,18 @@
 import { Loader2, ArrowRight, Sparkles } from "lucide-react";
 
 // Shared shell for every Auto Builder step — keeps the journey visually consistent.
-// White card on white page, dark text, accent-colored action button.
+// Dark studio surface with high-contrast copy and accent-colored actions.
 export default function AutoStepShell({ step, accent, title, subtitle, children, onApprove, approveLabel = "Approve & Continue", loading, canApprove = true }) {
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
       <div className="mb-6">
-        <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
           Step {step} of 12
         </div>
-        <h2 className="text-2xl font-bold text-slate-900">{title}</h2>
-        {subtitle && <p className="text-slate-500 mt-1.5 max-w-xl">{subtitle}</p>}
+        <h2 className="text-2xl font-bold text-white">{title}</h2>
+        {subtitle && <p className="text-slate-300 mt-1.5 max-w-xl">{subtitle}</p>}
       </div>
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
+      <div className="rounded-2xl border border-slate-800 bg-[#0B1220] p-6 shadow-[0_18px_70px_rgba(0,0,0,0.18)] sm:p-8">
         {children}
       </div>
       {onApprove && (
