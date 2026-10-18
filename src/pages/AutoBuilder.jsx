@@ -23,7 +23,7 @@ import "@/components/autobuilder/autoBuilderTheme.css";
 // content → compliance → social → review → launch.
 export default function AutoBuilder() {
   const [step, setStep] = useState("project");
-  const [accent, setAccent] = useState("#00d4ff");
+  const [accent, setAccent] = useState("#176BFF");
   const [projectId, setProjectId] = useState(null);
   const [saving, setSaving] = useState(false);
 
