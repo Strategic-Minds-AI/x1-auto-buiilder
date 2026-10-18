@@ -8,6 +8,7 @@ const factory = source('base44/functions/autonomousFactoryCycle/entry.ts');
 const sync = source('base44/functions/gptSyncEngine/entry.ts');
 const autonomous = source('base44/functions/gptAutonomousSync/entry.ts');
 const library = source('base44/functions/gptLibraryControl/entry.ts');
+const bridge = source('base44/functions/gptControlBridge/entry.ts');
 const release = source('base44/functions/authorizeRelease/entry.ts');
 const receiptSchema = JSON.parse(source('base44/entities/SyncReceipt.jsonc'));
 const validatorSchema = JSON.parse(source('base44/entities/ValidationReceipt.jsonc'));
@@ -82,4 +83,19 @@ test('library control does not fabricate stop/disable acknowledgments', () => {
   assert.match(library, /No enforced disable path exists/);
   assert.match(library, /Scheduled workflow has not been disabled/);
   assert.match(library, /Sync did not pass both directions/);
+});
+
+test('GPT service-role bridge requires administrator identity on all tools', () => {
+  assert.match(bridge, /authenticatedUser\.role\s*!==\s*'admin'/);
+  assert.match(bridge, /bearer\s*&&\s*validKey\s*&&\s*bearer\s*===\s*validKey/);
+  assert.doesNotMatch(bridge, /apiKey\s*&&\s*validKey/);
+  assert.match(bridge, /Administrator authority required for service-role operations/);
+});
+
+test('GPT bridge cannot create its own approved release or invalid approval records', () => {
+  assert.match(bridge, /status:\s*'PENDING'/);
+  assert.match(bridge, /action_class:\s*p\.actionClass/);
+  assert.match(bridge, /rollback_ref:\s*p\.rollbackRef/);
+  assert.match(bridge, /ValidationReceipt\.filter\(\{ verdict:\s*'FAIL' \}/);
+  assert.doesNotMatch(bridge, /status:\s*'pending'/);
 });
