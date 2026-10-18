@@ -2,6 +2,16 @@
   "name": "BuildProject",
   "type": "object",
   "properties": {
+        "industry": { "type": "string", "description": "Canonical selected industry profile id" },
+        "industry_label": { "type": "string", "description": "Human-readable selected industry" },
+        "industry_profile": { "type": "object", "description": "Visual, proof-point, conversion, and content profile used by generators" },
+        "brand_palette_id": { "type": "string", "description": "Stable id of selected brand palette" },
+        "brand_palette": { "type": "object", "description": "Selected palette tokens including primary, surface, ink, muted, accents, and gradient" },
+        "logo_url": { "type": "string", "description": "Generated brand logo asset URL" },
+        "template": { "type": "object", "description": "Selected reusable industry template and layout" },
+        "website_blueprint": { "type": "object", "description": "Generated website content blueprint and design requirements" },
+        "design_context": { "type": "object", "description": "Requested pages, modules, image count, and SEO/AEO/GEO options" },
+        "approved_content": { "type": "object", "description": "Reviewed content edits approved before compliance and launch" }
     "name": {
       "type": "string",
       "description": "Project name"
