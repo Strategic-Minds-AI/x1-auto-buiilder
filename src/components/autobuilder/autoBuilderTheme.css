@@ -1,0 +1,70 @@
+/* Scoped premium dark theme for the guided website factory.
+   Admin modules outside .auto-builder-dark retain their existing appearance. */
+.auto-builder-dark {
+  color: #f8fafc;
+  background:
+    radial-gradient(ellipse at 12% -10%, rgba(23, 107, 255, 0.13), transparent 34rem),
+    #05070b;
+  color-scheme: dark;
+}
+.auto-builder-dark .bg-white,
+.auto-builder-dark [class~="bg-white"] {
+  background-color: #0b1220 !important;
+}
+.auto-builder-dark .bg-slate-50,
+.auto-builder-dark [class~="bg-slate-50"] {
+  background-color: #080d16 !important;
+}
+.auto-builder-dark .bg-slate-100,
+.auto-builder-dark [class~="bg-slate-100"] {
+  background-color: #070b12 !important;
+}
+.auto-builder-dark [class~="text-slate-900"],
+.auto-builder-dark [class~="text-slate-800"],
+.auto-builder-dark [class~="text-slate-700"] {
+  color: #f1f5f9 !important;
+}
+.auto-builder-dark [class~="text-slate-600"] {
+  color: #cbd5e1 !important;
+}
+.auto-builder-dark [class~="text-slate-500"] {
+  color: #a8b5c7 !important;
+}
+.auto-builder-dark [class~="text-slate-400"] {
+  color: #8392a8 !important;
+}
+.auto-builder-dark [class~="border-slate-200"],
+.auto-builder-dark [class~="border-slate-300"] {
+  border-color: #26354a !important;
+}
+.auto-builder-dark input:not([type="color"]):not([type="range"]),
+.auto-builder-dark textarea,
+.auto-builder-dark select {
+  color: #f8fafc;
+}
+.auto-builder-dark input::placeholder,
+.auto-builder-dark textarea::placeholder {
+  color: #75849a;
+}
+.auto-builder-dark button:focus-visible,
+.auto-builder-dark a:focus-visible,
+.auto-builder-dark input:focus-visible,
+.auto-builder-dark select:focus-visible,
+.auto-builder-dark textarea:focus-visible {
+  outline: 2px solid #176bff;
+  outline-offset: 3px;
+}
+.auto-builder-dark .shadow-lg,
+.auto-builder-dark .shadow-xl {
+  --tw-shadow-color: rgba(0, 0, 0, 0.35);
+}
+@media (prefers-reduced-motion: reduce) {
+  .auto-builder-dark *,
+  .auto-builder-dark *::before,
+  .auto-builder-dark *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
