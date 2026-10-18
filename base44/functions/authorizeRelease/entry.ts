@@ -9,6 +9,7 @@ export default async function(req) {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (user.role !== 'admin') return Response.json({ error: 'Operator administrator required' }, { status: 403 });
 
     const body = await req.json();
     const { projectId, releaseNotes } = body;
@@ -24,13 +25,17 @@ export default async function(req) {
       { sort: '-created_date', limit: 50 }
     );
 
+    const requiredGates = ['static', 'functional', 'security', 'visual', 'operational'];
+    const evidencedPasses = receipts.filter(r => r.verdict === 'PASS' && r.validator && Array.isArray(r.evidence_refs) && r.evidence_refs.length > 0);
+    const covered = new Set(evidencedPasses.map(r => r.gate));
     const validationGate = {
       total: receipts.length,
-      passed: receipts.filter(r => r.result === 'pass').length,
-      failed: receipts.filter(r => r.result === 'fail').length,
-      blocked: receipts.filter(r => r.result === 'blocked').length,
-      unknown: receipts.filter(r => r.result === 'unknown').length,
-      details: receipts.map(r => ({ type: r.validation_type, result: r.result, score: r.score })),
+      passed: evidencedPasses.length,
+      failed: receipts.filter(r => r.verdict === 'FAIL').length,
+      blocked: receipts.filter(r => r.verdict === 'BLOCKED').length,
+      unknown: receipts.filter(r => !['PASS', 'FAIL', 'BLOCKED'].includes(r.verdict)).length,
+      missingGates: requiredGates.filter(gate => !covered.has(gate)),
+      details: receipts.map(r => ({ gate: r.gate, verdict: r.verdict, validator: r.validator, evidence_count: r.evidence_refs?.length || 0 })),
     };
 
     // 3. Check compliance reports
@@ -47,16 +52,9 @@ export default async function(req) {
       criticalIssues: latestCompliance?.critical_issues || 0,
     };
 
-    // 4. Check existing approvals
-    const { items: approvals } = await base44.entities.ApprovalRequest.filter(
-      { project_id: projectId, approval_type: 'release' },
-      { sort: '-created_date', limit: 10 }
-    );
-
-    const existingApproval = approvals.find(a => a.status === 'approved');
-
     // 5. Determine gate status
-    const validationPassed = validationGate.failed === 0 && validationGate.blocked === 0 && validationGate.total > 0;
+    const validationPassed = validationGate.failed === 0 && validationGate.blocked === 0 &&
+      validationGate.unknown === 0 && validationGate.missingGates.length === 0;
     const compliancePassed = complianceGate.hasReport && complianceGate.overallScore >= 80;
     const hasValidDeploy = !!project.deploy_url;
     const allGatesPassed = validationPassed && compliancePassed && hasValidDeploy;
@@ -79,47 +77,34 @@ export default async function(req) {
       }, { status: 403 });
     }
 
-    // 6. All gates passed — create the release approval
+    // Readiness may create a PENDING decision request but may not self-approve or publish.
+    if (!body.rollback_ref) {
+      return Response.json({
+        projectId,
+        authorized: false,
+        blockers: ['A rollback_ref is required before requesting operator approval'],
+      }, { status: 428 });
+    }
     const approval = await base44.entities.ApprovalRequest.create({
-      project_id: projectId,
-      approval_type: 'release',
-      description: releaseNotes || `Production release authorized for ${project.business_name || 'project'} — all validation and compliance gates passed.`,
-      options: [
-        { label: 'Approve Release', value: 'approve' },
-        { label: 'Hold Release', value: 'hold' },
-      ],
-      status: 'approved',
-      approved_by: user.id,
-      approved_at: new Date().toISOString(),
+      request_id: 'AR-' + crypto.randomUUID(),
+      action_class: 'PRODUCTION_RELEASE',
+      scope: 'release:website_project:' + projectId,
+      description: releaseNotes || 'Request a separately authorized production release',
+      status: 'PENDING',
+      requested_by: user.id,
+      rollback_ref: body.rollback_ref,
+      created_at: new Date().toISOString(),
     });
-
-    // 7. Mark the project as approved
-    await base44.entities.WebsiteProject.update(projectId, { status: 'approved' });
-
-    // 8. Create a GenerationJob to track the release
-    const releaseJob = await base44.entities.GenerationJob.create({
-      job_type: 'PUBLISH_APPROVED',
-      project_id: projectId,
-      status: 'complete',
-      priority: 'urgent',
-      approval_class: 'production',
-      payload: { releaseNotes: releaseNotes || '', approvalId: approval.id },
-      result_artifact: { deployUrl: project.deploy_url, approvalId: approval.id },
-      completed_at: new Date().toISOString(),
-    });
-
     return Response.json({
       projectId,
-      authorized: true,
+      authorized: false,
+      status: 'PENDING',
       gates,
       validation: validationGate,
       compliance: complianceGate,
-      approval,
-      releaseJob,
-      deployUrl: project.deploy_url,
-      message: `Release authorized for ${project.business_name || 'project'}. All gates passed.`,
-      authorizedAt: new Date().toISOString(),
-    });
+      approval_request_id: approval.id,
+      message: 'Readiness evidence recorded. An independent operator decision is required.',
+    }, { status: 202 });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
