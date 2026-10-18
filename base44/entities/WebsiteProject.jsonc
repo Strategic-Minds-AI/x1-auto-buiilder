@@ -5,7 +5,7 @@
         "brand_color": { "type": "string", "description": "Primary brand accent color hex" },
         "brand_palette_id": { "type": "string", "description": "Stable selected brand palette id" },
         "brand_palette": { "type": "object", "description": "Full selected brand palette token set" },
-        "brand_font": { "type": "string", "description": "Selected typography preset id" }
+        "brand_font": { "type": "string", "description": "Selected typography preset id" },
     "business_name": {
       "type": "string",
       "description": "Business name extracted or entered"
