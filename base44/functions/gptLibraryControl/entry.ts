@@ -51,7 +51,8 @@ export default async function(req) {
 
       return Response.json({
         enabled: apiKeyConfigured,
-        engine_ready: engineConfigured,
+        engine_ready: engineConfigured && autonomous?.last_push?.status === 'success' && autonomous?.last_pull?.status === 'success',
+        engine_configured: engineConfigured,
         autonomous: autonomous || { engine_configured: engineConfigured },
         tools: tools?.tools || [],
         recent_logs: logs,
@@ -71,16 +72,19 @@ export default async function(req) {
 
     // ── disable: mark GPT library as disabled ───────────────────────────────
     if (action === 'disable') {
-      await logReceipt(base44, 'disable', 'success', 'GPT library disabled — external AI clients will be rejected');
-      return Response.json({ enabled: false, message: 'GPT library is now disabled' });
+      await logReceipt(base44, 'disable', 'error', 'Disable requires a verified runtime kill switch; no enforcement changed');
+      return Response.json({ disabled: false, error: 'No enforced disable path exists. No change was made.' }, { status: 501 });
     }
 
     // ── autonomous_start: trigger a sync cycle ──────────────────────────────
     if (action === 'autonomous_start') {
       try {
         const res = await base44.functions.invoke('gptAutonomousSync', { action: 'cycle' });
-        await logReceipt(base44, 'autonomous_start', 'success', 'Autonomous coding sync cycle triggered');
-        return Response.json({ started: true, result: res?.data });
+        const sync = res?.data || {};
+        const ok = sync.success === true && sync.pushed?.ok === true && sync.pulled?.ok === true;
+        await logReceipt(base44, 'autonomous_start', ok ? 'success' : 'error',
+          ok ? 'Autonomous sync cycle verified' : 'Autonomous cycle failed or is missing required evidence');
+        return Response.json({ started: ok, result: sync, ...(ok ? {} : { error: 'Sync did not pass both directions' }) }, { status: ok ? 200 : 502 });
       } catch (err) {
         await logReceipt(base44, 'autonomous_start', 'error', String(err.message || err));
         return Response.json({ error: String(err.message || err) }, { status: 500 });
@@ -89,16 +93,19 @@ export default async function(req) {
 
     // ── autonomous_stop: log stop intent ────────────────────────────────────
     if (action === 'autonomous_stop') {
-      await logReceipt(base44, 'autonomous_stop', 'success', 'Autonomous coding system stopped by operator');
-      return Response.json({ stopped: true, message: 'Autonomous coding system stopped' });
+      await logReceipt(base44, 'autonomous_stop', 'error', 'No verified stop signal sent to the scheduled workflow');
+      return Response.json({ stopped: false, error: 'Scheduled workflow has not been disabled' }, { status: 501 });
     }
 
     // ── sync_now: trigger a bidirectional sync cycle ─────────────────────────
     if (action === 'sync_now') {
       try {
         const res = await base44.functions.invoke('gptAutonomousSync', { action: 'cycle' });
-        await logReceipt(base44, 'sync_now', 'success', 'Bidirectional GPT sync cycle completed');
-        return Response.json({ synced: true, result: res?.data });
+        const sync = res?.data || {};
+        const ok = sync.success === true && sync.pushed?.ok === true && sync.pulled?.ok === true;
+        await logReceipt(base44, 'sync_now', ok ? 'success' : 'error',
+          ok ? 'Bidirectional GPT sync cycle verified' : 'Bidirectional sync failed or lacked two-way evidence');
+        return Response.json({ synced: ok, result: sync, ...(ok ? {} : { error: 'Sync did not pass both directions' }) }, { status: ok ? 200 : 502 });
       } catch (err) {
         await logReceipt(base44, 'sync_now', 'error', String(err.message || err));
         return Response.json({ error: String(err.message || err) }, { status: 500 });
