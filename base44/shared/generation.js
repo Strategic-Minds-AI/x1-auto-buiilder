@@ -162,6 +162,11 @@ export async function buildWebsiteBlueprint(base44, params) {
       auditIssueCount: auditIssues.length,
       intelligence: intelligence ? { hasIntelligence: true, industry: intelligence.designDirection?.tone || '' } : { hasIntelligence: false },
       registryMatched: !!registryContext,
+      designContext,
+      requestedModules: designContext.requestedModules || [],
+      requestedPages: designContext.requestedPages || [],
+      targetImageCount: designContext.targetImageCount || 0,
+      optimization: designContext.optimization || {},
     };
   }
 
@@ -171,7 +176,16 @@ export async function buildWebsiteBlueprint(base44, params) {
     prompt: CONTENT_PROMPT(industry, businessResearch, benchmark) + '\n\n' + designDirective,
     response_json_schema: contentSchema
   });
-  return { businessResearch, benchmark, content };
+  return {
+    businessResearch,
+    benchmark,
+    content,
+    designContext,
+    requestedModules: designContext.requestedModules || [],
+    requestedPages: designContext.requestedPages || [],
+    targetImageCount: designContext.targetImageCount || 0,
+    optimization: designContext.optimization || {},
+  };
 }
 
 export async function runMassLaunch(base44, params, scope) {
