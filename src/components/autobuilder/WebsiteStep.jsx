@@ -18,6 +18,7 @@ const OPTIONAL_MODULES = [
 export default function WebsiteStep({ accent, vision, strategy, nameData, brandData, templateData, onApprove }) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [approvedDesignContext, setApprovedDesignContext] = useState(null);
   const [error, setError] = useState(null);
   const [extraPages, setExtraPages] = useState("About, Contact, FAQs");
   const [imageCount, setImageCount] = useState(6);
@@ -75,6 +76,7 @@ export default function WebsiteStep({ accent, vision, strategy, nameData, brandD
           geo ? "GEO/local: verified business entity details, local intent, consistent NAP only when provided, and unique location content." : "",
         ].filter(Boolean),
       };
+      setApprovedDesignContext(designContext);
       const res = await base44.functions.invoke("generateWebsite", {
         businessName: nameData?.name || "",
         businessWebsiteUrl: "",
@@ -91,7 +93,7 @@ export default function WebsiteStep({ accent, vision, strategy, nameData, brandD
     }
   };
 
-  const handleApprove = () => onApprove({ website: result, designContext: result?.designContext });
+  const handleApprove = () => onApprove({ website: result, designContext: approvedDesignContext });
 
   return (
     <AutoStepShell
