@@ -11,7 +11,7 @@
         "template": { "type": "object", "description": "Selected reusable industry template and layout" },
         "website_blueprint": { "type": "object", "description": "Generated website content blueprint and design requirements" },
         "design_context": { "type": "object", "description": "Requested pages, modules, image count, and SEO/AEO/GEO options" },
-        "approved_content": { "type": "object", "description": "Reviewed content edits approved before compliance and launch" }
+        "approved_content": { "type": "object", "description": "Reviewed content edits approved before compliance and launch" },
     "name": {
       "type": "string",
       "description": "Project name"
