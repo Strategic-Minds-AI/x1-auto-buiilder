@@ -32,8 +32,6 @@ export default function ThemePanel({ project, onClose, onApply }) {
       if (project?.id) {
         await base44.entities.WebsiteProject.update(project.id, {
           brand_color: color,
-          brand_palette_id: palette.id,
-          brand_font: font,
         });
       }
       onApply(color, { ...palette, accent: color, font });
