@@ -45,6 +45,7 @@ export default function WebsiteStep({ accent, vision, strategy, nameData, brandD
       const designContext = {
         industryId: industryProfile.id,
         industryLabel: industry,
+        businessGoal: vision?.statement || strategy?.goal || "",
         industryProfile,
         brandPalette: {
           name: palette.name || "Electric Midnight",
