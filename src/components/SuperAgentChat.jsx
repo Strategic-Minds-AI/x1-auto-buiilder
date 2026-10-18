@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
-import ReactMarkdown from "react-markdown";
+import ChatMediaContent from "@/components/ChatMediaContent";
 import {
   Bot, Send, X, Plus, Loader2,
   ChevronDown, ChevronRight, Wrench, CheckCircle, AlertCircle, Clock, Sparkles, MessageCircle, Bell, Trophy
@@ -253,7 +253,7 @@ function MessageBubble({ message }) {
       <div className="max-w-[90%]">
         {message.content && (
           <div className="rounded-2xl rounded-tl-sm bg-white border border-slate-200 px-3.5 py-2.5">
-            <ReactMarkdown className="text-sm text-slate-700 prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0 prose-headings:my-1.5 prose-code:text-[#00d4ff] prose-code:bg-slate-50 prose-code:px-1 prose-code:rounded">{message.content}</ReactMarkdown>
+            <ChatMediaContent content={message.content} />
           </div>
         )}
         {message.tool_calls?.map((tc, i) => <ToolCallDisplay key={i} toolCall={tc} />)}
