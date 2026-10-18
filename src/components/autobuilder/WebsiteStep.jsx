@@ -189,6 +189,14 @@ export default function WebsiteStep({ accent, vision, strategy, nameData, brandD
             </div>
           )}
           <div className="rounded-xl border border-slate-700 bg-slate-950 p-4">
+            <div className="mb-2 text-xs font-bold uppercase text-slate-400">Selected build scope</div>
+            <div className="flex flex-wrap gap-2">
+              {(approvedDesignContext?.requestedModules || []).map((module) => <span key={module.id} className="rounded-full border border-blue-400/30 bg-blue-400/10 px-2.5 py-1 text-[11px] text-blue-100">{module.name}</span>)}
+            </div>
+            <p className="mt-3 text-xs leading-relaxed text-slate-400">Requested pages: {(approvedDesignContext?.requestedPages || []).join(", ") || "Core pages"}</p>
+            <p className="mt-1 text-xs leading-relaxed text-slate-400">Target image assets: {approvedDesignContext?.targetImageCount || imageCount} · SEO {approvedDesignContext?.optimization?.seo ? "on" : "off"} · AEO {approvedDesignContext?.optimization?.aeo ? "on" : "off"} · GEO {approvedDesignContext?.optimization?.geo ? "on" : "off"}</p>
+          </div>
+          <div className="rounded-xl border border-slate-700 bg-slate-950 p-4">
             <div className="text-xs font-bold uppercase text-slate-400">Generation quality gates</div>
             <p className="mt-2 text-sm text-slate-300">Review the generated facts, industry fit, image prompts, metadata, and selected modules before publication. No invented claims should pass approval.</p>
           </div>
