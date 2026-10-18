@@ -15,6 +15,7 @@ import SocialStep from "@/components/autobuilder/SocialStep";
 import ReviewStep from "@/components/autobuilder/ReviewStep";
 import LaunchStep from "@/components/autobuilder/LaunchStep";
 import { Hammer, ArrowLeft } from "lucide-react";
+import "@/components/autobuilder/autoBuilderTheme.css";
 
 // The guided 12-step Auto Builder — a distraction-free, step-by-step journey
 // with a horizontal timeline at the top. Each step persists into the BuildProject
@@ -73,9 +74,9 @@ export default function AutoBuilder() {
   const approveLaunch = () => { /* done — stay on launch page */ };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900">
+    <div className="auto-builder-dark min-h-screen bg-[#05070B] text-white">
       {/* Top bar */}
-      <header className="border-b border-slate-200 bg-white">
+      <header className="border-b border-slate-800 bg-[#05070B]">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-3">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: accent }}>
             <Hammer className="h-4 w-4 text-slate-900" />
