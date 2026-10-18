@@ -12,24 +12,21 @@ import { renderSiteHtml, slugify } from '../../shared/siteRenderer.js';
 // Called by the AutonomousFactoryCycle workflow every 10 minutes.
 // ─────────────────────────────────────────────────────────────────────────
 
-const RAILWAY_API = 'https://backboard.railway.com/graphql/v2';
 const VERCEL_API = 'https://api.vercel.com';
 
 export default async function(req: Request): Promise<Response> {
   try {
     const base44 = createClientFromRequest(req);
-    let user = null;
-    try { user = await base44.auth.me(); } catch {}
-    // Allow workflow invocation (no user) and admin invocation
-    if (user && user.role !== 'admin') {
-      return Response.json({ error: 'Forbidden — admin required' }, { status: 403 });
+    const user = await base44.auth.me().catch(() => null);
+    // Scheduled work requires a separately verified service identity, never anonymous access.
+    if (!user || user.role !== 'admin') {
+      return Response.json({ error: 'Verified administrator identity required' }, { status: 403 });
     }
 
     const appUrl = req.headers.get('X-Base44-App-Url') || '';
     const syncKey = secrets.get('GPT_SYNC_API_KEY');
     const vercelToken = secrets.get('VERCEL_TOKEN');
     const vercelTeamId = secrets.get('VERCEL_TEAM_ID');
-    const railwayToken = secrets.get('RAILWAY_API_TOKEN');
 
     const result: any = {
       timestamp: new Date().toISOString(),
@@ -55,7 +52,7 @@ export default async function(req: Request): Promise<Response> {
         });
         const syncData = await syncRes.json().catch(() => ({}));
         result.phases.gpt_sync = {
-          ok: syncRes.ok && syncData.success !== false,
+          ok: syncRes.ok && syncData.success === true && syncData.pushed?.ok === true && syncData.pulled?.ok === true,
           pushed: syncData.pushed?.ok || false,
           pushed_records: syncData.pushed?.record_count || 0,
           pulled: syncData.pulled?.ok || false,
@@ -79,7 +76,7 @@ export default async function(req: Request): Promise<Response> {
     try {
       if (vercelToken) {
         const { items: pendingProjects } = await base44.asServiceRole.entities.WebsiteProject.filter(
-          { status: { $in: ['approved', 'preview_ready'] }, deploy_url: { $exists: false } },
+          { status: 'preview_ready', deploy_url: { $exists: false } },
           { sort: '-created_date', limit: 10, fields: ['id', 'business_name', 'industry', 'content'] }
         );
 
@@ -93,7 +90,14 @@ export default async function(req: Request): Promise<Response> {
             continue;
           }
           try {
-            const html = renderSiteHtml(project);
+            const rendered = renderSiteHtml(project);
+            const headTag = /<head(?:\s[^>]*)?>/i;
+            if (!headTag.test(rendered)) {
+              failed++;
+              deployResults.push({ id: project.id, status: 'blocked', reason: 'Cannot enforce preview noindex without a head element' });
+              continue;
+            }
+            const html = rendered.replace(headTag, (tag) => tag + '<meta name="robots" content="noindex,nofollow,noarchive">');
             const name = slugify(project.business_name || project.industry || 'site') + '-' + String(project.id).slice(0, 6);
             const endpoint = `${VERCEL_API}/v13/deployments${vercelTeamId ? '?teamId=' + encodeURIComponent(vercelTeamId) : ''}`;
             const vercelRes = await fetch(endpoint, {
@@ -103,7 +107,6 @@ export default async function(req: Request): Promise<Response> {
                 name,
                 files: [{ file: 'index.html', data: html }],
                 projectSettings: { framework: null },
-                target: 'production',
               }),
               signal: AbortSignal.timeout(60000),
             });
@@ -112,7 +115,7 @@ export default async function(req: Request): Promise<Response> {
               await base44.asServiceRole.entities.WebsiteProject.update(project.id, {
                 deploy_url: 'https://' + data.url,
                 deploy_id: data.id,
-                status: 'approved',
+                status: 'preview_ready',
               });
               deployed++;
               deployResults.push({ id: project.id, name: project.business_name, status: 'deployed', url: 'https://' + data.url });
@@ -127,7 +130,7 @@ export default async function(req: Request): Promise<Response> {
         }
 
         result.phases.vercel_deploy = {
-          ok: true,
+          ok: failed === 0,
           pending: pendingProjects.length,
           deployed,
           failed,
@@ -198,7 +201,7 @@ export default async function(req: Request): Promise<Response> {
         }
 
         result.phases.analytics_sync = {
-          ok: true,
+          ok: failed === 0,
           projects: deployedProjects.length,
           synced,
           skipped,
@@ -216,84 +219,23 @@ export default async function(req: Request): Promise<Response> {
     // ═══════════════════════════════════════════════════════════════════════
     // PHASE 4: RAILWAY SANDBOX PROVISIONING
     // ═══════════════════════════════════════════════════════════════════════
-    try {
-      if (railwayToken) {
-        // Find projects that need sandboxes (have a client_id but no sandbox yet)
-        // Limit to 2 per cycle — Railway allows 1 project per 30 seconds
-        const { items: clientProjects } = await base44.asServiceRole.entities.WebsiteProject.filter(
-          { client_id: { $exists: true }, status: { $in: ['draft', 'researching', 'generated'] } },
-          { sort: '-created_date', limit: 2, fields: ['id', 'business_name', 'client_id'] }
-        );
-
-        let provisioned = 0;
-        let skipped = 0;
-        const sandboxResults: any[] = [];
-
-        for (const [idx, project] of clientProjects.entries()) {
-          // Wait 31 seconds between provisions to respect Railway's rate limit
-          if (idx > 0) await new Promise(r => setTimeout(r, 31000));
-          try {
-            // Check if sandbox already exists
-            const { items: existing } = await base44.asServiceRole.entities.Sandbox.filter(
-              { project_id: project.id, platform: 'railway', status: 'active' },
-              { limit: 1 }
-            );
-            if (existing && existing.length > 0) {
-              skipped++;
-              continue;
-            }
-
-            // Create Railway project (GraphQL v2 — uses $input variable)
-            const sandboxName = `sbx-${String(project.id).slice(0, 8)}`;
-            const res = await fetch(RAILWAY_API, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${railwayToken}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                query: `mutation projectCreate($input: ProjectCreateInput!) { projectCreate(input: $input) { id name } }`,
-                variables: { input: { name: sandboxName } },
-              }),
-              signal: AbortSignal.timeout(15000),
-            });
-            const data = await res.json();
-            if (data.data?.projectCreate?.id) {
-              const railwayId = data.data.projectCreate.id;
-              await base44.asServiceRole.entities.Sandbox.create({
-                project_id: project.id,
-                platform: 'railway',
-                status: 'active',
-                sandbox_id: railwayId,
-                url: `https://railway.com/project/${railwayId}`,
-                config: { name: sandboxName, auto_provisioned: true },
-              });
-              provisioned++;
-              sandboxResults.push({ id: project.id, name: project.business_name, status: 'provisioned', railway_id: railwayId });
-            } else {
-              sandboxResults.push({ id: project.id, name: project.business_name, status: 'failed', error: data.errors?.[0]?.message || 'Unknown' });
-            }
-          } catch (err: any) {
-            sandboxResults.push({ id: project.id, name: project.business_name, status: 'failed', error: err.message });
-          }
-        }
-
-        result.phases.sandbox_provision = {
-          ok: true,
-          new_projects: clientProjects.length,
-          provisioned,
-          skipped,
-          results: sandboxResults,
-        };
-      } else {
-        result.phases.sandbox_provision = { ok: false, error: 'RAILWAY_API_TOKEN not configured' };
-        result.errors.push('Sandbox provision: RAILWAY_API_TOKEN not configured');
-      }
-    } catch (err: any) {
-      result.phases.sandbox_provision = { ok: false, error: err.message };
-      result.errors.push(`Sandbox provision: ${err.message}`);
-    }
+    // Reuse existing Railway workers. New project creation requires a separately verified approval.
+    result.phases.sandbox_provision = {
+      ok: true,
+      blocked: true,
+      provisioned: 0,
+      reason: 'Railway project creation requires scoped approval and a cost ceiling',
+    };
 
     // ═══════════════════════════════════════════════════════════════════════
     // LOG THE CYCLE
     // ═══════════════════════════════════════════════════════════════════════
+    for (const [phase, state] of Object.entries(result.phases)) {
+      if (state && (state as any).ok === false && !(state as any).blocked) {
+        result.errors.push(phase + ': failed or unavailable');
+      }
+    }
+    result.success = result.errors.length === 0;
     try {
       const summary = `Factory: GPT=${result.phases.gpt_sync?.ok ? 'OK' : 'FAIL'} | Vercel=${result.phases.vercel_deploy?.deployed || 0}d${result.phases.vercel_deploy?.failed || 0}f | Analytics=${result.phases.analytics_sync?.synced || 0}s | Sandbox=${result.phases.sandbox_provision?.provisioned || 0}p`;
       await base44.asServiceRole.entities.SyncReceipt.create({
@@ -301,12 +243,11 @@ export default async function(req: Request): Promise<Response> {
         idempotency_key: `factory-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         action: 'factory_cycle',
         entity: 'autonomous',
-        status: result.errors.length === 0 ? 'success' : 'partial',
+        status: result.success ? 'success' : 'error',
         summary: String(summary).slice(0, 400),
       });
     } catch { /* best effort */ }
 
-    result.success = result.errors.length === 0;
     result.error_count = result.errors.length;
     return Response.json(result);
   } catch (error: any) {
