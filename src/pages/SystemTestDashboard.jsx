@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import BackButton from "@/components/shared/BackButton";
 import PageHeader from "@/components/shared/PageHeader";
+import AIGatewayPanel from "@/components/shared/AIGatewayPanel";
 import { Loader2, PlayCircle, CheckCircle, AlertCircle, Shield, Activity, Gauge, FileText, Wrench } from "lucide-react";
 
 export default function SystemTestDashboard() {
@@ -122,6 +123,9 @@ export default function SystemTestDashboard() {
             </a>
           </div>
         </div>
+
+        {/* Central AI gateway — live model round-trip */}
+        <AIGatewayPanel />
 
         {/* Run result */}
         {runResult?.error && (
